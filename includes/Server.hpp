@@ -16,7 +16,7 @@
 
 # define MAX_CLIENTS 100
 # define MAX_EVENTS 1000
-# define PORT 8080
+# define PORT 9999
 
 
 
@@ -35,9 +35,10 @@ class Server {
 		
 		~Server();
 
-		void init();
-		void run();
-		void signalHandle();
+		void	init();
+		// static void	handleClient( int clientFd );
+		void	run();
+		void	signalHandle();
 };
 
 #endif

@@ -108,6 +108,32 @@ void Server::removeClient(int fd) {
 	close(fd);	
 }
 
+void handleClientIn(int fd) {
+	unsigned char buf;
+	int n;
+	RawBits raw;
+
+	std::cout << "start" << std::endl;
+	while (true) {
+		n = recv(fd, &buf, 1, MSG_DONTWAIT);
+		// n = read(this->_events[i].data.fd, &buf, 1);
+		if (n <= 0) {
+			break;
+		}
+		else {
+			// print_bytes(&buf, n);
+			std::cout << buf;
+			raw.pushBack(buf);
+		}
+	}
+	std::cout << "finish" << std::endl;	
+}
+
+void handleClientOut(int fd) {
+	const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello IMAD!";
+	send(fd, response, strlen(response), MSG_EOR);	
+}
+
 void Server::run(void) {
 	this->_epoll_fd = epoll_create1(0); // TODO: Secure this
 	getSocketFd(this->_epoll_fd, SET);
@@ -123,29 +149,10 @@ void Server::run(void) {
 				this->addNewClient();
 			}
 			else if (this->_events[i].events & EPOLLIN) {
-				unsigned char buf;
-				int n;
-				std::cout << "start" << std::endl;
-				while (true) {
-					n = recv(this->_events[i].data.fd, &buf, 1, MSG_DONTWAIT);
-					// n = read(this->_events[i].data.fd, &buf, 1);
-					if (n <= 0) {
-						break;
-					}
-					else {
-						// print_bytes(&buf, n);
-						std::cout << buf;
-						raw.pushBack(buf);
-					}
-				}
-				std::cout << "finish" << std::endl;
+				handleClientIn(this->_events[i].data.fd);
 			}
 			else if (this->_events[i].events & EPOLLOUT) {
-					const char *response = "HTTP/1.1 200 OK\r\n\r\nje suis en train de test!";
-            	    send(this->_events[i].data.fd, response, strlen(response), MSG_EOR);
-			}
-			else {
-				printf("[+] unexpected\n");
+				handleClientOut(this->_events[i].data.fd);
 			}
 			if (this->_events[i].events & (EPOLLRDHUP | EPOLLHUP)) {
 				this->removeClient(this->_events[i].data.fd);
