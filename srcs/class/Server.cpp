@@ -1,0 +1,128 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/04 23:16:36 by madamou           #+#    #+#             */
+/*   Updated: 2024/11/05 01:43:55 by madamou          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../includes/Server.hpp"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <netinet/in.h>
+#include <sys/epoll.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+Server::Server(void)
+	: _socket_fd(-1), _epoll_fd(-1) {
+	this->_events = new struct epoll_event[MAX_EVENTS];
+}
+
+Server::~Server(void) {
+	if (this->_socket_fd != -1)
+		close(this->_socket_fd);
+	delete [] this->_events;
+}
+
+void Server::init(void) {
+	// Open socket
+	this->_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->_socket_fd == -1) {
+		std::cerr << "Error when socket creation" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	// config address and port
+	
+	std::memset(&this->_server_addr, 0, sizeof(struct sockaddr_in));
+	this->_server_addr.sin_family = AF_INET;
+	this->_server_addr.sin_addr.s_addr = INADDR_ANY;
+	this->_server_addr.sin_port = htons(PORT);
+
+	// Link socket
+	if (bind(this->_socket_fd, (struct sockaddr*)&this->_server_addr, sizeof(this->_server_addr)) < 0) {
+        std::cerr << "Error when socket linking" << std::endl;
+        close(this->_socket_fd);
+        exit(EXIT_FAILURE);		
+	}
+
+	if (listen(this->_socket_fd, MAX_CLIENTS) < 0) {
+        std::cerr << "Error when listening" << std::endl;
+        close(this->_socket_fd);
+        exit(EXIT_FAILURE);			
+	}
+
+}
+
+void Server::addToEpoll(int fd, uint32_t events)
+{
+	struct epoll_event ev;
+	ev.events = events;
+	ev.data.fd = fd;
+	if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_ADD, fd, &ev) == -1) {
+		std::cerr << "Epoll add" << std::endl;
+		exit(1);
+	}
+}
+
+int Server::waitFdsToBeReady(void) {
+	return epoll_wait(this->_epoll_fd, this->_events, MAX_EVENTS, -1);
+}
+
+void Server::addNewClient(void) {
+	int client_fd;
+	struct sockaddr_in client_addr;
+	unsigned int socklen;
+
+	socklen = sizeof(client_addr);
+	client_fd = accept(this->_socket_fd,  (struct sockaddr *)&client_addr, &socklen); // TODO: Secure this
+	this->addToEpoll(client_fd, EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP);
+}
+
+void Server::removeClient(int fd) {
+	printf("[+] connection closed\n");
+	epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL);
+	close(fd);	
+}
+
+void Server::run(void) {
+	this->_epoll_fd = epoll_create1(0); // TODO: Secure this
+	this->addToEpoll(this->_socket_fd, EPOLLIN | EPOLLOUT | EPOLLET);
+	
+	int nbFdsReady;
+	while (true) {
+		nbFdsReady = this->waitFdsToBeReady(); // TODO: Secure this (maybe) not sure
+		for (int i = 0; i < nbFdsReady; i++) {
+			if (this->_events[i].data.fd == this->_socket_fd) {
+				this->addNewClient();
+			}
+			else if (this->_events[i].events & EPOLLIN) {
+				char buf[16];
+				int n;
+				while (true) {
+					bzero(buf, sizeof(buf));
+					n = read(this->_events[i].data.fd, buf, sizeof(buf));
+					if (n <= 0) {
+						break;
+					}
+					else {
+						write(1, buf, n);
+					}
+				}
+			}
+			else {
+				printf("[+] unexpected\n");
+			}
+			if (this->_events[i].events & (EPOLLRDHUP | EPOLLHUP)) {
+				this->removeClient(this->_events[i].data.fd);
+				continue;
+			}
+		}
+	}
+}
