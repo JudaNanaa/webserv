@@ -18,5 +18,9 @@
 #include <fcntl.h>
 #include <sys/epoll.h>
 #include <arpa/inet.h>
-#include <strings.h>
+#include <string>
+#include <vector>
+#include <cstdlib>
+#include <cstring>
+
 #endif

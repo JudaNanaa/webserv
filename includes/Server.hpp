@@ -18,6 +18,8 @@
 # define MAX_EVENTS 1000
 # define PORT 8080
 
+
+
 class Server {
 	private:
 		int _socket_fd;
@@ -35,7 +37,7 @@ class Server {
 
 		void init();
 		void run();
-		
+		void signalHandle();
 };
 
 #endif

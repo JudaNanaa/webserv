@@ -3,22 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:36 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/05 01:43:55 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/05 14:54:32 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/Server.hpp"
+#include <csignal>
 #include <cstdio>
 #include <cstdlib>
+#include <iomanip>
 #include <cstring>
 #include <iostream>
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include "../../includes/Server.hpp"
+#include "../../includes/utils.hpp"
+#include "../../includes/RawBits.hpp"
 
 Server::Server(void)
 	: _socket_fd(-1), _epoll_fd(-1) {
@@ -31,6 +35,19 @@ Server::~Server(void) {
 	delete [] this->_events;
 }
 
+void ifSignal(int sig) {
+	(void)sig;
+	close(getSocketFd(0, GET));
+	close(getEpollFd(0, GET));
+	exit(EXIT_FAILURE);
+}
+
+void Server::signalHandle(void) {
+	signal(SIGINT, ifSignal);
+	signal(SIGQUIT, ifSignal);
+	signal(SIGTSTP, ifSignal);
+}
+
 void Server::init(void) {
 	// Open socket
 	this->_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -40,6 +57,7 @@ void Server::init(void) {
 	}
 	// config address and port
 	
+	getSocketFd(this->_socket_fd, SET);
 	std::memset(&this->_server_addr, 0, sizeof(struct sockaddr_in));
 	this->_server_addr.sin_family = AF_INET;
 	this->_server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -57,7 +75,6 @@ void Server::init(void) {
         close(this->_socket_fd);
         exit(EXIT_FAILURE);			
 	}
-
 }
 
 void Server::addToEpoll(int fd, uint32_t events)
@@ -93,8 +110,11 @@ void Server::removeClient(int fd) {
 
 void Server::run(void) {
 	this->_epoll_fd = epoll_create1(0); // TODO: Secure this
+	getSocketFd(this->_epoll_fd, SET);
 	this->addToEpoll(this->_socket_fd, EPOLLIN | EPOLLOUT | EPOLLET);
+	RawBits raw;
 	
+	std::cout << "listening on : http://127.0.0.1:" << PORT << std::endl;
 	int nbFdsReady;
 	while (true) {
 		nbFdsReady = this->waitFdsToBeReady(); // TODO: Secure this (maybe) not sure
@@ -103,17 +123,23 @@ void Server::run(void) {
 				this->addNewClient();
 			}
 			else if (this->_events[i].events & EPOLLIN) {
-				char buf[16];
+				unsigned char buf;
 				int n;
 				while (true) {
-					bzero(buf, sizeof(buf));
-					n = read(this->_events[i].data.fd, buf, sizeof(buf));
+					n = read(this->_events[i].data.fd, &buf, 1);
 					if (n <= 0) {
 						break;
 					}
 					else {
-						write(1, buf, n);
+						// print_bytes(&buf, n);
+						std::cout << buf;
+						raw.pushBack(buf);
 					}
+				}
+				std::cout << std::endl;
+				if (this->_events[i].events & EPOLLOUT) {
+					const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello IMAD!";
+            	    send(this->_events[i].data.fd, response, strlen(response), MSG_EOR);
 				}
 			}
 			else {

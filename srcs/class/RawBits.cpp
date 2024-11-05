@@ -1,24 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   RawBits.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/05 00:24:55 by madamou          ###   ########.fr       */
+/*   Created: 2024/11/05 14:57:06 by itahri            #+#    #+#             */
+/*   Updated: 2024/11/05 14:57:14 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/includes.hpp"
-#include "../includes/Server.hpp"
+#include "../../includes/RawBits.hpp"
+#include <cstring>
 
-int main(void) {
-	Server server;
+RawBits::RawBits(void) {
+	_content = NULL;
+	_len = 0;
+}
 
-	server.signalHandle();
-	server.init();
-	server.run();
-	std::cout << "ok" << std::endl;
-	return 0;
+RawBits::~RawBits(void) {
+	if (_content)
+		delete[] _content;
+}
+
+void RawBits::pushBack(unsigned char c) {
+	char *dest = new char[_len + 1];
+	if (_content)
+		std::memmove(dest, _content, _len);
+	dest[_len] = c;
+	delete [] _content;
+	_content = dest;
+	_len++;
 }
