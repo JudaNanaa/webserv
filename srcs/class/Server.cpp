@@ -99,7 +99,7 @@ void Server::addNewClient(void) {
 
 	socklen = sizeof(client_addr);
 	client_fd = accept(this->_socket_fd,  (struct sockaddr *)&client_addr, &socklen); // TODO: Secure this
-	this->addToEpoll(client_fd, EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP);
+	this->addToEpoll(client_fd, EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLRDHUP | EPOLLHUP);
 }
 
 void Server::removeClient(int fd) {
@@ -111,7 +111,7 @@ void Server::removeClient(int fd) {
 void Server::run(void) {
 	this->_epoll_fd = epoll_create1(0); // TODO: Secure this
 	getSocketFd(this->_epoll_fd, SET);
-	this->addToEpoll(this->_socket_fd, EPOLLIN | EPOLLOUT | EPOLLET);
+	this->addToEpoll(this->_socket_fd, EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLRDHUP | EPOLLHUP);
 	RawBits raw;
 	
 	std::cout << "listening on : http://127.0.0.1:" << PORT << std::endl;
@@ -125,8 +125,10 @@ void Server::run(void) {
 			else if (this->_events[i].events & EPOLLIN) {
 				unsigned char buf;
 				int n;
+				std::cout << "start" << std::endl;
 				while (true) {
-					n = read(this->_events[i].data.fd, &buf, 1);
+					n = recv(this->_events[i].data.fd, &buf, 1, MSG_DONTWAIT);
+					// n = read(this->_events[i].data.fd, &buf, 1);
 					if (n <= 0) {
 						break;
 					}
@@ -136,11 +138,11 @@ void Server::run(void) {
 						raw.pushBack(buf);
 					}
 				}
-				std::cout << std::endl;
-				if (this->_events[i].events & EPOLLOUT) {
-					const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello IMAD!";
+				std::cout << "finish" << std::endl;
+			}
+			else if (this->_events[i].events & EPOLLOUT) {
+					const char *response = "HTTP/1.1 200 OK\r\n\r\nje suis en train de test!";
             	    send(this->_events[i].data.fd, response, strlen(response), MSG_EOR);
-				}
 			}
 			else {
 				printf("[+] unexpected\n");
