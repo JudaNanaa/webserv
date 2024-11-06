@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/06 16:26:21 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/06 18:10:38 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ class Server {
 		int _socket_fd;
 		struct sockaddr_in _server_addr;
 		int _epoll_fd;
-    Data* _data;
 		struct epoll_event *_events;
 		void addToEpoll(int fd, uint32_t events);
 		void addNewClient(void);
@@ -41,7 +40,8 @@ class Server {
 		// static void	handleClient( int clientFd );
 		void	run();
 		void	signalHandle();
-    void addData(Data* data);
+    	void addData(Data* data);
+    	Data &_data;
 };
 
 #endif

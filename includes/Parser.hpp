@@ -6,7 +6,7 @@
 /*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/06 16:35:30 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/06 18:21:30 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,14 @@ struct Data {
 
 class Pars {
   private:
+    static std::vector<Server>& parseConfigFile(std::string configFilePath);
     static void parseConfigPath(std::string path);
     static void handleLine(std::string &line, Data *data, int &lineNumber);
     static void parseServer(Server &serv, std::ifstream& configFile, int &lineNumber);
-    static std::vector<Server>* parseConfigFile(std::string configFilePath);
+
   public:
-    static std::vector<Server>* parse(std::string path);
+    static std::vector<Server> parse(std::string path);
+
     void addPort(Data* data, std::string port);
     void addServName(Data* data, std::string name);
     void addRootDir(Data* data, std::string path);

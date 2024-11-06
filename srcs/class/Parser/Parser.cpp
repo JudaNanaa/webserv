@@ -6,12 +6,13 @@
 /*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/06 17:16:07 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/06 18:19:00 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Parser.hpp"
 #include "../../../includes/Server.hpp"
+#include <cctype>
 #include <exception>
 #include <fstream>
 #include <stdexcept>
@@ -39,6 +40,7 @@ void Pars::handleLine(std::string &line, Data* data, int &lineNumber) {
 	/*typedef void (Pars::*FunctionType)(Data*, std::string);*/
   std::map<std::string, void (Pars::*)(Data*, std::string)> functionMap;
 
+
   functionMap["listen"] = &Pars::addPort;
   functionMap["server_names"] = &Pars::addServName;
   functionMap["root"] = &Pars::addRootDir;
@@ -51,13 +53,21 @@ void Pars::handleLine(std::string &line, Data* data, int &lineNumber) {
   functionMap["location"] = &Pars::addLocationDir;
   functionMap["index"] = &Pars::addIndex;
 
-	std::string	type = line.substr(0, line.find(" "));
+  std::string	type;
 
-	if (functionMap.find(trim(type)) == functionMap.end()) {	// type not in the map
+	std::cout << "Salut bg !" << std::endl;
+  if (line.find(' ') != std::string::npos)
+	  type = line.substr(0, line.find_first_of(' '));
+  else
+    throw std::invalid_argument("key miss value");
+  if (functionMap.find(trim(type)) == functionMap.end()) {	// type not in the map
 		throw std::invalid_argument("unknow keyword: " + type);
 	}
+	std::cout << "Aurevoir bg !" << std::endl;
   Pars parsInstance; //for now is the only method to do what i want i will change this soon
-  (parsInstance.*functionMap[type])(data, line.substr(line.find(" "), line.size()));
+  // if (line.find(" ") == std::string::npos)
+    // std::cerr << 
+  (parsInstance.*functionMap[trim(type)])(data, line.substr(line.find(" "), line.size()));
 }
 
 //for each server configuration check synthax and give each line to handleLine()
@@ -72,7 +82,7 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	
 	++lineNumber;
 
-	for (std::getline(configFile, line);; lineNumber++) {
+	for (;std::getline(configFile, line); lineNumber++) {
 		/*if (line[0] != '\n' && line[0] != '\t' && line[0] != ' ') {	// line not empty and not indented*/
 		/*	throw std::invalid_argument("ambigious indentation  : [" + line + "]");*/
 		/*} else {*/
@@ -81,6 +91,8 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 		// if (line.) {
 		// 	throw std::invalid_argument("ambigious indentation");
 		// }
+    // if (line.find("}") != std::string::npos)
+    //   break ;
     std::cout << "debug : \n"
       << "\t[line] " << line
       << std::endl;
@@ -90,9 +102,7 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
   serv.addData(data);
 }
 
-
-
-std::vector<Server>*	Pars::parseConfigFile(std::string configFilePath) {
+std::vector<Server>&	Pars::parseConfigFile(std::string configFilePath) {
   std::vector<Server>* servVec = new std::vector<Server>;
   std::string	line;
 
@@ -109,7 +119,7 @@ std::vector<Server>*	Pars::parseConfigFile(std::string configFilePath) {
       try {
         parseServer(newServ, configFile, lineNumber);
       } catch (std::exception& e) {
-        throw std::invalid_argument(e.what());
+        throw std::invalid_argument("line " + line + ": " + e.what());
       }
       servVec->push_back(newServ);
     }
@@ -117,10 +127,11 @@ std::vector<Server>*	Pars::parseConfigFile(std::string configFilePath) {
     //add a server in vector for each server config in file
     // error
   }
+  return *servVec;
 }
 
 
-std::vector<Server>* Pars::parse(std::string path) {
+std::vector<Server> Pars::parse(std::string path) {
   return parseConfigFile(path);
 }
 
