@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:36 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/05 14:54:32 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/06 16:44:26 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,35 @@
 #include <cstdlib>
 #include <iomanip>
 #include <cstring>
+#include <string>
+#include <sstream>
 #include <iostream>
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <cstddef>
 #include "../../includes/Server.hpp"
 #include "../../includes/utils.hpp"
 #include "../../includes/RawBits.hpp"
+#include "../../includes/Parser.hpp"
 
 Server::Server(void)
 	: _socket_fd(-1), _epoll_fd(-1) {
 	this->_events = new struct epoll_event[MAX_EVENTS];
+  _data = NULL;
 }
 
 Server::~Server(void) {
 	if (this->_socket_fd != -1)
 		close(this->_socket_fd);
+  if (_data)
+    delete _data;
 	delete [] this->_events;
+}
+
+void Server::addData(Data* data) {
+  _data = data;
 }
 
 void ifSignal(int sig) {
@@ -130,8 +141,21 @@ void handleClientIn(int fd) {
 }
 
 void handleClientOut(int fd) {
-	const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello IMAD!";
-	send(fd, response, strlen(response), MSG_EOR);	
+  const char *html_content = 
+        "<!DOCTYPE html>"
+        "<html>"
+        "<head><title>Page de test</title></head>"
+        "<body><h1>Bienvenue sur mon serveur !</h1><p>Ceci est une page HTML.</p></body>"
+        "</html>";
+  std::string response = "HTTP/1.1 200 OK\r\n";
+    response += "Content-Type: text/html\r\n";
+    std::ostringstream oss;
+    oss << strlen(html_content);
+    response += "Content-Length: " + oss.str() + "\r\n";
+    response += "\r\n"; // Séparateur entre en-têtes et contenu
+    response += html_content; // Ajouter le contenu HTML
+
+	send(fd, response.c_str(), response.size(), MSG_EOR);	
 }
 
 void Server::run(void) {

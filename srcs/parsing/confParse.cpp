@@ -6,11 +6,12 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 20:16:27 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/05 21:25:43 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/06 17:14:48 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Server.hpp"
+#include "../../includes/Parser.hpp"
 #include <exception>
 #include <fstream>
 #include <stdexcept>
@@ -57,18 +58,15 @@ void handleLine(std::string &line, Server &serv, int &lineNumber) {
 	}
 
 	functionMap[type](line, serv, lineNumber);
-
 }
 
 void	parseServer(Server &serv, std::ifstream& configFile, int &lineNumber) {
 	std::string	line;
 
-	std::getline(configFile, line); // TODO: (maybe) protect
-
-	if (line != "{") {
+	std::getline(configFile, line);
+	if (line != "{" || ) {
 		throw std::invalid_argument("invalid line");
 	}
-	
 	++lineNumber;
 
 	for (std::getline(configFile, line);; lineNumber++) {
@@ -86,6 +84,18 @@ void	parseServer(Server &serv, std::ifstream& configFile, int &lineNumber) {
 	
 }
 
+std::string trim(const std::string& str) {
+    // Supprimer les espaces en début
+    size_t start = str.find_first_not_of(" \t\n\r\f\v");
+    if (start == std::string::npos) return ""; // Chaîne vide si uniquement des espaces
+
+    // Supprimer les espaces en fin
+    size_t end = str.find_last_not_of(" \t\n\r\f\v");
+    
+    // Retourner la sous-chaîne sans espaces en début et en fin
+    return str.substr(start, end - start + 1);
+}
+
 void	parseConfigFile(std::vector<Server>& serv, std::string configFilePath) {
 	parseConfigPath(configFilePath);
 
@@ -99,15 +109,15 @@ void	parseConfigFile(std::vector<Server>& serv, std::string configFilePath) {
 
 	for (int lineNumber = 0;;(std::getline(configFile, line), lineNumber++)) {
 		// if (line == "server")
-		Server	newServ;
-		try {
-			parseServer(newServ, configFile, lineNumber);
-		} catch (std::exception& e) {
-			throw std::invalid_argument("line " + std::to_string(lineNumber) + ": " + e.what());
-		}
-		serv.push_back(newServ);
-		// else
-			// error
+    Server	newServ;
+    if (trim(line) == "server") {
+      try {
+        parseServer(newServ, configFile, lineNumber);
+      } catch (std::exception& e) {
+        throw std::invalid_argument("line " + std::to_string(lineNumber) + ": " + e.what());
+      }
+      serv.push_back(newServ);
+    }
 	}
 
 }
