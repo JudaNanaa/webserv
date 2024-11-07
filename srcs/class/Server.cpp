@@ -45,11 +45,12 @@ void Server::addData(Data* data) {
   _data = data;
 }
 
+int Server::getSocketFd(void) const {
+	return this->_socket_fd;
+}
+
 void ifSignal(int sig) {
 	(void)sig;
-	// close(getSocketFd(0, GET));
-	// close(getEpollFd(0, GET));
-	// exit(EXIT_FAILURE);
 	g_running = false;
 }
 
@@ -69,12 +70,10 @@ void Server::init(void) {
 	// Open socket
 	this->_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_socket_fd == -1) {
-		std::cerr << "Error when socket creation" << std::endl;
-		exit(EXIT_FAILURE);
+		throw ErrorException("Can't open socket");
 	}
 	// config address and port
 	
-	getSocketFd(this->_socket_fd, SET);
 	std::memset(&this->_server_addr, 0, sizeof(struct sockaddr_in));
 	this->_server_addr.sin_family = AF_INET;
 	this->_server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -83,25 +82,12 @@ void Server::init(void) {
 	// Link socket
 	if (bind(this->_socket_fd, (struct sockaddr*)&this->_server_addr, sizeof(this->_server_addr)) < 0) {
         std::cerr << "Error when socket linking" << std::endl;
-        close(this->_socket_fd);
-        exit(EXIT_FAILURE);		
+        throw ErrorException("Can't bind the socket");
 	}
 
 	if (listen(this->_socket_fd, MAX_CLIENTS) < 0) {
         std::cerr << "Error when listening" << std::endl;
-        close(this->_socket_fd);
-        exit(EXIT_FAILURE);			
-	}
-}
-
-void Server::addToEpoll(int fd, uint32_t events)
-{
-	struct epoll_event ev;
-	ev.events = events;
-	ev.data.fd = fd;
-	if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_ADD, fd, &ev) == -1) {
-		std::cerr << "Epoll add" << std::endl;
-		exit(1);
+        throw ErrorException("Can't listen on this socket");		
 	}
 }
 
@@ -109,14 +95,8 @@ int Server::waitFdsToBeReady(void) {
 	return epoll_wait(this->_epoll_fd, this->_events, MAX_EVENTS, -1);
 }
 
-void Server::addNewClient(void) {
-	int client_fd;
-	struct sockaddr_in client_addr;
-	unsigned int socklen;
-
-	socklen = sizeof(client_addr);
-	client_fd = accept(this->_socket_fd,  (struct sockaddr *)&client_addr, &socklen); // TODO: Secure this
-	this->addToEpoll(client_fd, EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLRDHUP | EPOLLHUP);
+void Server::addClientToMap(Client client) {
+	this->_clientMap[client.getClientFd()] = client;
 }
 
 void Server::removeClient(int fd) {

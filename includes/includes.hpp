@@ -23,4 +23,23 @@
 #include <cstdlib>
 #include <cstring>
 
+class ErrorException : public std::exception
+{
+	std::string _msg;
+	public:
+
+		ErrorException(const std::string& str)
+			: _msg(std::string("Empty Image : ") + str)
+		{
+
+		}
+
+	virtual const char* what() const throw()
+	{
+		return _msg.c_str();
+	}
+};
+
+extern bool g_running;
+
 #endif

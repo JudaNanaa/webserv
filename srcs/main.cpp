@@ -18,15 +18,15 @@
 
 int main(void) {
 	Server server;
-  std::vector<Server> servVec;
+  	std::vector<Server> servVec;
   	try {
 		servVec = Pars::parse("easyParsTest.conf");
 	} catch (std::exception &e) {
 		std::cout << "Error : " << e.what() << std::endl;
 		return 1;
 	}
-  std::cout << "PARSING OK!" << std::endl;
-  std::cout << "test post : " << servVec[0]._data->_port << std::endl;
+	std::cout << "PARSING OK!" << std::endl;
+	std::cout << "test post : " << servVec[0]._data->_port << std::endl;
 	server.signalHandle();
 	server.init();
 	server.run();
