@@ -6,12 +6,13 @@
 /*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/06 17:00:57 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 15:23:04 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Parser.hpp"
 #include "../../../includes/Server.hpp"
+#include "../../../includes/includes.hpp"
 #include <exception>
 #include <fstream>
 #include <stdexcept>
@@ -20,21 +21,6 @@
 #include <vector>
 #include <cstddef>
 
-
-Data::Data() {
-  _allowedMethodes = 0;
-  _index = "";
-  _root = "";
-  _serverName = "";
-  _port = 0;
-  _cgi = "";
-  _location = "";
-  _autoIndex = false;
-  _errorPage = "";
-  _uploadFolder = "";
-}
-
-Data::~Data() {}
 
 void Pars::addPort(Data* data, std::string port) {
   if (!port.empty())
@@ -105,13 +91,16 @@ void Pars::addIndex(Data* data, std::string index) {
 }
 
 std::string trim(const std::string& str) {
-    // Supprimer les espaces en début
     size_t start = str.find_first_not_of(" \t\n\r\f\v");
     if (start == std::string::npos) return ""; // Chaîne vide si uniquement des espaces
-
-    // Supprimer les espaces en fin
     size_t end = str.find_last_not_of(" \t\n\r\f\v");
-    
-    // Retourner la sous-chaîne sans espaces en début et en fin
     return str.substr(start, end - start + 1);
+}
+
+void trimn(std::string& str) {
+    size_t start = str.find_first_not_of(" \t\n\r\f\v");
+    if (start == std::string::npos) return ; // Chaîne vide si uniquement des espaces
+    size_t end = str.find_last_not_of(" \t\n\r\f\v");
+    str.erase(end + 1);
+    str.erase(0, start);
 }

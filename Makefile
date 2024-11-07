@@ -6,7 +6,7 @@
 #    By: madamou <madamou@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/29 12:42:35 by madamou           #+#    #+#              #
-#    Updated: 2024/11/06 16:37:40 by itahri           ###   ########.fr        #
+#    Updated: 2024/11/07 13:42:58 by itahri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ CC = c++
 
 C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3 
 
-PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp)
+PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp)
 
 CLASS = $(addprefix class/, Server.cpp RawBits.cpp $(PARSER))
 

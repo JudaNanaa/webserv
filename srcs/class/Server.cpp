@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:36 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/06 16:44:26 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 15:28:25 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,22 +28,19 @@
 #include "../../includes/RawBits.hpp"
 #include "../../includes/Parser.hpp"
 
-Server::Server(void)
+Server::Server(void)  
 	: _socket_fd(-1), _epoll_fd(-1) {
 	this->_events = new struct epoll_event[MAX_EVENTS];
-  _data = NULL;
 }
 
 Server::~Server(void) {
 	if (this->_socket_fd != -1)
 		close(this->_socket_fd);
-  if (_data)
-    delete _data;
-	delete [] this->_events;
+	  // delete [] this->_events;
 }
 
 void Server::addData(Data* data) {
-  _data = data;
+  data = data;
 }
 
 void ifSignal(int sig) {

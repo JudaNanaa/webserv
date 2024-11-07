@@ -6,7 +6,7 @@
 /*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/06 18:19:00 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 15:27:16 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,28 @@
 #include <string>
 #include <vector>
 
+
+void debugPrint(std::string str) {
+  for (int i = 0; str[i]; i++) {
+    if (str[i] == ' ')
+      std::cout << "~";
+    else if (str[i] == '\t')
+      std::cout << "\\t";
+    else
+      std::cout << str[i];
+  }
+}
+
+void normalizeLine(std::string &line) {
+  const std::string tabReplacement = "    ";
+  size_t pos = 0;
+
+  while ((pos = line.find('\t', pos)) != std::string::npos) {
+    line.replace(pos, 1, tabReplacement);
+    pos += tabReplacement.length();
+  }
+  trimn(line);
+}
 
 //check the path
 void	Pars::parseConfigPath(std::string path) {
@@ -36,7 +58,7 @@ void	Pars::parseConfigPath(std::string path) {
 
 //for each lines apply the associated function
 void Pars::handleLine(std::string &line, Data* data, int &lineNumber) {
-  (void)lineNumber;
+  // (void)lineNumber;
 	/*typedef void (Pars::*FunctionType)(Data*, std::string);*/
   std::map<std::string, void (Pars::*)(Data*, std::string)> functionMap;
 
@@ -54,19 +76,17 @@ void Pars::handleLine(std::string &line, Data* data, int &lineNumber) {
   functionMap["index"] = &Pars::addIndex;
 
   std::string	type;
-
-	std::cout << "Salut bg !" << std::endl;
-  if (line.find(' ') != std::string::npos)
-	  type = line.substr(0, line.find_first_of(' '));
-  else
-    throw std::invalid_argument("key miss value");
+  
+  normalizeLine(line);
+  std::cout << "{" << lineNumber << "}" << "'->";
+  debugPrint(line);
+  std::cout << "<-'" << std::endl;
+  type = line.substr(0, line.find(' '));
+  std::cout << "{" << lineNumber << "}" << "[" << trim(type) << "]" << std::endl;
   if (functionMap.find(trim(type)) == functionMap.end()) {	// type not in the map
-		throw std::invalid_argument("unknow keyword: " + type);
+		throw std::invalid_argument("unknow keyword: " + trim(type));
 	}
-	std::cout << "Aurevoir bg !" << std::endl;
   Pars parsInstance; //for now is the only method to do what i want i will change this soon
-  // if (line.find(" ") == std::string::npos)
-    // std::cerr << 
   (parsInstance.*functionMap[trim(type)])(data, line.substr(line.find(" "), line.size()));
 }
 
@@ -83,21 +103,15 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	++lineNumber;
 
 	for (;std::getline(configFile, line); lineNumber++) {
-		/*if (line[0] != '\n' && line[0] != '\t' && line[0] != ' ') {	// line not empty and not indented*/
-		/*	throw std::invalid_argument("ambigious indentation  : [" + line + "]");*/
-		/*} else {*/
-		/*	line.erase(0, 1);*/
-		/*}*/
-		// if (line.) {
-		// 	throw std::invalid_argument("ambigious indentation");
-		// }
-    // if (line.find("}") != std::string::npos)
-    //   break ;
-    std::cout << "debug : \n"
-      << "\t[line] " << line
-      << std::endl;
-    std::cout << "\t [data] " << data << std::endl;
-		handleLine(line, data, lineNumber);
+    std::cout << "debug : " << line << std::endl;
+    if (line.find('}') != std::string::npos)
+      break;
+    // std::cout << "debug : \n"
+    //   << "\t[line] " << line
+    //   << std::endl;
+    // std::cout << "\t [data] " << data << std::endl;
+    if (!line.empty())
+		  handleLine(line, data, lineNumber);
 	}
   serv.addData(data);
 }
@@ -119,9 +133,10 @@ std::vector<Server>&	Pars::parseConfigFile(std::string configFilePath) {
       try {
         parseServer(newServ, configFile, lineNumber);
       } catch (std::exception& e) {
-        throw std::invalid_argument("line " + line + ": " + e.what());
+        throw std::invalid_argument("line : '" + line + "' : " + e.what());
       }
       servVec->push_back(newServ);
+      std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
     }
     // else
     //add a server in vector for each server config in file

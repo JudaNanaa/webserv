@@ -6,7 +6,7 @@
 /*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/06 18:21:30 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 15:21:23 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ struct Data {
   public:
     Data();
     ~Data();
+    Data& operator=(const Data& src);
     int           _port;
     std::string   _serverName;
     std::string   _root;
@@ -61,5 +62,6 @@ class Pars {
 };
 
 std::string trim(const std::string& str);
+void trimn(std::string& str);
 
 #endif

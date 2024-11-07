@@ -6,7 +6,7 @@
 /*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/06 18:20:15 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 14:53:12 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,13 @@
 
 int main(void) {
 	Server server;
-	std::vector<Server> servVec;
-
   	try {
-		servVec = Pars::parse("configExample.conf");
+		Pars::parse("easyParsTest.conf");
 	} catch (std::exception &e) {
 		std::cout << "Error : " << e.what() << std::endl;
 		return 1;
 	}
-std::cout << "test post : " << servVec[0]._data._port << std::endl;
+  // std::cout << "test post : " << servVec[0]._data._port << std::endl;
 	server.signalHandle();
 	server.init();
 	server.run();

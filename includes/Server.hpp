@@ -6,7 +6,7 @@
 /*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/06 18:10:38 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 13:42:30 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ class Server {
 		// static void	handleClient( int clientFd );
 		void	run();
 		void	signalHandle();
-    	void addData(Data* data);
-    	Data &_data;
+    void addData(Data* data);
+    Data *_data;
 };
 
 #endif
