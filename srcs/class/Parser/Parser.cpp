@@ -6,7 +6,7 @@
 /*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/07 15:27:16 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 15:57:05 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,23 +101,20 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	}
 	
 	++lineNumber;
+  std::cout << lineNumber << std::endl;
 
 	for (;std::getline(configFile, line); lineNumber++) {
     std::cout << "debug : " << line << std::endl;
     if (line.find('}') != std::string::npos)
       break;
-    // std::cout << "debug : \n"
-    //   << "\t[line] " << line
-    //   << std::endl;
-    // std::cout << "\t [data] " << data << std::endl;
     if (!line.empty())
 		  handleLine(line, data, lineNumber);
 	}
   serv.addData(data);
 }
 
-std::vector<Server>&	Pars::parseConfigFile(std::string configFilePath) {
-  std::vector<Server>* servVec = new std::vector<Server>;
+std::vector<Server> Pars::parseConfigFile(std::string configFilePath) {
+  std::vector<Server> servVec;
   std::string	line;
 
   parseConfigPath(configFilePath);
@@ -126,8 +123,8 @@ std::vector<Server>&	Pars::parseConfigFile(std::string configFilePath) {
   if (configFile.fail()) {
     throw std::invalid_argument("Can't open the config file");
   }
-  for (int lineNumber = 0;;(std::getline(configFile, line), lineNumber++)) {
-    // if (line == "server")
+  for (int lineNumber = 0;std::getline(configFile, line); lineNumber++) {
+    if (line.empty()) continue;
     if (trim(line) == "server") {
       Server	newServ;
       try {
@@ -135,14 +132,11 @@ std::vector<Server>&	Pars::parseConfigFile(std::string configFilePath) {
       } catch (std::exception& e) {
         throw std::invalid_argument("line : '" + line + "' : " + e.what());
       }
-      servVec->push_back(newServ);
+      servVec.push_back(newServ);
       std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
     }
-    // else
-    //add a server in vector for each server config in file
-    // error
   }
-  return *servVec;
+  return servVec;
 }
 
 

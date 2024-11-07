@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:36 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/07 15:28:25 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 16:00:23 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ Server::~Server(void) {
 }
 
 void Server::addData(Data* data) {
-  data = data;
+  _data = data;
 }
 
 void ifSignal(int sig) {
