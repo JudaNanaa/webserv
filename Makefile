@@ -25,7 +25,7 @@ CC = c++
 
 C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3 
 
-CLASS = $(addprefix class/, Server.cpp RawBits.cpp)
+CLASS = $(addprefix class/, Server.cpp RawBits.cpp Data.cpp)
 
 SRCS = main.cpp GetterSetter.cpp $(CLASS)
 

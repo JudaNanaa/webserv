@@ -11,14 +11,18 @@
 /* ************************************************************************** */
 
 #include "../includes/includes.hpp"
-#include "../includes/Server.hpp"
+#include "../includes/Data.hpp"
+
+void signalHandle(void);
 
 int main(void) {
-	Server server;
+	Data data;
 
-	server.signalHandle();
-	server.init();
-	server.run();
+	// Parsing and store servers vector in data.servVect
+	data.initServers();
+	signalHandle();
+	data.runServers();
+	// data.closeServers();
 	std::cout << "ok" << std::endl;
 	return 0;
 }

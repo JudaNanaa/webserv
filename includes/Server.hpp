@@ -35,6 +35,8 @@ class Server {
 		
 		~Server();
 
+		Server &operator=(Server const &other);
+
 		void init();
 		void run();
 		void signalHandle();

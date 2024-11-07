@@ -19,11 +19,12 @@
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
-#include <thread>
 #include <unistd.h>
 #include "../../includes/Server.hpp"
 #include "../../includes/utils.hpp"
 #include "../../includes/RawBits.hpp"
+
+bool g_running = true;
 
 Server::Server(void)
 	: _socket_fd(-1), _epoll_fd(-1) {
@@ -33,19 +34,28 @@ Server::Server(void)
 Server::~Server(void) {
 	if (this->_socket_fd != -1)
 		close(this->_socket_fd);
+	if (this->_epoll_fd != -1)
+		close(this->_epoll_fd);
 }
 
 void ifSignal(int sig) {
 	(void)sig;
-	close(getSocketFd(0, GET));
-	close(getEpollFd(0, GET));
-	exit(EXIT_FAILURE);
+	// close(getSocketFd(0, GET));
+	// close(getEpollFd(0, GET));
+	// exit(EXIT_FAILURE);
+	g_running = false;
 }
 
-void Server::signalHandle(void) {
+void signalHandle(void) {
 	signal(SIGINT, ifSignal);
 	signal(SIGQUIT, ifSignal);
 	signal(SIGTSTP, ifSignal);
+}
+
+Server &Server::operator=(Server const &other) {
+	this->_socket_fd = other._socket_fd;
+	this->_epoll_fd = other._epoll_fd;
+	return *this;
 }
 
 void Server::init(void) {
@@ -142,7 +152,7 @@ void Server::run(void) {
 	
 	std::cout << "listening on : http://127.0.0.1:" << PORT << std::endl;
 	int nbFdsReady;
-	while (true) {
+	while (g_running) {
 		nbFdsReady = this->waitFdsToBeReady(); // TODO: Secure this (maybe) not sure
 		for (int i = 0; i < nbFdsReady; i++) {
 			if (this->_events[i].data.fd == this->_socket_fd) {
