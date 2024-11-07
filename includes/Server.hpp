@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/05 01:20:43 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/07 13:42:30 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,10 @@
 
 # define MAX_CLIENTS 100
 # define MAX_EVENTS 1000
-# define PORT 8080
+# define PORT 9999
 
 
+struct Data ;
 
 class Server {
 	private:
@@ -35,11 +36,12 @@ class Server {
 		
 		~Server();
 
-		Server &operator=(Server const &other);
-
-		void init();
-		void run();
-		void signalHandle();
+		void	init();
+		// static void	handleClient( int clientFd );
+		void	run();
+		void	signalHandle();
+    void addData(Data* data);
+    Data *_data;
 };
 
 #endif

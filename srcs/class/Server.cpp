@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:36 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/05 14:54:32 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/07 16:00:23 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,22 @@
 #include <cstdlib>
 #include <iomanip>
 #include <cstring>
+#include <string>
+#include <sstream>
 #include <iostream>
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <cstddef>
 #include "../../includes/Server.hpp"
 #include "../../includes/utils.hpp"
 #include "../../includes/RawBits.hpp"
 
 bool g_running = true;
+#include "../../includes/Parser.hpp"
 
-Server::Server(void)
+Server::Server(void)  
 	: _socket_fd(-1), _epoll_fd(-1) {
 	
 }
@@ -34,8 +38,11 @@ Server::Server(void)
 Server::~Server(void) {
 	if (this->_socket_fd != -1)
 		close(this->_socket_fd);
-	if (this->_epoll_fd != -1)
-		close(this->_epoll_fd);
+	  // delete [] this->_events;
+}
+
+void Server::addData(Data* data) {
+  _data = data;
 }
 
 void ifSignal(int sig) {
@@ -118,32 +125,6 @@ void Server::removeClient(int fd) {
 	close(fd);	
 }
 
-void handleClientIn(int fd) {
-	unsigned char buf;
-	int n;
-	RawBits raw;
-
-	std::cout << "start" << std::endl;
-	while (true) {
-		n = recv(fd, &buf, 1, MSG_DONTWAIT);
-		// n = read(this->_events[i].data.fd, &buf, 1);
-		if (n <= 0) {
-			break;
-		}
-		else {
-			// print_bytes(&buf, n);
-			std::cout << buf;
-			raw.pushBack(buf);
-		}
-	}
-	std::cout << "finish" << std::endl;	
-}
-
-void handleClientOut(int fd) {
-	const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello IMAD!";
-	send(fd, response, strlen(response), MSG_EOR);	
-}
-
 void Server::run(void) {
 	this->_epoll_fd = epoll_create1(0); // TODO: Secure this
 	getSocketFd(this->_epoll_fd, SET);
@@ -162,7 +143,8 @@ void Server::run(void) {
 				handleClientIn(this->_events[i].data.fd);
 			}
 			else if (this->_events[i].events & EPOLLOUT) {
-				handleClientOut(this->_events[i].data.fd);
+					const char *response = "HTTP/1.1 200 OK\r\n\r\nje suis en train de test!";
+            	    send(this->_events[i].data.fd, response, strlen(response), MSG_EOR);
 			}
 			else {
 				printf("[+] unexpected\n");
