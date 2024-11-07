@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/07 15:57:05 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 22:03:11 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ void Pars::handleLine(std::string &line, Data* data, int &lineNumber) {
 	/*typedef void (Pars::*FunctionType)(Data*, std::string);*/
   std::map<std::string, void (Pars::*)(Data*, std::string)> functionMap;
 
+  (void)lineNumber;
 
   functionMap["listen"] = &Pars::addPort;
   functionMap["server_names"] = &Pars::addServName;
@@ -78,11 +79,11 @@ void Pars::handleLine(std::string &line, Data* data, int &lineNumber) {
   std::string	type;
   
   normalizeLine(line);
-  std::cout << "{" << lineNumber << "}" << "'->";
-  debugPrint(line);
-  std::cout << "<-'" << std::endl;
+  // std::cout << "{" << lineNumber << "}" << "'->";
+  // debugPrint(line);
+  // std::cout << "<-'" << std::endl;
   type = line.substr(0, line.find(' '));
-  std::cout << "{" << lineNumber << "}" << "[" << trim(type) << "]" << std::endl;
+  // std::cout << "{" << lineNumber << "}" << "[" << trim(type) << "]" << std::endl;
   if (functionMap.find(trim(type)) == functionMap.end()) {	// type not in the map
 		throw std::invalid_argument("unknow keyword: " + trim(type));
 	}
@@ -101,10 +102,10 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	}
 	
 	++lineNumber;
-  std::cout << lineNumber << std::endl;
+  // std::cout << lineNumber << std::endl;
 
 	for (;std::getline(configFile, line); lineNumber++) {
-    std::cout << "debug : " << line << std::endl;
+    // std::cout << "debug : " << line << std::endl;
     if (line.find('}') != std::string::npos)
       break;
     if (!line.empty())
@@ -133,7 +134,7 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath) {
         throw std::invalid_argument("line : '" + line + "' : " + e.what());
       }
       servVec.push_back(newServ);
-      std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
+      // std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
     }
   }
   return servVec;

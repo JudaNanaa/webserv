@@ -3,7 +3,8 @@
 
 class Client {
 	private:
-		char *str;
+		// char *str;
+		// unsigned char buff;
 		int _fd;
 	public:
 		Client();

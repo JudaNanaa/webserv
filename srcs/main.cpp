@@ -3,21 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/07 15:52:52 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 21:54:34 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/includes.hpp"
+#include "../includes/GlobalData.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/Parser.hpp"
 #include <exception>
 #include <vector>
 
 int main(void) {
+	GlobalData data;
 	Server server;
+	
   	std::vector<Server> servVec;
   	try {
 		servVec = Pars::parse("easyParsTest.conf");
@@ -27,9 +30,16 @@ int main(void) {
 	}
 	std::cout << "PARSING OK!" << std::endl;
 	std::cout << "test post : " << servVec[0]._data->_port << std::endl;
-	server.signalHandle();
-	server.init();
-	server.run();
+	try {
+		data.runServers(servVec);
+	} catch(std::exception& e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		return (1);
+	}
+	
+	// server.signalHandle();
+	// server.init();
+	// server.run();
 	std::cout << "ok" << std::endl;
 	return 0;
 }

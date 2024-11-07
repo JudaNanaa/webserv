@@ -39,10 +39,10 @@ class Server {
 
 		void	init();
 		// static void	handleClient( int clientFd );
-		void	run();
 		void addClientToMap(Client client);
-		void	signalHandle();
-		int ifClientInServer(int fd) const;
+		bool ifClientInServer(int fd) const;
+		Client &getClient(int fd);
+		void removeClientInMap(int fd);
     	void addData(Data* data);
 		int getSocketFd() const;
     Data *_data;

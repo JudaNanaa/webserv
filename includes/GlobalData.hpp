@@ -16,10 +16,12 @@ class GlobalData {
 		void initEpoll(std::vector<Server> &servVec);
 		void addToEpoll(int fd, uint32_t events);
 		int waitFdsToBeReady(void);
-		Client &searchClient(const int fd) const;
+		Client &searchClient(const int fd);
 		void addNewClient(Server &server);
 		void initServers(std::vector<Server> &servVec);
 		void handleClientIn(int fd);
+		void handleClientOut(int fd);
+		void removeClient(int fd);
 	public:
 		GlobalData();
 
