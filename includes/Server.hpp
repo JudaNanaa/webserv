@@ -25,7 +25,7 @@ class Server {
 		int _socket_fd;
 		struct sockaddr_in _server_addr;
 		int _epoll_fd;
-		struct epoll_event *_events;
+		struct epoll_event _events[MAX_EVENTS];
 		void addToEpoll(int fd, uint32_t events);
 		void addNewClient(void);
 		void removeClient(int fd);
