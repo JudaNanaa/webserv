@@ -63,6 +63,7 @@ void signalHandle(void) {
 }
 
 void Server::init(void) {
+	struct sockaddr_in server_addr;
 	// Open socket
 	this->_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_socket_fd == -1) {
@@ -70,13 +71,13 @@ void Server::init(void) {
 	}
 	// config address and port
 	
-	std::memset(&this->_server_addr, 0, sizeof(struct sockaddr_in));
-	this->_server_addr.sin_family = AF_INET;
-	this->_server_addr.sin_addr.s_addr = INADDR_ANY;
-	this->_server_addr.sin_port = htons(this->_data->_port);
+	std::memset(&server_addr, 0, sizeof(struct sockaddr_in));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = INADDR_ANY;
+	server_addr.sin_port = htons(this->_data->_port);
 
 	// Link socket
-	if (bind(this->_socket_fd, (struct sockaddr*)&this->_server_addr, sizeof(this->_server_addr)) < 0) {
+	if (bind(this->_socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         std::cerr << "Error when socket linking" << std::endl;
         throw std::invalid_argument("Can't bind the socket");
 	}
@@ -87,7 +88,7 @@ void Server::init(void) {
 	}
 }
 
-void Server::addClientToMap(Client client) {
+void Server::addClientToMap(Client &client) {
 	this->_clientMap[client.getClientFd()] = client;
 }
 

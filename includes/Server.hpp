@@ -27,8 +27,6 @@ class Server {
 	private:
 		int _socket_fd;
 		std::map<int, Client> _clientMap;
-		struct sockaddr_in _server_addr;
-		struct epoll_event _events[MAX_EVENTS];
 		void addToEpoll(int fd, uint32_t events);
 		void removeClient(int fd);
 		int waitFdsToBeReady(void);
@@ -39,7 +37,7 @@ class Server {
 
 		void	init();
 		// static void	handleClient( int clientFd );
-		void addClientToMap(Client client);
+		void addClientToMap(Client &client);
 		bool ifClientInServer(int fd) const;
 		Client &getClient(int fd);
 		void removeClientInMap(int fd);

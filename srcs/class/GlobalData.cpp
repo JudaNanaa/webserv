@@ -2,6 +2,7 @@
 #include "../../includes/Client.hpp"
 #include "../../includes/RawBits.hpp"
 #include "../../includes/includes.hpp"
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
@@ -28,14 +29,14 @@ void GlobalData::addToEpoll(int fd, uint32_t events)
 	ev.events = events;
 	ev.data.fd = fd;
 	if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_ADD, fd, &ev) == -1) {
-		throw std::invalid_argument("Epoll add error");
+		throw std::runtime_error("Epoll add error");
 	}
 }
 
 void GlobalData::initServers(std::vector<Server> &servVec) {
 	std::vector<Server>::iterator it = servVec.begin();
 	std::vector<Server>::iterator end = servVec.end();
-	
+
 	while (it != end) {
 		it->init();
 		it++;
@@ -49,7 +50,7 @@ void GlobalData::initEpoll(std::vector<Server> &servVec) {
 	std::vector<Server>::iterator end = servVec.end();
 	
 	while (it != end) {
-		addToEpoll(it->getSocketFd(), EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLRDHUP | EPOLLHUP);
+		this->addToEpoll(it->getSocketFd(), EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLRDHUP | EPOLLHUP);
 		this->_servMap[it->getSocketFd()] = *it;
 		it++;
 	}
@@ -68,9 +69,16 @@ void GlobalData::addNewClient(Server &server) {
 	socklen = sizeof(client_addr);
 	clientFd = accept(server.getSocketFd(),  (struct sockaddr *)&client_addr, &socklen); // TODO: Secure this
 	if (clientFd == -1)
-		throw std::invalid_argument("Can't accept the connexion with the client");
+		throw std::runtime_error("Can't accept the connexion with the client");
 	std::cout << "client fd: " << clientFd << std::endl;
-	this->addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLRDHUP | EPOLLHUP);
+	//-----------------------------------------------------------------//
+	int	flags = fcntl(clientFd, F_GETFL, 0);
+	if (flags == -1)
+		throw std::runtime_error("Getting flags with fcntl failed");
+	if (fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
+		throw std::runtime_error("Setting flags with fcntl failed");
+	//-----------------------------------------------------------------//
+	this->addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLRDHUP);
 	client.setClientFd(clientFd);
 	server.addClientToMap(client);
 }
@@ -145,30 +153,38 @@ void GlobalData::removeClient(int fd) {
 	printf("[+] connection closed\n");
 }
 
+bool GlobalData::isServerFd(const int &fd) {
+	return this->_servMap.find(fd) != this->_servMap.end();
+}
+
 void GlobalData::runServers(std::vector<Server> &servVec) {
-	this->initServers(servVec);
 	int nbFdsReady;
+	int fd;
+
+	this->initServers(servVec);
 	while (g_running) {
 		nbFdsReady = this->waitFdsToBeReady(); // TODO: Secure this (maybe) not sure
 		for (int i = 0; i < nbFdsReady; i++) {
-
-			if (this->_servMap.find(this->_events[i].data.fd) != this->_servMap.end()) { // find socketFd
-				// this->_servMap[this->_events[i].data.fd]->addNewClient();
-				std::cout << "new user on fd " << this->_events[i].data.fd << std ::endl;
-				this->addNewClient(this->_servMap[this->_events[i].data.fd]);
+			fd = this->_events[i].data.fd;
+			if (isServerFd(fd) == true && (this->_events[i].events & EPOLLIN)) { // find socketFd
+				std::cout << "new user on fd " << fd << std ::endl;
+				this->addNewClient(this->_servMap[fd]);
 			}
-			else if (this->_events[i].events & EPOLLIN) {
-				std::cout << "New input" << std::endl;
-				this->handleClientIn(this->_events[i].data.fd);
-			}
-			else if (this->_events[i].events & EPOLLOUT) {
-				std::cout << "New output" << std::endl;
-				this->handleClientOut(this->_events[i].data.fd);
-			}
-			if (this->_events[i].events & (EPOLLRDHUP | EPOLLHUP)) {
-				std::cout << "Remove user" << std::endl;
-				this->removeClient(this->_events[i].data.fd);
-				continue;
+			else {
+				if (this->_events[i].events & (EPOLLRDHUP | EPOLLHUP)) {
+					std::cout << "Remove user" << std::endl;
+					this->removeClient(fd);
+				}
+				else {
+					if (this->_events[i].events & EPOLLIN) {
+						std::cout << "New input" << std::endl;
+						this->handleClientIn(fd);
+					}
+					if (this->_events[i].events & EPOLLOUT) {
+						std::cout << "New output" << std::endl;
+						this->handleClientOut(fd);
+					}
+				}
 			}
 		}
 	}
