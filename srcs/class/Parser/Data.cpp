@@ -6,7 +6,7 @@
 /*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:35:03 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/07 13:40:51 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/07 16:09:25 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ Data::Data() {
   _autoIndex = false;
   _errorPage = "";
   _uploadFolder = "";
+  _clientMaxBodySize = 0;
 }
 
 Data::~Data() {}
