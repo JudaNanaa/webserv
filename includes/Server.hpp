@@ -43,6 +43,7 @@ class Server {
 		void removeClientInMap(int fd);
     	void addData(Data* data);
 		int getSocketFd() const;
+		int nbOfClient(void) const;
     Data *_data;
 };
 

@@ -64,11 +64,16 @@ void signalHandle(void) {
 
 void Server::init(void) {
 	struct sockaddr_in server_addr;
+	const int opt = 1;
 	// Open socket
 	this->_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_socket_fd == -1) {
 		throw std::invalid_argument("Can't open socket");
 	}
+	
+	if(setsockopt(this->_socket_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) == -1) { 
+        throw std::invalid_argument("Could not set socket options");	
+    } 
 	// config address and port
 	
 	std::memset(&server_addr, 0, sizeof(struct sockaddr_in));
@@ -78,12 +83,10 @@ void Server::init(void) {
 
 	// Link socket
 	if (bind(this->_socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        std::cerr << "Error when socket linking" << std::endl;
         throw std::invalid_argument("Can't bind the socket");
 	}
 
 	if (listen(this->_socket_fd, MAX_CLIENTS) < 0) {
-        std::cerr << "Error when listening" << std::endl;
         throw std::invalid_argument("Can't listen on this socket");		
 	}
 }
@@ -107,4 +110,8 @@ void Server::removeClientInMap(int fd) {
 
 	this->_clientMap.erase(fd);
 	printf("[+] connection closed\n");
+}
+
+int Server::nbOfClient(void) const {
+	return this->_clientMap.size();
 }
