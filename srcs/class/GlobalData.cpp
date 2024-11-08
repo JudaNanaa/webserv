@@ -12,6 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <sys/epoll.h>
+#include <sys/select.h>
 #include <vector>
 
 GlobalData::GlobalData() { 
@@ -84,35 +85,29 @@ Client &GlobalData::searchClient(const int fd)  {
 }
 
 void GlobalData::handleClientIn(int fd) {
-	unsigned char buf;
+	unsigned char c;
 	int n;
 	Client client;
-	RawBits raw;
 
-	
 	client = this->searchClient(fd);
-	std::cout << "start" << std::endl;
 	while (true) {
-		n = recv(fd, &buf, 1, MSG_DONTWAIT);
-		if (n <= 0) {
+		n = recv(fd, &c, 1, MSG_DONTWAIT);
+		if (n <= 0)
 			break;
-		}
-		else {
-			std::cout << buf;
-			raw.pushBack(buf);
-		}
+		client.pushRequest(c);
 	}
-	std::cout << "finish" << std::endl;	
+	std::cout << std::endl;
 }
 
 void GlobalData::handleClientOut(int fd) {
-  const char *html_content = 
+
+  	const char *html_content = 
         "<!DOCTYPE html>"
         "<html>"
         "<head><title>Page de test</title></head>"
         "<body><h1>Bienvenue sur mon serveur !</h1><p>Ceci est une page HTML.</p></body>"
         "</html>";
-  std::string response = "HTTP/1.1 200 OK\r\n";
+	std::string response = "HTTP/1.1 200 OK\r\n";
     response += "Content-Type: text/html\r\n";
     std::ostringstream oss;
     oss << strlen(html_content);
