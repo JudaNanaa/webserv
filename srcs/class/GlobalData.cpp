@@ -41,7 +41,6 @@ void GlobalData::initServers(std::vector<Server> &servVec) {
 	this->_epoll_fd = epoll_create1(0); // TODO: Secure this
 	while (it != end) {
 		it->init();
-		std::cerr << "socket fd == " << it->getSocketFd() << std::endl;
 		this->addToEpoll(it->getSocketFd(), EPOLLIN); // TODO: try catch this
 		this->_servMap[it->getSocketFd()] = *it;
 		it++;
@@ -63,11 +62,8 @@ void GlobalData::addNewClient(Server &server) {
 	clientFd = accept(server.getSocketFd(),  (struct sockaddr *)&client_addr, &socklen); // TODO: Secure this
 	if (clientFd == -1)
 		throw std::runtime_error("Can't accept the connexion with the client");
-	std::cout << "client fd: " << clientFd << std::endl;
-	//-----------------------------------------------------------------//
 	if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("Setting flags with fcntl failed");
-	//-----------------------------------------------------------------//
 	this->addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLRDHUP); // TODO: try catch this
 
 	client->setClientFd(clientFd);
@@ -98,12 +94,10 @@ void GlobalData::handleClientIn(int fd) {
 	std::cout << "start" << std::endl;
 	while (true) {
 		n = recv(fd, &buf, 1, MSG_DONTWAIT);
-		// n = read(this->_events[i].data.fd, &buf, 1);
 		if (n <= 0) {
 			break;
 		}
 		else {
-			// print_bytes(&buf, n);
 			std::cout << buf;
 			raw.pushBack(buf);
 		}
@@ -159,21 +153,16 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 		for (int i = 0; i < nbFdsReady; i++) {
 			fd = this->_events[i].data.fd;
 			if (isServerFd(fd) == true && (this->_events[i].events & EPOLLIN)) {
-				std::cout << "new user on fd " << fd << std::endl;
 				this->addNewClient(this->_servMap[fd]);
-				std::cerr << "nb clients == " << this->_servMap[fd].nbOfClient() << std::endl;
 			}
 			else if (this->_events[i].events & (EPOLLRDHUP | EPOLLHUP)) {
-				std::cout << "Remove user" << std::endl;
 				this->removeClient(fd);
 			}
 			else {
 				if (this->_events[i].events & EPOLLIN) {
-					std::cout << "New input" << std::endl;
 					this->handleClientIn(fd);
 				}
 				if (this->_events[i].events & EPOLLOUT) {
-					std::cout << "New output" << std::endl;
 					this->handleClientOut(fd);
 				}
 			}
