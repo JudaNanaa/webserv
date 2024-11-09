@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/07 21:54:34 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/09 14:50:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,6 @@ int main(void) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return (1);
 	}
-	
-	// server.signalHandle();
-	// server.init();
-	// server.run();
 	std::cout << "ok" << std::endl;
 	return 0;
 }

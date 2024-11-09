@@ -68,11 +68,11 @@ void Server::init(void) {
 	// Open socket
 	this->_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_socket_fd == -1) {
-		throw std::invalid_argument("Can't open socket");
+		throw std::runtime_error("Can't open socket");
 	}
 	
 	if(setsockopt(this->_socket_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) == -1) { 
-        throw std::invalid_argument("Could not set socket options");	
+        throw std::runtime_error("Could not set socket options");	
     } 
 	// config address and port
 	
@@ -83,11 +83,11 @@ void Server::init(void) {
 
 	// Link socket
 	if (bind(this->_socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        throw std::invalid_argument("Can't bind the socket");
+        throw std::runtime_error("Can't bind the socket");
 	}
 
 	if (listen(this->_socket_fd, MAX_CLIENTS) < 0) {
-        throw std::invalid_argument("Can't listen on this socket");		
+        throw std::runtime_error("Can't listen on this socket");		
 	}
 }
 

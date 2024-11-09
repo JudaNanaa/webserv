@@ -6,11 +6,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <ostream>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <sys/epoll.h>
 #include <sys/select.h>
 #include <vector>
@@ -28,8 +30,12 @@ GlobalData::~GlobalData() {
 void GlobalData::addToEpoll(int fd, uint32_t events)
 {
 	struct epoll_event ev;
+
 	ev.events = events;
 	ev.data.fd = fd;
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+		throw std::runtime_error("Setting flags with fcntl failed");
+	}
 	if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_ADD, fd, &ev) == -1) {
 		throw std::runtime_error("Epoll add error");
 	}
@@ -58,15 +64,13 @@ void GlobalData::addNewClient(Server &server) {
 	struct sockaddr_in client_addr;
 	unsigned int socklen;
 
-	client = new Client();
 	socklen = sizeof(client_addr);
 	clientFd = accept(server.getSocketFd(),  (struct sockaddr *)&client_addr, &socklen); // TODO: Secure this
 	if (clientFd == -1)
 		throw std::runtime_error("Can't accept the connexion with the client");
-	if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1)
-		throw std::runtime_error("Setting flags with fcntl failed");
 	this->addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLRDHUP); // TODO: try catch this
 
+	client = new Client();
 	client->setClientFd(clientFd);
 	server.addClientToMap(*client);
 }
@@ -100,20 +104,24 @@ void GlobalData::handleClientIn(int fd) {
 }
 
 void GlobalData::handleClientOut(int fd) {
+	std::ifstream file;
 
-  	const char *html_content = 
-        "<!DOCTYPE html>"
-        "<html>"
-        "<head><title>Page de test</title></head>"
-        "<body><h1>Bienvenue sur mon serveur !</h1><p>Ceci est une page HTML.</p></body>"
-        "</html>";
-	std::string response = "HTTP/1.1 200 OK\r\n";
+	file.open("index.html");
+	if (file.fail()) {
+		throw std::runtime_error("Can't open the file");
+	}
+    std::ostringstream buffer;
+    buffer << file.rdbuf();
+    std::string html_content = buffer.str();
+
+	std::ostringstream oss;
+    std::string response = "HTTP/1.1 200 OK\r\n";
     response += "Content-Type: text/html\r\n";
-    std::ostringstream oss;
-    oss << strlen(html_content);
+	oss << html_content.size();
     response += "Content-Length: " + oss.str() + "\r\n";
-    response += "\r\n"; // Séparateur entre en-têtes et contenu
-    response += html_content; // Ajouter le contenu HTML
+    response += "\r\n";
+
+    response += html_content;
 
 	send(fd, response.c_str(), response.size(), MSG_EOR);	
 }

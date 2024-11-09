@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/05 14:57:47 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/09 17:44:55 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,6 @@ std::vector<char *>	RawBits::split(char *s, char *c)
 	if (!s)
 		return (split);
 	if (ft_split_words(split, s, c) == 1)
-		throw std::invalid_argument("Split failed");
+		throw std::runtime_error("Split failed");
 	return (split);
 }
