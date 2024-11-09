@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 13:55:03 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/09 16:30:00 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/09 17:29:19 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ struct	Location {
 		std::string		_root;
 		std::string		_cgi; // temporary a string maybe a special struc later
 		std::string		_redirect;
-		std::string		_allowedMethods;
+		int				_allowedMethods;
 		int				_client_max_body_size;
 
 		std::string		_index;
@@ -44,12 +44,12 @@ struct	Location {
 		const std::string&	root( void ) const;
 		const std::string&	cgi( void ) const;
 		const std::string&	redirect( void ) const;
-		const std::string&	allowedMethods( void ) const;
+		int					allowedMethods( void ) const;
 		int					maxBodySize( void ) const;
 
 		const std::string&	index( void ) const;
 		bool				autoIndex( void ) const;
-		
+
 		bool				fileUpload( void ) const;
 		const std::string&	uploadFolder( void ) const;
 
@@ -59,7 +59,7 @@ struct	Location {
 		void	root( std::string newRoot );
 		void	cgi( std::string newCgi );
 		void	redirect( std::string newRedirect );
-		void	allowedMethods( std::string newAllowedMethods );
+		void	allowedMethods( int newAllowedMethods );
 		void	maxBodySize( int newMaxBodySize );
 
 		void	index( std::string newIndex );

@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/09 16:59:37 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/09 17:57:31 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,24 @@ void	addLocationLine(std::string &line, Location& location) {
 		location.cgi(value);
 	} else if (key == "redirect") {	//			REDIRECT
 		location.redirect(value);
-	} else if (key == "allowed_methods") {	//			ALLOWEDMETHODS
-		location.allowedMethods(value);
+	} else if (key == "allowed_methods") {	//			ALLOWED METHODS
+		int methods = 0;
+		if (value.find("GET") != std::string::npos) {
+			methods = methods | GET_;
+		} if (value.find("POST") != std::string::npos) {
+			methods = methods | POST_;
+		} if (value.find("DELETE") != std::string::npos) {
+			methods = methods | DELETE_;
+		} if (value.find("OPTIONS") != std::string::npos) {
+			methods = methods | OPTIONS_;
+		} 
+		
+		if (methods == 0) {	// no methods found
+			throw std::invalid_argument("GET, DELETE or POST expected");
+		} else {
+			location.allowedMethods(methods);
+		}
+			
 	} else if (key == "uploads_folder") {	//			UPLOADS_FOLDER
 		location.uploadFolder(value);
 	} else if (key == "client_max_body_size") {	//			CLIENT_MAX_BODY_SIZE
@@ -170,7 +186,7 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 	functionMap["index"] = &Pars::addIndex;
 
 	std::string	type;
-	
+
 	normalizeLine(line);
 	type = line.substr(0, line.find(' '));
 	// std::cout << "{" << lineNumber << ": " << type << "}" << "'->";
@@ -200,7 +216,7 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	if (line != "{") {
 		throw std::invalid_argument("invalid line 1");
 	}
-	
+
 	++lineNumber;
 	// std::cout << lineNumber << std::endl;
 
@@ -240,8 +256,6 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath) {
 	return servVec;
 }
 
-
 std::vector<Server> Pars::parse(std::string path) {
 	return parseConfigFile(path);
 }
-

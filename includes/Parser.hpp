@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/08 14:56:04 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/09 17:35:00 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,6 @@
 #include <fstream>
 #include <vector>
 #include <map>
-
-#define GET_ 1;
-#define POST_ 2;
-#define DELETE_ 3;
 
 struct Data {
   public:

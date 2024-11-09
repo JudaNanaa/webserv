@@ -6,7 +6,7 @@
 #    By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/29 12:42:35 by madamou           #+#    #+#              #
-#    Updated: 2024/11/09 16:31:19 by ibaby            ###   ########.fr        #
+#    Updated: 2024/11/09 17:06:09 by ibaby            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ END= 	$(shell tput -Txterm sgr0)
 
 CC = c++
 
-C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3 
+C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3
 
 PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp)
 

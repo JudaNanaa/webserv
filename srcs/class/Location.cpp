@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/09 16:40:16 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/09 17:49:34 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ Location::Location() {
 	_root = "";
 	_cgi = "";
 	_redirect = "";
-	_allowedMethods = "";
+	_allowedMethods = 0;
 	_client_max_body_size = -1; // no limit (?)
 
 	_index = "";
@@ -66,7 +66,7 @@ const std::string&	Location::cgi( void ) const {
 const std::string&	Location::redirect( void ) const {
 	return _redirect;
 } // string
-const std::string& Location::allowedMethods( void ) const {
+int Location::allowedMethods( void ) const {
 	return _allowedMethods;
 } // allowedMethods
 int	Location::maxBodySize( void ) const {
@@ -102,7 +102,7 @@ void	Location::cgi( std::string newCgi ) {
 void	Location::redirect( std::string newRedirect ) {
 	_redirect = newRedirect;
 } // redirect
-void	Location::allowedMethods( std::string newAllowedMethods ) {
+void	Location::allowedMethods( int newAllowedMethods ) {
 	_allowedMethods = newAllowedMethods;
 } // allowedMethods
 void	Location::maxBodySize( int newMaxBodySize ) {
@@ -127,6 +127,23 @@ std::string	isDefault(const std::string& var) {
 	return (var.empty()? "default":var);
 }
 
+std::string	printMethods(int methods) {
+	std::string	result;
+
+	if (methods & GET_) {
+		result += "GET ";
+	} if (methods & POST_) {
+		result += "POST ";
+	} if (methods & DELETE_) {
+		result += "DELETE ";
+	} if (methods & OPTIONS_) {
+		result += "OPTIONS ";
+	} if (result.empty()) {
+		result = "none";
+	}
+	return (result);
+}
+
 std::ostream& operator<<(std::ostream& os, const Location& location) {
 	std::cout << "location " << isDefault(location.location()) << "\n{" << std::endl;
 	std::cout << "\t" << "root: " << isDefault(location.root()) << std::endl;
@@ -134,7 +151,7 @@ std::ostream& operator<<(std::ostream& os, const Location& location) {
 	std::cout << "\t" << "autoIndex: " << (location.autoIndex()? "true":"false") << std::endl;
 	std::cout << "\t" << "cgi: " << isDefault(location.cgi()) << std::endl;
 	std::cout << "\t" << "redirect: " << isDefault(location.redirect()) << std::endl;
-	std::cout << "\t" << "allowed Methods: " << isDefault(location.allowedMethods()) << std::endl;
+	std::cout << "\t" << "allowed Methods: " << printMethods(location.allowedMethods()) << std::endl;
 	if (location.maxBodySize() == -1)
 		std::cout << "\t" << "max body size: " << "default" << std::endl;
 	else
