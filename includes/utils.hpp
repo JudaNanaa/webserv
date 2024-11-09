@@ -1,11 +1,12 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+# include "includes.hpp"
+
 # define SET 0
 # define GET 1
 
-int getSocketFd(int fd, int flag);
-int getEpollFd(int fd, int flag);
+std::vector<std::string> split(std::string s, std::string delimiter);
 
 
 #endif

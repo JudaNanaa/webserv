@@ -28,6 +28,8 @@
 #include <vector>
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
+
 
 extern bool g_running;
 

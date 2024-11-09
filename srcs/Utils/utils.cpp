@@ -21,28 +21,6 @@ int	ft_is_in_charset(char c, char *set)
 	return (c != '\0' && std::strchr(set, c) != NULL);
 }
 
-static int	ft_count_word(char const *s, char *c)
-{
-	int	i;
-	int	cpt;
-
-	cpt = 0;
-	i = 0;
-	while (s[i])
-	{
-		while (ft_is_in_charset(s[i], c) && s[i])
-			i++;
-		while (!ft_is_in_charset(s[i], c) && s[i])
-			i++;
-		cpt++;
-	}
-	if (i == 0)
-		return (0);
-	if (ft_is_in_charset(s[i - 1], c))
-		cpt--;
-	return (cpt);
-}
-
 static char	*ft_norminette(char const *s, int i, int j)
 {
 	int		k;
@@ -73,10 +51,8 @@ static int	ft_split_words(std::vector<char *> split, char const *s, char *c)
 {
 	int	i;
 	int	j;
-	int	index;
 
 	i = 0;
-	index = 0;
 	while (s[i])
 	{
 		while (ft_is_in_charset(s[i], c) && s[i])
@@ -106,4 +82,19 @@ std::vector<char *>	RawBits::split(char *s, char *c)
 	if (ft_split_words(split, s, c) == 1)
 		throw std::runtime_error("Split failed");
 	return (split);
+}
+
+std::vector<std::string> split(std::string s, std::string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
+
+    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
 }

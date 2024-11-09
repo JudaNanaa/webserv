@@ -31,5 +31,8 @@ bool const &Client::isReadyToResponse(void) const {
 
 void Client::pushRequest(char str[BUFFER_SIZE]) {
 	this->_request.addRequest(str);
-	std::cout << str;
+}
+
+void Client::setServer(Server *server) {
+	this->_server = server;
 }

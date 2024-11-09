@@ -35,11 +35,11 @@ SERVER = $(addprefix Server/, Server.cpp)
 
 PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp Location.cpp)
 
-CLASS = $(addprefix class/, RawBits.cpp $(PARSER) $(GLOBALDATA) $(CLIENT) $(SERVER) $(REQUEST))
-
 UTILS = $(addprefix Utils/, utils.cpp)
 
-SRCS = main.cpp $(CLASS)
+CLASS = $(addprefix class/, RawBits.cpp $(PARSER) $(GLOBALDATA) $(CLIENT) $(SERVER) $(REQUEST) )
+
+SRCS = main.cpp $(CLASS) $(UTILS)
 
 SRCS_DIR = srcs/
 

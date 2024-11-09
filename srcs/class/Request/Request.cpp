@@ -11,10 +11,13 @@
 /* ************************************************************************** */
 
 #include "../../../includes/Request.hpp" 
+#include "../../../includes/utils.hpp" 
 #include <map>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <variant>
+#include <vector>
 
 Request::Request() {
 	_method = 0;
@@ -65,7 +68,25 @@ void Request::addRequest(std::string str) {
 }
 
 void Request::parseRequest(void) {
-	
+	std::string header;
+	std::vector<std::string> headerSplit;
+	std::vector<std::string> lineSplit;
+
+	header = _request.substr(0, _request.find("\r\n\r\n"));
+	headerSplit = split(header, "\r\n");
+
+	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
+		// La premiere ligne est pas bonne donc faire une reponse en fonction
+		std::cout << "Error parseRequest" << std::endl;
+		return;
+	}
+	lineSplit = split(headerSplit[0], " ");
+	if (lineSplit.size() != 3) {
+		// La premiere ligne est pas bonne donc faire une reponse en fonction
+		std::cout << "Error parseRequest" << std::endl;
+		return;
+	}
+	std::cout << header << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& os, const Request& request ) {

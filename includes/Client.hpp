@@ -3,9 +3,13 @@
 
 #include "RawBits.hpp"
 #include "Request.hpp"
+// #include "Server.hpp"
+
+class Server;
 
 class Client {
 	private:
+		Server *_server;
 		int _fd;
 		bool _readyToResponse;
 		Request _request;
@@ -18,6 +22,7 @@ class Client {
 		bool const &isReadyToResponse(void) const; 
 		void setClientFd(int fd);
 		void pushRequest(char str[BUFFER_SIZE]);
+		void setServer(Server *server);
 };
 
 #endif

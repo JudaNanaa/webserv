@@ -74,6 +74,7 @@ void GlobalData::addNewClient(Server &server) {
 
 	client = new Client();
 	client->setClientFd(clientFd);
+	client->setServer(&server);
 	server.addClientToMap(*client);
 }
 
