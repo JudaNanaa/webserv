@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParserUtils.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/07 15:40:16 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/08 21:00:36 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,11 @@ void Pars::addUpFoldDir(Data* data, std::string path) {
 
 void Pars::addAllowedMethodes(Data* data, std::string w) {
   if (w.find("GET") != std::string::npos) 
-    data->_allowedMethodes += GET_;
+    data->_allowedMethods += GET_;
   if (w.find("POST") != std::string::npos) 
-    data->_allowedMethodes += POST_;
+    data->_allowedMethods += POST_;
   if (w.find("DELETE") != std::string::npos) 
-    data->_allowedMethodes += DELETE_;
+    data->_allowedMethods += DELETE_;
 }
 
 
@@ -77,13 +77,6 @@ void Pars::addClientMBodyS(Data* data, std::string size) {
   if (!size.empty())
     data->_clientMaxBodySize = std::atoi(size.c_str());
 }
-
-
-void Pars::addLocationDir(Data* data, std::string loc) {
-  if (!loc.empty())
-    data->_location = loc;
-}
-
 
 void Pars::addIndex(Data* data, std::string index) {
   if (!index.empty())

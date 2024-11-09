@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: madamou <madamou@student.42.fr>            +#+  +:+       +#+         #
+#    By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/29 12:42:35 by madamou           #+#    #+#              #
-#    Updated: 2024/11/07 13:42:58 by itahri           ###   ########.fr        #
+#    Updated: 2024/11/09 16:31:19 by ibaby            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3
 
 PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp)
 
-CLASS = $(addprefix class/, Server.cpp RawBits.cpp $(PARSER))
+CLASS = $(addprefix class/, Location.cpp Server.cpp RawBits.cpp $(PARSER))
 
 SRCS = main.cpp GetterSetter.cpp $(CLASS)
 

@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/07 13:42:30 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/09 16:44:17 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 #include "includes.hpp"
+#include <ostream>
 
 # define MAX_CLIENTS 100
 # define MAX_EVENTS 1000
@@ -40,8 +41,8 @@ class Server {
 		// static void	handleClient( int clientFd );
 		void	run();
 		void	signalHandle();
-    void addData(Data* data);
-    Data *_data;
+		void addData(Data* data);
+		Data *_data;
 };
 
 #endif
