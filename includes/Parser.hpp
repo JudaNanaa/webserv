@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/07 15:57:19 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/09 17:35:00 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,35 +14,35 @@
 #define PARSER_HPP
 
 #include "includes.hpp"
+#include "Location.hpp"
 #include "Server.hpp"
-
-#define GET_ 1;
-#define POST_ 2;
-#define DELETE_ 3;
+#include <fstream>
+#include <vector>
+#include <map>
 
 struct Data {
   public:
     Data();
     ~Data();
     Data& operator=(const Data& src);
-    int           _port;
-    std::string   _serverName;
-    std::string   _root;
-    std::string   _uploadFolder;
-    int           _allowedMethodes;
-    std::string   _errorPage;
-    bool          _autoIndex;
-    std::string   _cgi; // temporary a string maybe a special struc later
-    unsigned int  _clientMaxBodySize;
-    std::string   _location;
-    std::string   _index;
+    int				_port;
+    std::string		_serverName;
+    std::string		_root;
+    std::string		_uploadFolder;
+    int				_allowedMethods;
+    std::string		_errorPage;
+    bool			_autoIndex;
+    std::string		_cgi; // temporary a string maybe a special struc later
+    unsigned int	_clientMaxBodySize;
+	std::map<std::string, Location>	_locations;
+    std::string		_index;
 };
 
 class Pars {
   private:
     static std::vector<Server> parseConfigFile(std::string configFilePath);
     static void parseConfigPath(std::string path);
-    static void handleLine(std::string &line, Data *data, int &lineNumber);
+    static void handleLine(std::string &line, std::ifstream& configFile, Data *data, int &lineNumber);
     static void parseServer(Server &serv, std::ifstream& configFile, int &lineNumber);
 
   public:

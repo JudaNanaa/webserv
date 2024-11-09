@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/09 14:50:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/09 18:39:07 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int main(void) {
 	
   	std::vector<Server> servVec;
   	try {
-		servVec = Pars::parse("easyParsTest.conf");
+		servVec = Pars::parse("configExample.conf");
 	} catch (std::exception &e) {
 		std::cout << "Error : " << e.what() << std::endl;
 		return 1;

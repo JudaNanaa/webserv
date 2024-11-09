@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/09 14:49:40 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/09 18:38:43 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "includes.hpp"
 #include "Client.hpp"
 #include <map>
+#include <ostream>
 
 # define MAX_CLIENTS 100
 # define MAX_EVENTS 1000
