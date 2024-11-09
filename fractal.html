@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractale Animée</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="fractalCanvas" width="800" height="800"></canvas>
+
+<script>
+    const canvas = document.getElementById("fractalCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let zoom = 1;
+    let offsetX = -0.5;
+    let offsetY = 0;
+    let colorShift = 0;
+
+    function mandelbrot(cRe, cIm, maxIterations) {
+        let x = 0, y = 0;
+        let iteration = 0;
+        
+        while (x * x + y * y <= 4 && iteration < maxIterations) {
+            let xNew = x * x - y * y + cRe;
+            y = 2 * x * y + cIm;
+            x = xNew;
+            iteration++;
+        }
+
+        return iteration;
+    }
+
+    function drawFractal() {
+        const width = canvas.width;
+        const height = canvas.height;
+        const maxIterations = 100;
+
+        for (let x = 0; x < width; x++) {
+            for (let y = 0; y < height; y++) {
+                let cRe = (x - width / 2) * (4 / width) / zoom + offsetX;
+                let cIm = (y - height / 2) * (4 / height) / zoom + offsetY;
+
+                let m = mandelbrot(cRe, cIm, maxIterations);
+
+                // Couleurs animées avec un décalage
+                let color = (m + colorShift) % 256;
+                ctx.fillStyle = `rgb(${color}, ${color * 0.5}, ${color * 0.2})`;
+                ctx.fillRect(x, y, 1, 1);
+            }
+        }
+    }
+
+    function animateFractal() {
+        colorShift += 1; // Incrément du décalage de couleur
+        zoom *= 1.01;    // Zoom progressif pour l'effet de mouvement
+
+        drawFractal();
+        requestAnimationFrame(animateFractal);
+    }
+
+    animateFractal();
+</script>
+
+</body>
+</html>

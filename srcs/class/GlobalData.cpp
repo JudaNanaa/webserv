@@ -106,7 +106,7 @@ void GlobalData::handleClientIn(int fd) {
 void GlobalData::handleClientOut(int fd) {
 	std::ifstream file;
 
-	file.open("index.html");
+	file.open("original.html");
 	if (file.fail()) {
 		throw std::runtime_error("Can't open the file");
 	}
