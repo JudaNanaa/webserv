@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/09 16:45:39 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/09 16:59:37 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,6 +227,7 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath) {
 	for (int lineNumber = 0;std::getline(configFile, line); lineNumber++) {
 	  if (line.empty() || trim(line).empty()) continue;
 	  if (trim(line) == "server") {
+	    std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
 	    Server	newServ;
 	    try {
 	      parseServer(newServ, configFile, lineNumber);
@@ -234,7 +235,6 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath) {
 	      throw std::invalid_argument(e.what());
 	    }
 	    servVec.push_back(newServ);
-	    std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
 	  }
 	}
 	return servVec;
