@@ -1,7 +1,7 @@
-#include "../../includes/GlobalData.hpp"
-#include "../../includes/Client.hpp"
-#include "../../includes/RawBits.hpp"
-#include "../../includes/includes.hpp"
+#include "../../../includes/GlobalData.hpp"
+#include "../../../includes/Client.hpp"
+#include "../../../includes/RawBits.hpp"
+#include "../../../includes/includes.hpp"
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
@@ -16,6 +16,8 @@
 #include <sys/epoll.h>
 #include <sys/select.h>
 #include <vector>
+
+bool g_running = true;
 
 GlobalData::GlobalData() { 
 	this->_epoll_fd = -1;
@@ -89,16 +91,21 @@ Client &GlobalData::searchClient(const int fd)  {
 }
 
 void GlobalData::handleClientIn(int fd) {
-	unsigned char c;
+	char buff[BUFFER_SIZE + 1];
 	int n;
 	Client client;
 
 	client = this->searchClient(fd);
 	while (true) {
-		n = recv(fd, &c, 1, MSG_DONTWAIT);
-		if (n <= 0)
+		n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
+		if (n == -1) {
+			removeClient(fd);
 			break;
-		client.pushRequest(c);
+		}
+		if (n == 0)
+			break;
+		buff[n] = '\0';
+		client.pushRequest(buff);
 	}
 	std::cout << std::endl;
 }
@@ -106,7 +113,7 @@ void GlobalData::handleClientIn(int fd) {
 void GlobalData::handleClientOut(int fd) {
 	std::ifstream file;
 
-	file.open("original.html");
+	file.open("URIs/original.html");
 	if (file.fail()) {
 		throw std::runtime_error("Can't open the file");
 	}
@@ -165,7 +172,7 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 				if (this->_events[i].events & EPOLLIN) {
 					this->handleClientIn(fd);
 				}
-				if (this->_events[i].events & EPOLLOUT) {
+				else if (this->_events[i].events & EPOLLOUT) {
 					this->handleClientOut(fd);
 				}
 			}

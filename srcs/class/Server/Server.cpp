@@ -25,13 +25,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <cstddef>
-#include "../../includes/Server.hpp"
-#include "../../includes/utils.hpp"
-#include "../../includes/RawBits.hpp"
-#include "../../includes/GlobalData.hpp"
-
-bool g_running = true;
-#include "../../includes/Parser.hpp"
+#include "../../../includes/Server.hpp"
+#include "../../../includes/utils.hpp"
+#include "../../../includes/RawBits.hpp"
+#include "../../../includes/GlobalData.hpp"
+#include "../../../includes/Parser.hpp"
 
 Server::Server(void)  
 	: _socket_fd(-1) {
@@ -107,9 +105,7 @@ Client &Server::getClient(int fd) {
 }
 
 void Server::removeClientInMap(int fd) {
-
 	this->_clientMap.erase(fd);
-	printf("[+] connection closed\n");
 }
 
 int Server::nbOfClient(void) const {

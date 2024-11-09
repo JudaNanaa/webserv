@@ -2,11 +2,13 @@
 #define CLIENT_HPP
 
 #include "RawBits.hpp"
+#include "Request.hpp"
+
 class Client {
 	private:
 		int _fd;
 		bool _readyToResponse;
-		RawBits _request;
+		Request _request;
 	public:
 		Client();
 		~Client();
@@ -15,7 +17,7 @@ class Client {
 		void setReadyToresponse(bool boolean);
 		bool const &isReadyToResponse(void) const; 
 		void setClientFd(int fd);
-		void pushRequest(char c);
+		void pushRequest(char str[BUFFER_SIZE]);
 };
 
 #endif

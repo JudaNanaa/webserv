@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation de Terminal de Programmation</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #00ff00;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: monospace;
+            margin: 0;
+        }
+
+        #terminal {
+            background-color: #000;
+            border: 3px solid #00ff00;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0px 0px 15px #00ff00;
+        }
+
+        #output {
+            white-space: pre-wrap;
+            font-size: 1rem;
+        }
+
+        input {
+            background-color: #1e1e1e;
+            color: #00ff00;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="terminal">
+    <div id="output">Bienvenue dans le terminal de simulation de programmation !
+Tapez "help" pour voir la liste des commandes disponibles.</div>
+    <input type="text" id="input" placeholder="Entrez une commande ici..." autofocus>
+</div>
+
+<script>
+    const output = document.getElementById("output");
+    const input = document.getElementById("input");
+
+    const commands = {
+        help: "Commandes disponibles:\n- help\n- about\n- js\n- c\n- python\n- quit",
+        about: "Simulation de terminal qui affiche des infos sur des langages de programmation.",
+        js: "JavaScript: Langage de programmation principalement utilisé pour le développement web.",
+        c: "C: Langage de programmation bas niveau, souvent utilisé pour le développement système.",
+        python: "Python: Langage de programmation polyvalent, populaire pour le développement web, scientifique, et l'IA.",
+        quit: "Fermeture du terminal... Merci d'avoir utilisé cette simulation !"
+    };
+
+    input.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            const userInput = input.value.trim().toLowerCase();
+            if (commands[userInput]) {
+                addOutput(`> ${userInput}\n${commands[userInput]}`);
+                if (userInput === "quit") input.disabled = true;
+            } else {
+                addOutput(`> ${userInput}\nCommande non reconnue. Tapez 'help' pour les commandes disponibles.`);
+            }
+            input.value = "";
+        }
+    });
+
+    function addOutput(text) {
+        output.textContent += `\n${text}`;
+        output.scrollTop = output.scrollHeight;
+    }
+</script>
+
+</body>
+</html>

@@ -6,7 +6,7 @@
 #    By: madamou <madamou@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/29 12:42:35 by madamou           #+#    #+#              #
-#    Updated: 2024/11/09 18:39:31 by madamou          ###   ########.fr        #
+#    Updated: 2024/11/09 19:38:24 by madamou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,11 +25,21 @@ CC = c++
 
 C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3
 
-PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp)
+REQUEST = $(addprefix Request/, Request.cpp)
 
-CLASS = $(addprefix class/, Server.cpp RawBits.cpp GlobalData.cpp Client.cpp $(PARSER))
+GLOBALDATA = $(addprefix GlobalData/, GlobalData.cpp)
 
-SRCS = main.cpp GetterSetter.cpp $(CLASS)
+CLIENT = $(addprefix Client/, Client.cpp)
+
+SERVER = $(addprefix Server/, Server.cpp)
+
+PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp Location.cpp)
+
+CLASS = $(addprefix class/, RawBits.cpp $(PARSER) $(GLOBALDATA) $(CLIENT) $(SERVER) $(REQUEST))
+
+UTILS = $(addprefix Utils/, utils.cpp)
+
+SRCS = main.cpp $(CLASS)
 
 SRCS_DIR = srcs/
 

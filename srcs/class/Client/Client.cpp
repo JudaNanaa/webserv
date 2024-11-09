@@ -1,4 +1,4 @@
-#include "../../includes/Client.hpp"
+#include "../../../includes/Client.hpp"
 #include <unistd.h>
 #include <iostream>
 
@@ -29,7 +29,7 @@ bool const &Client::isReadyToResponse(void) const {
 } 
 
 
-void Client::pushRequest(char c) {
-	this->_request.pushBack(c);
-	std::cout << c;
+void Client::pushRequest(char str[BUFFER_SIZE]) {
+	this->_request.addRequest(str);
+	std::cout << str;
 }
