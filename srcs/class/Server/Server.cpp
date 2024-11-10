@@ -134,6 +134,6 @@ bool Server::checkAllowMethodes(std::string methode) {
     methode.erase(methode.find("GET"), 3);
   }
   if (!methode.empty())
-    throw std::invalid_argument("Invalid methode");
+    throw std::invalid_argument("Invalid methode : " + methode);
   return result;
 }

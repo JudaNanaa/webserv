@@ -88,7 +88,7 @@ void Request::parseRequest(void) {
 		return;
 	}
   if (!_server->checkAllowMethodes(lineSplit[0]))
-    std::cout << "Error Invalid Method" << std::endl;
+    std::cout << "Error Invalid Method : [" + lineSplit[0] + "]" << std::endl;
   std::cout << "HEADER parseRequest: " << std::endl;
 	std::cout << header << std::endl;
 }
