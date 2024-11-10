@@ -42,6 +42,8 @@ void normalizeLine(std::string &line) {
 	  line.replace(pos, 1, tabReplacement);
 	  pos += tabReplacement.length();
 	}
+  if (line.find(";") != std::string::npos)
+    line.erase(line.find(';'), 1);
 	trimn(line);
 }
 
@@ -204,7 +206,7 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 		throw std::invalid_argument("unknow keyword: " + trim(type));
 	}
 	Pars parsInstance; //for now is the only method to do what i want i will change this soon
-	(parsInstance.*functionMap[trim(type)])(data, line.substr(line.find(" ")));
+	(parsInstance.*functionMap[trim(type)])(data, trim(line.substr(line.find(" "))));
 	std::cout << trim(type) << ": " << line.substr(line.find(" ")) << std::endl;;
 }
 

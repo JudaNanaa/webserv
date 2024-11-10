@@ -9,7 +9,6 @@ class Server;
 
 class Client {
 	private:
-		Server *_server;
 		int _fd;
 		bool _readyToResponse;
 		Request _request;
@@ -17,6 +16,7 @@ class Client {
 		Client();
 		~Client();
 
+		Server *_server;
 		int getClientFd(void) const;
 		void setReadyToresponse(bool boolean);
 		bool const &isReadyToResponse(void) const; 

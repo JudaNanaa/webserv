@@ -34,6 +34,8 @@ void Pars::addServName(Data* data, std::string name) {
 
 
 void Pars::addRootDir(Data* data, std::string path) {
+  if (path.find("/") != path.length() - 1)
+    path.push_back('/');
   if (!path.empty())
     data->_root = path;
 }
@@ -41,7 +43,7 @@ void Pars::addRootDir(Data* data, std::string path) {
 
 void Pars::addUpFoldDir(Data* data, std::string path) {
   if (!path.empty())
-    data->_index = path;
+    data->_uploadFolder = path;
 }
 
 
