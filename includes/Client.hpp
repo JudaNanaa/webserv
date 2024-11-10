@@ -23,6 +23,7 @@ class Client {
 		void setClientFd(int fd);
 		void pushRequest(char str[BUFFER_SIZE]);
 		void setServer(Server *server);
+    void setServerReq(Server *server);
 };
 
 #endif

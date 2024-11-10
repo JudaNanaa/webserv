@@ -36,3 +36,7 @@ void Client::pushRequest(char str[BUFFER_SIZE]) {
 void Client::setServer(Server *server) {
 	this->_server = server;
 }
+
+void Client::setServerReq(Server *server) {
+  _request.addServer(server);
+}

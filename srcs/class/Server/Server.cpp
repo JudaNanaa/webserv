@@ -111,3 +111,29 @@ void Server::removeClientInMap(int fd) {
 int Server::nbOfClient(void) const {
 	return this->_clientMap.size();
 }
+
+bool Server::checkAllowMethodes(std::string methode) {
+  bool result = true;
+  if (methode.find(";") != std::string::npos)
+    methode.erase(methode.find(';'),1);
+
+  if (methode.find("GET") != std::string::npos) {
+    _data->_allowedMethods & GET_ ? result = true : result = false;
+    methode.erase(methode.find("GET"), 3);
+  }
+  if (result && methode.find("POST") != std::string::npos) {
+    _data->_allowedMethods & POST_ ? result = true : result = false;
+    methode.erase(methode.find("GET"), 3);
+  }
+  if (result && methode.find("DELETE") != std::string::npos) {
+    _data->_allowedMethods & DELETE_ ? result = true : result = false;
+    methode.erase(methode.find("GET"), 3);
+  }
+  if (result && methode.find("OPTIONS") != std::string::npos) {
+    _data->_allowedMethods & OPTIONS_ ? result = true : result = false;
+    methode.erase(methode.find("GET"), 3);
+  }
+  if (!methode.empty())
+    throw std::invalid_argument("Invalid methode");
+  return result;
+}

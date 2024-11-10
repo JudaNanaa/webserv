@@ -12,6 +12,7 @@
 
 #include "../../../includes/Request.hpp" 
 #include "../../../includes/utils.hpp" 
+#include "../../../includes/Server.hpp"
 #include <map>
 #include <sstream>
 #include <stdexcept>
@@ -71,7 +72,7 @@ void Request::parseRequest(void) {
 	std::string header;
 	std::vector<std::string> headerSplit;
 	std::vector<std::string> lineSplit;
-
+  
 	header = _request.substr(0, _request.find("\r\n\r\n"));
 	headerSplit = split(header, "\r\n");
 
@@ -86,6 +87,9 @@ void Request::parseRequest(void) {
 		std::cout << "Error parseRequest" << std::endl;
 		return;
 	}
+  if (!_server->checkAllowMethodes(lineSplit[0]))
+    std::cout << "Error Invalid Method" << std::endl;
+  std::cout << "HEADER parseRequest: " << std::endl;
 	std::cout << header << std::endl;
 }
 
@@ -119,3 +123,7 @@ std::ostream& operator<<(std::ostream& os, const Request& request ) {
 
 	return os;
 }
+
+void Request::addServer(Server* server) {
+  _server = server;
+} 

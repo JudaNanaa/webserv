@@ -20,6 +20,8 @@
 
 # define BUFFER_SIZE 4096
 
+class Server;
+
 class Request {
 	private:
 		int	_method;
@@ -27,6 +29,7 @@ class Request {
 		std::string	_Host;
 		std::map<std::string, std::string>	_others;
 		std::string	_request;
+    Server *_server;
 
 		void parseRequest(void);
 
@@ -48,6 +51,7 @@ class Request {
 		void	add( std::string key, std::string value );
 		
 		void addRequest(std::string str);
+    void addServer(Server* server);
 		
 		friend std::ostream& operator<<(std::ostream& os, const Request& request );
 };

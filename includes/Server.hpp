@@ -14,6 +14,7 @@
 #define SERVER_HPP
 #include "includes.hpp"
 #include "Client.hpp"
+#include "Request.hpp"
 #include <map>
 #include <ostream>
 
@@ -46,6 +47,9 @@ class Server {
 		int getSocketFd() const;
 		int nbOfClient(void) const;
     Data *_data;
+
+    //request Parsing
+    bool checkAllowMethodes(std::string methodes);
 };
 
 #endif
