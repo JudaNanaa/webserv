@@ -82,13 +82,13 @@ void Request::parseRequest(void) {
 		return;
 	}
 	lineSplit = split(headerSplit[0], " ");
-	if (lineSplit.size() != 3) {
+	if (lineSplit.size() != 3) { // not always 3 part 
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		std::cout << "Error parseRequest" << std::endl;
 		return;
 	}
   if (!_server->checkAllowMethodes(lineSplit[0]))
-    std::cout << "Error Invalid Method : [" + lineSplit[0] + "]" << std::endl;
+    std::cout << "Error Invalid Method : [" + lineSplit[0] + "]" << std::endl; // need correct gesture
   std::cout << "HEADER parseRequest: " << std::endl;
 	std::cout << header << std::endl;
 }

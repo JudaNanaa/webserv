@@ -116,6 +116,7 @@ void GlobalData::handleClientOut(int fd) {
 	std::ifstream file;
 
 	file.open("URIs/original.html");
+  // file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
 	if (file.fail()) {
 		throw std::runtime_error("Can't open the file");
 	}
