@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/09 20:45:06 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/10 18:33:13 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,10 @@ class Request {
 		std::string	_Host;
 		std::map<std::string, std::string>	_others;
 		std::string	_request;
-    Server *_server;
+		Server *_server;
 
-		void parseRequest(void);
+		void	parseRequest(void);
+		void	parseRequestLine( std::string line );
 
 	public:
 		Request();

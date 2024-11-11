@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/09 18:39:59 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/10 19:50:06 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,3 +262,8 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath) {
 std::vector<Server> Pars::parse(std::string path) {
 	return parseConfigFile(path);
 }
+
+
+
+
+

@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/09 20:25:15 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/10 18:39:51 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 	std::cout << "PARSING OK!" << std::endl;
-	std::vector<Server>::iterator it = servVec.begin();
-	std::vector<Server>::iterator end = servVec.end();
-	int i = 0;
-	while (it != end) {
-		std::cout << "server on : http://127.0.0.1:" << servVec[i]._data->_port << std::endl;
-		it++;
-		i++;
-	}
 	try {
 		data.runServers(servVec);
 	} catch(std::exception& e) {

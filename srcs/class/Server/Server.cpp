@@ -87,6 +87,11 @@ void Server::init(void) {
 	if (listen(this->_socket_fd, MAX_CLIENTS) < 0) {
         throw std::runtime_error("Can't listen on this socket");		
 	}
+	std::stringstream ss;
+	ss << this->_data->_port;
+	this->_host[0] = "127.0.0.1:" + ss.str();
+	this->_host[1] = "localhost:" + ss.str();
+	std::cout << "server on : http://" << this->_host[0] << std::endl;
 }
 
 void Server::addClientToMap(Client &client) {
@@ -112,28 +117,27 @@ int Server::nbOfClient(void) const {
 	return this->_clientMap.size();
 }
 
-bool Server::checkAllowMethodes(std::string methode) {
-  bool result = true;
-  if (methode.find(";") != std::string::npos)
-    methode.erase(methode.find(';'),1);
+bool Server::isServerHost(std::string const &str) const {
+	if (_host[0] == str || _host[1] == str) {
+		return true;
+	}
+	return false;
+}
 
-  if (methode.find("GET") != std::string::npos) {
-    _data->_allowedMethods & GET_ ? result = true : result = false;
-    methode.erase(methode.find("GET"), 3);
+bool Server::checkAllowMethodes(std::string methode) {
+  if (methode.compare("GET") == 0) {
+	return (_data->_allowedMethods & GET_);
   }
-  if (result && methode.find("POST") != std::string::npos) {
-    _data->_allowedMethods & POST_ ? result = true : result = false;
-    methode.erase(methode.find("GET"), 3);
+  if (methode.compare("POST")  == 0) {
+	return (_data->_allowedMethods & POST_);
   }
-  if (result && methode.find("DELETE") != std::string::npos) {
-    _data->_allowedMethods & DELETE_ ? result = true : result = false;
-    methode.erase(methode.find("GET"), 3);
+  if (methode.compare("DELETE")  == 0) {
+	return (_data->_allowedMethods & DELETE_);
   }
-  if (result && methode.find("OPTIONS") != std::string::npos) {
-    _data->_allowedMethods & OPTIONS_ ? result = true : result = false;
-    methode.erase(methode.find("GET"), 3);
+  if (methode.compare("OPTIONS")  == 0) {
+	return (_data->_allowedMethods & OPTIONS_);
   }
   if (!methode.empty())
     throw std::invalid_argument("Invalid methode : " + methode);
-  return result;
+  return false;
 }

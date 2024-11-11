@@ -117,13 +117,14 @@ void GlobalData::handleClientOut(int fd) {
 	std::ifstream file;
 
 	// file.open("URIs/original.html");
-  Client client = searchClient(fd);
-  file.open((client._server->_data->_root + client._server->_data->_index).c_str());
-  std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
-  // file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
+	Client client = searchClient(fd);
+	file.open((client._server->_data->_root + client._server->_data->_index).c_str());
+	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
+	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
 	if (file.fail()) {
 		throw std::runtime_error("Can't open the file");
 	}
+
     std::ostringstream buffer;
     buffer << file.rdbuf();
     std::string html_content = buffer.str();
