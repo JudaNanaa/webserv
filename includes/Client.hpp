@@ -10,6 +10,7 @@ class Server;
 class Client {
 	private:
 		int _fd;
+		bool _readyToParseHeader;
 		bool _readyToResponse;
 		Request _request;
 	public:
@@ -23,7 +24,10 @@ class Client {
 		void setClientFd(int fd);
 		void pushRequest(char str[BUFFER_SIZE]);
 		void setServer(Server *server);
-    void setServerReq(Server *server);
+    	void setServerReq(Server *server);
+		bool getReadyToParseHeader(void) const;
+		Request &getRequest(void);
+
 };
 
 #endif

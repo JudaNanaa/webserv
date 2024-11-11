@@ -5,11 +5,18 @@
 Client::Client() {
 	this->_fd = -1;
 	this->_readyToResponse = false;
+	_readyToParseHeader = false;
+	std::cerr << "client creation" << std::endl;
 }
 
 Client::~Client() {
-	if (this->_fd != -1)
-		close(this->_fd);
+	// if (this->_fd != -1)
+	// 	close(this->_fd);
+	std::cerr << "client destructor" << std::endl;
+}
+
+bool Client::getReadyToParseHeader(void) const {
+	return _readyToParseHeader;
 }
 
 int Client::getClientFd(void) const {
@@ -28,9 +35,14 @@ bool const &Client::isReadyToResponse(void) const {
 	return	this->_readyToResponse;
 } 
 
+Request &Client::getRequest(void) {
+	return _request; 
+}
 
 void Client::pushRequest(char str[BUFFER_SIZE]) {
-	this->_request.addRequest(str);
+	if (this->_request.addRequest(str) == READY_PARSE_HEADER) {
+		_readyToParseHeader = true;
+	}
 }
 
 void Client::setServer(Server *server) {

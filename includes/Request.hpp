@@ -20,10 +20,18 @@
 
 # define BUFFER_SIZE 4096
 
+typedef enum s_parse
+{
+	NOT_READY,
+	READY_PARSE_HEADER,
+}t_parse;
+
 class Server;
 
 class Request {
 	private:
+		std::string _header;
+		std::string _body;
 		int	_method;
 		std::string	_path;
 		std::string	_Host;
@@ -43,6 +51,7 @@ class Request {
 		const std::string& path( void ) const;
 		const std::string& host( void ) const;
 		const std::string& find( std::string key ) const;
+		std::string &getHeader(void);
 		
 		/*	SETTER	*/
 
@@ -51,8 +60,10 @@ class Request {
 		void	path( std::string newPath );
 		void	add( std::string key, std::string value );
 		
-		void addRequest(std::string str);
-    void addServer(Server* server);
+		t_parse addRequest(std::string str);
+    	void addServer(Server* server);
+		void addRequestToMap(std::string key, std::string value);
+		bool isKeyfindInHeader(std::string const &key) const;
 		
 		friend std::ostream& operator<<(std::ostream& os, const Request& request );
 };

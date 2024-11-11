@@ -22,6 +22,7 @@ class GlobalData {
 		void handleClientOut(int fd);
 		void removeClient(int fd);
 		bool isServerFd(const int &fd) const;
+		Server &getServerWithClientFd(const int fd);
 	public:
 		GlobalData();
 

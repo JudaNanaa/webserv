@@ -76,7 +76,7 @@ void GlobalData::addNewClient(Server &server) {
 	client = new Client();
 	client->setClientFd(clientFd);
 	client->setServer(&server);
-  client->setServerReq(&server);
+	client->setServerReq(&server);
 	server.addClientToMap(*client);
 }
 
@@ -93,24 +93,29 @@ Client &GlobalData::searchClient(const int fd)  {
 	return it->second.getClient(fd);
 }
 
-void GlobalData::handleClientIn(int fd) {
-	char buff[BUFFER_SIZE + 1];
-	int n;
-	Client client;
+Server &GlobalData::getServerWithClientFd(const int fd)  {
+	std::map<int, Server>::iterator it = _servMap.begin();
+	std::map<int, Server>::iterator end = _servMap.end();
 
-	client = this->searchClient(fd);
-	while (true) {
-		n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
-		if (n == -1) {
-			removeClient(fd);
+	while (it != end) {
+		if (it->second.ifClientInServer(fd) == true) {
 			break;
 		}
-		if (n == 0)
-			break;
-		buff[n] = '\0';
-		client.pushRequest(buff);
+		++it;
 	}
-	std::cout << std::endl;
+	return it->second;
+}
+
+void GlobalData::handleClientIn(int fd) {
+	Server server;
+
+	server = getServerWithClientFd(fd);
+	try {
+		server.addClientRequest(fd);
+	} catch (const std::exception &e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		removeClient(fd);
+	}
 }
 
 void GlobalData::handleClientOut(int fd) {
@@ -118,6 +123,9 @@ void GlobalData::handleClientOut(int fd) {
 
 	// file.open("URIs/original.html");
 	Client client = searchClient(fd);
+	// if (client.isReadyToResponse() == false) {
+	// 	return;
+	// }
 	file.open((client._server->_data->_root + client._server->_data->_index).c_str());
 	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
 	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
@@ -138,20 +146,14 @@ void GlobalData::handleClientOut(int fd) {
 
     response += html_content;
 
-	send(fd, response.c_str(), response.size(), MSG_EOR);	
+	send(fd, response.c_str(), response.size(), MSG_EOR);
 }
 
 void GlobalData::removeClient(int fd) {
-	std::map<int, Server>::iterator it = this->_servMap.begin();
-	std::map<int, Server>::iterator end = this->_servMap.end();
+	Server server;
 
-	while (it != end) {
-		if (it->second.ifClientInServer(fd) == true) {
-			break;
-		}
-		++it;
-	}
-	it->second.removeClientInMap(fd);
+	server = getServerWithClientFd(fd);
+	server.removeClientInMap(fd);
 	epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 	close(fd);
 	printf("[+] connection closed\n");
@@ -170,7 +172,7 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 		nbFdsReady = this->waitFdsToBeReady(); // TODO: Secure this (maybe) not sure
 		for (int i = 0; i < nbFdsReady; i++) {
 			fd = this->_events[i].data.fd;
-			if (isServerFd(fd) == true && (this->_events[i].events & EPOLLIN)) {
+			if (isServerFd(fd) == true) {
 				this->addNewClient(this->_servMap[fd]);
 			}
 			else if (this->_events[i].events & (EPOLLRDHUP | EPOLLHUP)) {
@@ -180,7 +182,7 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 				if (this->_events[i].events & EPOLLIN) {
 					this->handleClientIn(fd);
 				}
-				else if (this->_events[i].events & EPOLLOUT) {
+				if (this->_events[i].events & EPOLLOUT) {
 					this->handleClientOut(fd);
 				}
 			}

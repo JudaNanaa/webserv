@@ -10,12 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <asm-generic/socket.h>
+#include <cerrno>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
+#include <fcntl.h>
 #include <iomanip>
 #include <cstring>
+#include <iterator>
 #include <stdexcept>
 #include <string>
 #include <sstream>
@@ -63,17 +67,23 @@ void signalHandle(void) {
 void Server::init(void) {
 	struct sockaddr_in server_addr;
 	const int opt = 1;
+	const int keepAlive = 1;
 	// Open socket
-	this->_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+	this->_socket_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (this->_socket_fd == -1) {
 		throw std::runtime_error("Can't open socket");
 	}
 	
-	if(setsockopt(this->_socket_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) == -1) { 
+	if(setsockopt(this->_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) { 
+        throw std::runtime_error("Could not set socket options");	
+    }
+ 
+	if(setsockopt(this->_socket_fd, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(keepAlive)) == -1) { 
         throw std::runtime_error("Could not set socket options");	
     } 
 	// config address and port
 	
+	fcntl(this->_socket_fd, F_SETFL, O_NONBLOCK);
 	std::memset(&server_addr, 0, sizeof(struct sockaddr_in));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -122,6 +132,96 @@ bool Server::isServerHost(std::string const &str) const {
 		return true;
 	}
 	return false;
+}
+
+void	Server::_parseRequestLine( std::string line, Request clientRequest) {
+
+	if (line.find(": ") == std::string::npos)
+		throw std::invalid_argument("invalid line: " + line);
+
+	std::string	value = line.substr(line.find(": ") + 2);
+
+	std::string key = line.erase(line.find(": "));	// erase the value (keep the key)
+	clientRequest.addRequestToMap(key, value);
+}
+
+void Server::_parseClientHeader(Client &client) {
+	Request clientRequest;
+	std::string header;
+	std::vector<std::string> headerSplit;
+	std::vector<std::string> lineSplit;
+
+	clientRequest = client.getRequest();
+	header = clientRequest.getHeader();
+	std::cout << "Request incoming..." << std::endl;
+	headerSplit = split(header, "\r\n");
+
+	std::cout << "DEBUG HEADER: \n" << header << std::endl;
+
+	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
+		// La premiere ligne est pas bonne donc faire une reponse en fonction
+		throw std::invalid_argument("Error header: " + headerSplit[0]);
+	}
+
+	lineSplit = split(headerSplit[0], " ");
+	if (lineSplit.size() != 3) { // not always 3 part
+		// La premiere ligne est pas bonne donc faire une reponse en fonction
+		throw std::invalid_argument("Error header: " + headerSplit[0]);
+	}
+
+	checkAllowMethodes(lineSplit[0]);
+
+	clientRequest.path(lineSplit[1]);
+
+	if (lineSplit[2].compare("HTTP/1.1") != 0) {
+		// le htpp nest pas bon !!
+		throw std::invalid_argument("Error header: " + headerSplit[2]);
+	}
+
+	lineSplit = split(headerSplit[1], ": "); // check line host
+	if (lineSplit.size() != 2) {
+		throw std::invalid_argument("Error header: " + headerSplit[1]);
+	}
+	if (lineSplit[0].compare("Host") != 0) {
+		throw std::invalid_argument("Error header: " + headerSplit[1]);
+	}
+	clientRequest.host(lineSplit[1]);
+	if (isServerHost(clientRequest.host()) == false) { // check si le host est bien celui du server
+		throw std::invalid_argument("Error header: Not the server host: " + lineSplit[1]);
+	}
+
+	for (std::vector<std::string>::const_iterator it = headerSplit.begin() + 2, ite = headerSplit.end();
+			it != ite; it++) {
+		_parseRequestLine(*it, clientRequest);
+	}
+
+	std::cout << "REQUEST:\n" << clientRequest << std::endl;
+	// if (clientRequest.isKeyfindInHeader("Content-Length") == false) {
+	// 	client.setReadyToresponse(true);
+	// }
+	// client.setReadyToresponse(true);
+}
+
+void Server::addClientRequest(int fd) {
+	char buff[BUFFER_SIZE + 1];
+	int n;
+	Client client;
+
+	client = getClient(fd);
+	while (true) {
+		n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
+		if (n == -1) {
+			perror(strerror(errno));
+			throw std::runtime_error("Can't recv the message !");
+		}
+		if (n == 0)
+			break;
+		buff[n] = '\0';
+		client.pushRequest(buff);
+		if (client.getReadyToParseHeader() == true) {
+			_parseClientHeader(client);
+		}
+	}
 }
 
 bool Server::checkAllowMethodes(std::string methode) {

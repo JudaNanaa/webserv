@@ -22,7 +22,6 @@
 # define MAX_EVENTS 1000
 # define PORT 9999
 
-
 struct Data ;
 
 class Server {
@@ -31,8 +30,9 @@ class Server {
 		std::string _host[2];
 		std::map<int, Client> _clientMap;
 		void addToEpoll(int fd, uint32_t events);
-		void removeClient(int fd);
-		int waitFdsToBeReady(void);
+			int waitFdsToBeReady(void);
+		void _parseClientHeader(Client &client);
+		void	_parseRequestLine( std::string line, Request clientRequest);
 	public:
 		Server();
 		
@@ -48,6 +48,7 @@ class Server {
 		int getSocketFd() const;
 		bool isServerHost(std::string const &str) const;
 		int nbOfClient(void) const;
+		void addClientRequest(int fd);
     Data *_data;
 
     //request Parsing
