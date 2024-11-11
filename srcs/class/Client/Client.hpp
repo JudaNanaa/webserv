@@ -1,8 +1,8 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#include "RawBits.hpp"
-#include "Request.hpp"
+#include "../../../includes/RawBits.hpp"
+#include "../Request/Request.hpp"
 // #include "Server.hpp"
 
 class Server;

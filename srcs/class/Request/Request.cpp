@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/Request.hpp" 
+#include "Request.hpp" 
 #include "../../../includes/utils.hpp" 
-#include "../../../includes/Server.hpp"
+#include "../Server/Server.hpp"
 #include <map>
 #include <sstream>
 #include <stdexcept>
@@ -110,7 +110,7 @@ std::ostream& operator<<(std::ostream& os, const Request& request ) {
 	} os << std::endl;
 
 	os
-	<< "\t" << "path: " << request.path()
+	<< "\t" << "path: " << request.path() << std::endl
 	<< "\t" << "host: " << request.host()
 	<< std::endl;
 

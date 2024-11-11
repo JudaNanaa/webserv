@@ -25,11 +25,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <cstddef>
-#include "../../../includes/Server.hpp"
+#include "Server.hpp"
 #include "../../../includes/utils.hpp"
 #include "../../../includes/RawBits.hpp"
-#include "../../../includes/GlobalData.hpp"
-#include "../../../includes/Parser.hpp"
+#include "../GlobalData/GlobalData.hpp"
+#include "../Parser/Parser.hpp"
 
 Server::Server(void)  
 	: _socket_fd(-1) {

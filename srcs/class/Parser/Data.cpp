@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/Parser.hpp"
+#include "Parser.hpp"
 
 Data::Data() {
   _allowedMethods = 0;
