@@ -24,12 +24,20 @@ typedef enum s_parse
 {
 	NOT_READY,
 	READY_PARSE_HEADER,
+	READY_PARSE_BODY,
 }t_parse;
+
+typedef enum s_state
+{
+	ON_HEADER,
+	ON_BODY,
+}t_state;
 
 class Server;
 
 class Request {
 	private:
+		t_state _state;
 		std::string _header;
 		std::string _body;
 		int	_method;
@@ -38,6 +46,7 @@ class Request {
 		std::map<std::string, std::string>	_others;
 		std::string	_request;
 		Server *_server;
+		unsigned int _sizeBody;
 
 		void	parseRequest(void);
 		void	parseRequestLine( std::string line );
@@ -52,6 +61,7 @@ class Request {
 		const std::string& host( void ) const;
 		const std::string& find( std::string key ) const;
 		std::string &getHeader(void);
+		const t_state &getStatus(void) const;
 		
 		/*	SETTER	*/
 
@@ -59,6 +69,7 @@ class Request {
 		void	host( std::string newHost );
 		void	path( std::string newPath );
 		void	add( std::string key, std::string value );
+		void	setSizeBody(unsigned int nb);
 		
 		t_parse addRequest(std::string str);
     	void addServer(Server* server);

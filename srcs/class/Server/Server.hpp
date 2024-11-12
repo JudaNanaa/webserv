@@ -32,7 +32,7 @@ class Server {
 		void addToEpoll(int fd, uint32_t events);
 			int waitFdsToBeReady(void);
 		void _parseClientHeader(Client &client);
-		void	_parseRequestLine( std::string line, Request clientRequest);
+		void	_parseRequestLine( std::string line, Request &clientRequest);
 	public:
 		Server();
 		

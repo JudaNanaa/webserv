@@ -45,20 +45,20 @@ void GlobalData::addToEpoll(int fd, uint32_t events)
 }
 
 void GlobalData::initServers(std::vector<Server> &servVec) {
-	std::vector<Server>::iterator it = servVec.begin();
+	std::vector<Server>::iterator servIt = servVec.begin();
 	std::vector<Server>::iterator end = servVec.end();
 
 	this->_epoll_fd = epoll_create1(0); // TODO: Secure this
-	while (it != end) {
-		it->init();
-		this->addToEpoll(it->getSocketFd(), EPOLLIN); // TODO: try catch this
-		this->_servMap[it->getSocketFd()] = *it;
-		it++;
+	while (servIt != end) {
+		servIt->init();
+		addToEpoll(servIt->getSocketFd(), EPOLLIN); // TODO: try catch this
+		_servMap[servIt->getSocketFd()] = *servIt;
+		servIt++;
 	}
 }
 
 int GlobalData::waitFdsToBeReady(void) {
-	return epoll_wait(this->_epoll_fd, this->_events, MAX_EVENTS, 100);
+	return epoll_wait(this->_epoll_fd, this->_events, MAX_EVENTS, -1);
 }
 
 void GlobalData::addNewClient(Server &server) {
@@ -73,9 +73,7 @@ void GlobalData::addNewClient(Server &server) {
 		throw std::runtime_error("Can't accept the connexion with the client");
 	this->addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLRDHUP); // TODO: try catch this
 
-	client = new Client();
-	client->setClientFd(clientFd);
-	client->setServer(&server);
+	client = new Client(clientFd, &server);
 	client->setServerReq(&server);
 	server.addClientToMap(*client);
 }

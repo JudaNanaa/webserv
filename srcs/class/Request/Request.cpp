@@ -22,6 +22,8 @@
 
 Request::Request() {
 	_method = 0;
+	_state = ON_HEADER;
+	_sizeBody = 0;
 }
 
 Request::~Request() {
@@ -46,6 +48,10 @@ const std::string&	Request::find( std::string key ) const {
 	return (_others.at(key));
 }
 
+const t_state &Request::getStatus(void) const {
+	return _state;
+}
+
 void	Request::method( int newMethod ) {
 	_method = newMethod;
 }
@@ -56,6 +62,10 @@ void	Request::host( std::string newHost ) {
 
 void	Request::path( std::string newPath ) {
 	_path = newPath;
+}
+
+void	Request::setSizeBody(unsigned int nb) {
+	_sizeBody = nb;
 }
 
 std::string &Request::getHeader(void) {
@@ -78,12 +88,22 @@ bool Request::isKeyfindInHeader(std::string const &key) const {
 
 t_parse	Request::addRequest(std::string str) {
 	_request += str;
-	if (_request.find("\r\n\r\n") == std::string::npos) {
-		return NOT_READY;
+	if (_state == ON_HEADER) {
+		if (_request.find("\r\n\r\n") == std::string::npos) {
+			return NOT_READY;
+		}
+		_header = _request.substr(0, _request.find("\r\n\r\n"));
+		_body = _request.substr(_request.find("\r\n\r\n") + 4);
+		_state = ON_BODY;
+		return READY_PARSE_HEADER;
 	}
-	_header = _request.substr(0, _request.find("\r\n\r\n"));
-	_body = _request.substr(_request.find("\r\n\r\n") + 4);
-	return READY_PARSE_HEADER;
+	if (_state == ON_BODY) {
+		_body += str;
+		if (_body.length() >= _sizeBody) {
+			return READY_PARSE_BODY;
+		}
+	}
+	return NOT_READY;
 }
 
 // void	Request::parseRequestLine( std::string line ) {

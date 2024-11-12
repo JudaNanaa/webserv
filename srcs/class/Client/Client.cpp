@@ -3,28 +3,41 @@
 #include <iostream>
 
 Client::Client() {
-	this->_fd = -1;
+
+}
+
+Client::Client(int const fd, Server *server)
+	: _fd(fd), _server(server) {
 	this->_readyToResponse = false;
 	_readyToParseHeader = false;
-	std::cerr << "client creation" << std::endl;
 }
 
 Client::~Client() {
-	// if (this->_fd != -1)
-	// 	close(this->_fd);
-	std::cerr << "client destructor" << std::endl;
 }
 
-bool Client::getReadyToParseHeader(void) const {
+Client &Client::operator=(Client const &other) {
+	this->_fd = other._fd;
+	this->_readyToParseHeader = other._readyToParseHeader;
+	this->_readyToResponse = other._readyToResponse;
+	this->_request = other._request;
+	this->_server = other._server;
+	return *this;
+}
+
+const bool &Client::getReadyToParseHeader(void) const {
 	return _readyToParseHeader;
+}
+
+const bool &Client::getReadyToParseBody(void) const {
+	return _readyToParseBody;
+}
+
+const t_state &Client::whatToDo(void) const {
+	return _request.getStatus();
 }
 
 int Client::getClientFd(void) const {
 	return this->_fd;
-}
-
-void Client::setClientFd(int fd) {
-	this->_fd = fd;
 }
 
 void Client::setReadyToresponse(bool boolean) {
@@ -40,13 +53,14 @@ Request &Client::getRequest(void) {
 }
 
 void Client::pushRequest(char str[BUFFER_SIZE]) {
-	if (this->_request.addRequest(str) == READY_PARSE_HEADER) {
+	t_parse result;
+	result = this->_request.addRequest(str);
+	if (result == READY_PARSE_HEADER) {
 		_readyToParseHeader = true;
 	}
-}
-
-void Client::setServer(Server *server) {
-	this->_server = server;
+	else if (result == READY_PARSE_BODY) {
+		_readyToParseBody = true;
+	}
 }
 
 void Client::setServerReq(Server *server) {

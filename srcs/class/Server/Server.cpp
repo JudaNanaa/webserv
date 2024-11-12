@@ -32,6 +32,7 @@
 #include "Server.hpp"
 #include "../../../includes/utils.hpp"
 #include "../../../includes/RawBits.hpp"
+#include "../Request/Request.hpp"
 #include "../GlobalData/GlobalData.hpp"
 #include "../Parser/Parser.hpp"
 
@@ -41,8 +42,8 @@ Server::Server(void)
 }
 
 Server::~Server(void) {
-	if (this->_socket_fd != -1)
-		close(this->_socket_fd);
+	// if (this->_socket_fd != -1)
+	// 	close(this->_socket_fd);
 }
 
 void Server::addData(Data* data) {
@@ -66,8 +67,8 @@ void signalHandle(void) {
 
 void Server::init(void) {
 	struct sockaddr_in server_addr;
-	const int opt = 1;
-	const int keepAlive = 1;
+	int opt = 1;
+	int keepAlive = 1;
 	// Open socket
 	this->_socket_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (this->_socket_fd == -1) {
@@ -83,7 +84,6 @@ void Server::init(void) {
     } 
 	// config address and port
 	
-	fcntl(this->_socket_fd, F_SETFL, O_NONBLOCK);
 	std::memset(&server_addr, 0, sizeof(struct sockaddr_in));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -134,7 +134,7 @@ bool Server::isServerHost(std::string const &str) const {
 	return false;
 }
 
-void	Server::_parseRequestLine( std::string line, Request clientRequest) {
+void	Server::_parseRequestLine( std::string line, Request &clientRequest) {
 
 	if (line.find(": ") == std::string::npos)
 		throw std::invalid_argument("invalid line: " + line);
@@ -156,7 +156,7 @@ void Server::_parseClientHeader(Client &client) {
 	std::cout << "Request incoming..." << std::endl;
 	headerSplit = split(header, "\r\n");
 
-	std::cout << "DEBUG HEADER: \n" << header << std::endl;
+	// std::cout << "DEBUG HEADER: \n" << header << std::endl;
 
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
@@ -196,10 +196,12 @@ void Server::_parseClientHeader(Client &client) {
 	}
 
 	std::cout << "REQUEST:\n" << clientRequest << std::endl;
-	// if (clientRequest.isKeyfindInHeader("Content-Length") == false) {
-	// 	client.setReadyToresponse(true);
-	// }
-	// client.setReadyToresponse(true);
+	if (clientRequest.isKeyfindInHeader("Content-Length") == true) {
+		clientRequest.setSizeBody(atoi(clientRequest.find("Content-Length").c_str()));
+	}
+	else {
+		client.setReadyToresponse(true);
+	}
 }
 
 void Server::addClientRequest(int fd) {
@@ -211,16 +213,18 @@ void Server::addClientRequest(int fd) {
 	while (true) {
 		n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
 		if (n == -1) {
-			perror(strerror(errno));
 			throw std::runtime_error("Can't recv the message !");
 		}
 		if (n == 0)
 			break;
 		buff[n] = '\0';
 		client.pushRequest(buff);
-		if (client.getReadyToParseHeader() == true) {
+		if (client.whatToDo() == ON_HEADER && client.getReadyToParseHeader()) {
 			_parseClientHeader(client);
 		}
+		// else if (client.whatToDo() == ON_BODY && client.getReadyToParseBody()) {
+		// 	_parseClientHeader(client); //Parse body
+		// }
 	}
 }
 

@@ -11,21 +11,24 @@ class Client {
 	private:
 		int _fd;
 		bool _readyToParseHeader;
+		bool _readyToParseBody;
 		bool _readyToResponse;
 		Request _request;
 	public:
 		Client();
+		Client(int const fd, Server *server);
 		~Client();
 
+		Client &operator=(Client const &other);
 		Server *_server;
 		int getClientFd(void) const;
 		void setReadyToresponse(bool boolean);
 		bool const &isReadyToResponse(void) const; 
-		void setClientFd(int fd);
 		void pushRequest(char str[BUFFER_SIZE]);
-		void setServer(Server *server);
     	void setServerReq(Server *server);
-		bool getReadyToParseHeader(void) const;
+		const t_state &whatToDo(void) const;
+		const bool &getReadyToParseHeader(void) const;
+		const bool &getReadyToParseBody(void) const;
 		Request &getRequest(void);
 
 };
