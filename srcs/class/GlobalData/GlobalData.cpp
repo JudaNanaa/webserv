@@ -1,7 +1,7 @@
-#include "../../../includes/GlobalData.hpp"
-#include "../../../includes/Client.hpp"
+#include "GlobalData.hpp"
+#include "../Client/Client.hpp"
 #include "../../../includes/RawBits.hpp"
-#include "../../../includes/Parser.hpp"
+#include "../Parser/Parser.hpp"
 #include "../../../includes/includes.hpp"
 #include <algorithm>
 #include <cstdlib>

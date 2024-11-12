@@ -13,9 +13,9 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
-#include "includes.hpp"
+#include "../../../includes/includes.hpp"
 #include "Location.hpp"
-#include "Server.hpp"
+#include "../Server/Server.hpp"
 #include <fstream>
 #include <vector>
 #include <map>

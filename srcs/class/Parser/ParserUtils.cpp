@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/Parser.hpp"
-#include "../../../includes/Server.hpp"
+#include "Parser.hpp"
+#include "../Server/Server.hpp"
 #include "../../../includes/includes.hpp"
 #include <exception>
 #include <fstream>

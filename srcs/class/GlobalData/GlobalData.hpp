@@ -1,9 +1,9 @@
 #ifndef GLOBALDATA_HPP
 #define GLOBALDATA_HPP
 
-#include "Server.hpp"
-#include "includes.hpp"
-#include "utils.hpp"
+#include "../Server/Server.hpp"
+#include "../../../includes/includes.hpp"
+#include "../../../includes/utils.hpp"
 #include <exception>
 #include <vector>
 #include <map>

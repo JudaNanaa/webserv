@@ -12,9 +12,9 @@
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
-#include "includes.hpp"
-#include "Client.hpp"
-#include "Request.hpp"
+#include "../../../includes/includes.hpp"
+#include "../Client/Client.hpp"
+#include "../Request/Request.hpp"
 #include <map>
 #include <ostream>
 

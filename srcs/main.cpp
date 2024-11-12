@@ -11,9 +11,9 @@
 /* ************************************************************************** */
 
 #include "../includes/includes.hpp"
-#include "../includes/GlobalData.hpp"
-#include "../includes/Server.hpp"
-#include "../includes/Parser.hpp"
+#include "class/GlobalData/GlobalData.hpp"
+#include "class/Server/Server.hpp"
+#include "class/Parser/Parser.hpp"
 #include <exception>
 #include <iostream>
 #include <vector>

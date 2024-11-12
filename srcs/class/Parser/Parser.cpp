@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/Parser.hpp"
-#include "../../../includes/Server.hpp"
-#include "../../../includes/Location.hpp"
+#include "Parser.hpp"
+#include "../Server/Server.hpp"
+#include "Location.hpp"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
