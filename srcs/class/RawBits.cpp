@@ -23,6 +23,10 @@ RawBits::~RawBits(void) {
 		delete[] _content;
 }
 
+const int &RawBits::getLen(void) const {
+	return _len;
+}
+
 void RawBits::pushBack(unsigned char c) {
 	char *dest = new char[_len + 1];
 	if (_content)

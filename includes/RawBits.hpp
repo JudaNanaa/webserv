@@ -24,6 +24,7 @@ class RawBits {
 		RawBits(void);
 		~RawBits();
 		void pushBack(unsigned char c);
+		const int &getLen(void) const;
 		char *decode(void);
 };
 

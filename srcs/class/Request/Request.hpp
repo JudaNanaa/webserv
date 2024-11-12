@@ -14,6 +14,7 @@
 # define REQUEST_HPP
 
 #include "../../../includes/includes.hpp"
+#include "../../../includes/RawBits.hpp"
 #include <map>
 #include <ostream>
 #include <string>
@@ -39,7 +40,7 @@ class Request {
 	private:
 		t_state _state;
 		std::string _header;
-		std::string _body;
+		RawBits _body;
 		int	_method;
 		std::string	_path;
 		std::string	_Host;
@@ -71,7 +72,8 @@ class Request {
 		void	add( std::string key, std::string value );
 		void	setSizeBody(unsigned int nb);
 		
-		t_parse addRequest(std::string str);
+		t_parse addHeaderRequest(std::string str);
+		t_parse addBodyRequest(char buff[BUFFER_SIZE + 1], int n);
     	void addServer(Server* server);
 		void addRequestToMap(std::string key, std::string value);
 		bool isKeyfindInHeader(std::string const &key) const;

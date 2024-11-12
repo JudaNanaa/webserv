@@ -86,26 +86,29 @@ bool Request::isKeyfindInHeader(std::string const &key) const {
 	return _others.find(key) != _others.end();
 }
 
-t_parse	Request::addRequest(std::string str) {
+t_parse	Request::addHeaderRequest(std::string str) {
 	_request += str;
-	if (_state == ON_HEADER) {
-		if (_request.find("\r\n\r\n") == std::string::npos) {
-			return NOT_READY;
-		}
-		_header = _request.substr(0, _request.find("\r\n\r\n"));
-		_body = _request.substr(_request.find("\r\n\r\n") + 4);
-		_state = ON_BODY;
-		return READY_PARSE_HEADER;
+	if (_request.find("\r\n\r\n") == std::string::npos) {
+		return NOT_READY;
 	}
-	if (_state == ON_BODY) {
-		_body += str;
-		if (_body.length() >= _sizeBody) {
-			return READY_PARSE_BODY;
-		}
+	_header = _request.substr(0, _request.find("\r\n\r\n"));
+	std::string body = _request.substr(_request.find("\r\n\r\n") + 4);
+	for (int i = 0; body[i]; i++) {
+		_body.pushBack(body[i]);
+	}
+	_state = ON_BODY;
+	return READY_PARSE_HEADER;
+}
+
+t_parse	Request::addBodyRequest(char buff[BUFFER_SIZE + 1], int n) {
+	for (int i = 0; i < n && _body.getLen() < _sizeBody; i++) {
+		_body.pushBack(buff[i]);
+	}
+	if (_body.getLen() == _sizeBody) {
+		return READY_PARSE_BODY;
 	}
 	return NOT_READY;
 }
-
 // void	Request::parseRequestLine( std::string line ) {
 
 // 	if (line.find(": ") == std::string::npos)

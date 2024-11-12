@@ -156,7 +156,7 @@ void Server::_parseClientHeader(Client &client) {
 	std::cout << "Request incoming..." << std::endl;
 	headerSplit = split(header, "\r\n");
 
-	// std::cout << "DEBUG HEADER: \n" << header << std::endl;
+	std::cout << "DEBUG HEADER: \n" << header << std::endl;
 
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
@@ -196,12 +196,17 @@ void Server::_parseClientHeader(Client &client) {
 	}
 
 	std::cout << "REQUEST:\n" << clientRequest << std::endl;
+
 	if (clientRequest.isKeyfindInHeader("Content-Length") == true) {
 		clientRequest.setSizeBody(atoi(clientRequest.find("Content-Length").c_str()));
 	}
 	else {
 		client.setReadyToresponse(true);
 	}
+}
+
+void Server::_parseClientBody(Client &client) {
+	
 }
 
 void Server::addClientRequest(int fd) {
@@ -218,14 +223,21 @@ void Server::addClientRequest(int fd) {
 		if (n == 0)
 			break;
 		buff[n] = '\0';
-		client.pushRequest(buff);
-		if (client.whatToDo() == ON_HEADER && client.getReadyToParseHeader()) {
-			_parseClientHeader(client);
+		std::cerr << buff;
+		if (client.whatToDo() == ON_HEADER) {
+			client.pushHeaderRequest(buff);
+			if (client.getReadyToParseHeader()) {
+				_parseClientHeader(client);
+			}
 		}
-		// else if (client.whatToDo() == ON_BODY && client.getReadyToParseBody()) {
-		// 	_parseClientHeader(client); //Parse body
-		// }
+		else if (client.whatToDo() == ON_BODY) {
+			client.pushBodyRequest(buff, n);
+			if (client.getReadyToParseBody()) {
+				_parseClientBody(client); //Parse body
+			}
+		}
 	}
+	std::cerr<< std::endl;
 }
 
 bool Server::checkAllowMethodes(std::string methode) {

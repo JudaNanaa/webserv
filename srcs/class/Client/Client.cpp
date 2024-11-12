@@ -52,13 +52,20 @@ Request &Client::getRequest(void) {
 	return _request; 
 }
 
-void Client::pushRequest(char str[BUFFER_SIZE]) {
+void Client::pushHeaderRequest(char str[BUFFER_SIZE + 1]) {
 	t_parse result;
-	result = this->_request.addRequest(str);
+
+	result = this->_request.addHeaderRequest(str);
 	if (result == READY_PARSE_HEADER) {
 		_readyToParseHeader = true;
 	}
-	else if (result == READY_PARSE_BODY) {
+}
+
+void Client::pushBodyRequest(char str[BUFFER_SIZE + 1], int n) {
+	t_parse result;
+
+	result = this->_request.addBodyRequest(str, n);
+	if (result == READY_PARSE_BODY) {
 		_readyToParseBody = true;
 	}
 }

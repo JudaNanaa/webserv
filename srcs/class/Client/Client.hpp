@@ -24,7 +24,8 @@ class Client {
 		int getClientFd(void) const;
 		void setReadyToresponse(bool boolean);
 		bool const &isReadyToResponse(void) const; 
-		void pushRequest(char str[BUFFER_SIZE]);
+		void pushHeaderRequest(char str[BUFFER_SIZE + 1]);
+		void pushBodyRequest(char str[BUFFER_SIZE + 1], int n);
     	void setServerReq(Server *server);
 		const t_state &whatToDo(void) const;
 		const bool &getReadyToParseHeader(void) const;
