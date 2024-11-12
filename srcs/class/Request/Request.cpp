@@ -52,6 +52,10 @@ const t_state &Request::getStatus(void) const {
 	return _state;
 }
 
+RawBits &Request::getBody(void) {
+	return _body;
+}
+
 void	Request::method( int newMethod ) {
 	_method = newMethod;
 }

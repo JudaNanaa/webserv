@@ -62,6 +62,7 @@ class Request {
 		const std::string& host( void ) const;
 		const std::string& find( std::string key ) const;
 		std::string &getHeader(void);
+		RawBits &getBody(void);
 		const t_state &getStatus(void) const;
 		
 		/*	SETTER	*/

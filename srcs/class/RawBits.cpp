@@ -19,11 +19,17 @@ RawBits::RawBits(void) {
 }
 
 RawBits::~RawBits(void) {
-	if (_content)
-		delete[] _content;
+	// std::cerr << "test moussa" << std::endl;
+	// if (_content)
+	// 	delete[] _content;
+	// _content = NULL;
 }
 
-const int &RawBits::getLen(void) const {
+const char *RawBits::getContent(void) const {
+	return _content;
+}
+
+const unsigned int &RawBits::getLen(void) const {
 	return _len;
 }
 

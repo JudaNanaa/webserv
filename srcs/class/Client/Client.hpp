@@ -22,6 +22,7 @@ class Client {
 		Client &operator=(Client const &other);
 		Server *_server;
 		int getClientFd(void) const;
+		RawBits &getBodyRequest(void);
 		void setReadyToresponse(bool boolean);
 		bool const &isReadyToResponse(void) const; 
 		void pushHeaderRequest(char str[BUFFER_SIZE + 1]);

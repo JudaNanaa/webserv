@@ -18,13 +18,14 @@
 class RawBits {
 	private:
 		char*	_content;
-		int		_len;
+		unsigned int		_len;
 		std::vector<char *> split(char *s, char *c);
 	public:
 		RawBits(void);
 		~RawBits();
 		void pushBack(unsigned char c);
-		const int &getLen(void) const;
+		const char *getContent(void) const;
+		const unsigned int &getLen(void) const;
 		char *decode(void);
 };
 

@@ -13,6 +13,7 @@ Client::Client(int const fd, Server *server)
 }
 
 Client::~Client() {
+	std::cerr << "client destroyed" << std::endl;
 }
 
 Client &Client::operator=(Client const &other) {
@@ -50,6 +51,10 @@ bool const &Client::isReadyToResponse(void) const {
 
 Request &Client::getRequest(void) {
 	return _request; 
+}
+
+RawBits &Client::getBodyRequest(void) {
+	return _request.getBody();
 }
 
 void Client::pushHeaderRequest(char str[BUFFER_SIZE + 1]) {

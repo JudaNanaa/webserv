@@ -206,7 +206,11 @@ void Server::_parseClientHeader(Client &client) {
 }
 
 void Server::_parseClientBody(Client &client) {
-	
+	RawBits clientBody;
+
+	clientBody = client.getBodyRequest();
+	std::cout << clientBody.getContent() << std::endl;
+	client.setReadyToresponse(true);
 }
 
 void Server::addClientRequest(int fd) {
@@ -223,7 +227,7 @@ void Server::addClientRequest(int fd) {
 		if (n == 0)
 			break;
 		buff[n] = '\0';
-		std::cerr << buff;
+		// std::cerr << buff;
 		if (client.whatToDo() == ON_HEADER) {
 			client.pushHeaderRequest(buff);
 			if (client.getReadyToParseHeader()) {
