@@ -21,6 +21,9 @@ class Client {
 
 		Client &operator=(Client const &other);
 		Server *_server;
+
+		void	cleanRequest( void );
+
 		int getClientFd(void) const;
 		void setReadyToresponse(bool boolean);
 		bool const &isReadyToResponse(void) const; 

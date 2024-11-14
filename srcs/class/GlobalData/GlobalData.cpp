@@ -127,9 +127,9 @@ void GlobalData::handleClientOut(int fd) {
 		file.open((client->_server->_data->_root + client->_server->_data->_index).c_str());
 	else
 		file.open((client->_server->_data->_root + client->getRequest()->path()).c_str());
-	std::cout << "if no root : " << client->_server->_data->_root + client->getRequest()->path() << std::endl;
-	std::cout << "if root : " << client->_server->_data->_root + client->_server->_data->_index << std::endl;
-	std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
+	// std::cout << "if no root : " << client->_server->_data->_root + client->getRequest()->path() << std::endl;
+	// std::cout << "if root : " << client->_server->_data->_root + client->_server->_data->_index << std::endl;
+	// std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
 	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
 	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
 	if (file.fail()) {
@@ -152,6 +152,7 @@ void GlobalData::handleClientOut(int fd) {
     response += html_content;
 
 	send(fd, response.c_str(), response.size(), MSG_EOR);
+	client->cleanRequest();
 }
 
 void GlobalData::removeClient(int fd) {
@@ -178,13 +179,16 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 		for (int i = 0; i < nbFdsReady; i++) {
 			fd = this->_events[i].data.fd;
 			if (isServerFd(fd) == true) {
+				std::cout << "\n--------------------ADDING CLIENT--------------------\n" << std::endl;
 				this->addNewClient(this->_servMap[fd]);
 			}
 			else if (this->_events[i].events & (EPOLLRDHUP | EPOLLHUP)) {
+				std::cout << "\n--------------------REMOVING CLIENT--------------------\n" << std::endl;
 				this->removeClient(fd);
 			}
 			else {
 				if (this->_events[i].events & EPOLLIN) {
+				std::cout << "\n--------------------NEW REQUEST--------------------\n" << std::endl;
 					this->handleClientIn(fd);
 				}
 				else if (this->_events[i].events & EPOLLOUT) {

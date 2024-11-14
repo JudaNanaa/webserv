@@ -3,7 +3,7 @@
 #include <iostream>
 
 Client::Client() {
-
+	_request = NULL;
 }
 
 Client::Client(int const fd, Server *server)
@@ -78,4 +78,10 @@ void Client::pushBodyRequest(char *str, int n) {
 
 void Client::setServerReq(Server *server) {
   _request->addServer(server);
+}
+
+void	Client::cleanRequest( void ) {
+	if (_request != NULL)
+		delete _request;
+	_request = new Request();
 }

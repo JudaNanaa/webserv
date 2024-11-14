@@ -104,7 +104,7 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 t_parse	Request::addBodyRequest(char *buff, int n) {
 	_request->appendBody(buff, n);
 	_request->BuffToRaw(buff, n);
-	std::cerr <<  std::endl << "_request->getLenBody() == " << _request->getLenBody() << std::endl;
+	std::cerr <<  std::endl << "body length == " << _request->getLenBody() << "/" << _contentLenght << std::endl;
 	if (_request->getLenBody() == _contentLenght) {
 		return READY_PARSE_BODY;
 	}

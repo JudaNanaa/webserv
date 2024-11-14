@@ -199,8 +199,7 @@ void Server::_parseClientHeader(Client *client) {
 
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
 		clientRequest->setSizeBody(atoi(clientRequest->find("Content-Length").c_str()));
-	}
-	else {
+	} else {
 		client->setReadyToresponse(true);
 	}
 }
