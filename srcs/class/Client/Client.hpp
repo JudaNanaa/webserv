@@ -15,7 +15,6 @@ class Client {
 		bool _readyToResponse;
 		Request *_request;
 	public:
-		Client();
 		Client(int const fd, Server *server);
 		~Client();
 

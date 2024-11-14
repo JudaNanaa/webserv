@@ -91,7 +91,7 @@ Client *GlobalData::searchClient(const int fd)  {
 	return it->second.getClient(fd);
 }
 
-Server &GlobalData::getServerWithClientFd(const int fd)  {
+Server *GlobalData::getServerWithClientFd(const int fd)  {
 	std::map<int, Server>::iterator it = _servMap.begin();
 	std::map<int, Server>::iterator end = _servMap.end();
 
@@ -101,15 +101,15 @@ Server &GlobalData::getServerWithClientFd(const int fd)  {
 		}
 		++it;
 	}
-	return it->second;
+	return &it->second;
 }
 
 void GlobalData::handleClientIn(int fd) {
-	Server server;
+	Server *server;
 
 	server = getServerWithClientFd(fd);
 	try {
-		server.addClientRequest(fd);
+		server->addClientRequest(fd);
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		removeClient(fd);
@@ -123,12 +123,16 @@ void GlobalData::handleClientOut(int fd) {
 	Client *client = searchClient(fd);
 	if (client->isReadyToResponse() == false)
 		return;
-	if (client->getRequest()->path() == "/")
+	if (client->getRequest()->path() == "/") {
 		file.open((client->_server->_data->_root + client->_server->_data->_index).c_str());
-	else
+		std::cout << "if root : " << client->_server->_data->_root + client->_server->_data->_index << std::endl;
+
+	}
+	else {
+
+		std::cout << "if no root : " << client->_server->_data->_root + client->getRequest()->path() << std::endl;
 		file.open((client->_server->_data->_root + client->getRequest()->path()).c_str());
-	// std::cout << "if no root : " << client->_server->_data->_root + client->getRequest()->path() << std::endl;
-	// std::cout << "if root : " << client->_server->_data->_root + client->_server->_data->_index << std::endl;
+	}
 	// std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
 	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
 	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
@@ -156,10 +160,10 @@ void GlobalData::handleClientOut(int fd) {
 }
 
 void GlobalData::removeClient(int fd) {
-	Server server;
+	Server *server;
 
 	server = getServerWithClientFd(fd);
-	server.removeClientInMap(fd);
+	server->removeClientInMap(fd);
 	epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 	close(fd);
 	printf("[+] connection closed\n");

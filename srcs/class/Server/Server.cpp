@@ -153,7 +153,6 @@ void Server::_parseClientHeader(Client *client) {
 
 	clientRequest = client->getRequest();
 	header = clientRequest->getRawRequest()->getHeader();
-	std::cout << "Request incoming..." << std::endl;
 	headerSplit = split(header, "\r\n");
 
 	std::cout << "DEBUG HEADER: \n" << header << std::endl;
@@ -216,7 +215,6 @@ void Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE + 1];
 	int n;
 	Client *client;
-	/*static int ok;*/
 
 	client = getClient(fd);
 	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
@@ -226,7 +224,6 @@ void Server::addClientRequest(int fd) {
 	if (n < 0)
 		return;
 	buff[n] = '\0';
-	std::cout << buff << std::endl << "n == " << n << std::endl;
 	if (client->whatToDo() == ON_HEADER) {
 	 	client->pushHeaderRequest(&buff[0], n);
 	 	if (client->getReadyToParseHeader()) {
@@ -239,7 +236,6 @@ void Server::addClientRequest(int fd) {
 	 		_parseClientBody(client); //Parse body
 	 	}
 	}
-	std::cout << std::endl << "nb of time == "  << std::endl;
 }
 
 bool Server::checkAllowMethodes(std::string methode) {

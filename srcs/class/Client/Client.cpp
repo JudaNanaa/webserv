@@ -2,10 +2,6 @@
 #include <unistd.h>
 #include <iostream>
 
-Client::Client() {
-	_request = NULL;
-}
-
 Client::Client(int const fd, Server *server)
 	: _fd(fd), _server(server) {
 	_request = new Request();
