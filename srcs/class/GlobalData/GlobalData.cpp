@@ -157,6 +157,7 @@ void GlobalData::handleClientOut(int fd) {
 
 	send(fd, response.c_str(), response.size(), MSG_EOR);
 	client->cleanRequest();
+	client->setReadyToresponse(false);
 }
 
 void GlobalData::removeClient(int fd) {

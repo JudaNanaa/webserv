@@ -204,9 +204,9 @@ void Server::_parseClientHeader(Client *client) {
 }
 
 void Server::_parseClientBody(Client *client) {
-	const char *clientBody;
+	// const char *clientBody;
 
-	clientBody = client->getRequest()->getRawRequest()->getBody();
+	// clientBody = client->getRequest()->getRawRequest()->getBody();
 	// std::cout << clientBody->getContent() << std::endl;
 	client->setReadyToresponse(true);
 }
@@ -224,16 +224,20 @@ void Server::addClientRequest(int fd) {
 	if (n < 0)
 		return;
 	buff[n] = '\0';
+	std::cout << buff << std::endl;
 	if (client->whatToDo() == ON_HEADER) {
 	 	client->pushHeaderRequest(&buff[0], n);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
-	  }
+			if (client->getRequest()->getRawRequest()->getLenBody() == client->getRequest()->getContentLenght()) {
+				_parseClientBody(client); // Parse body
+			}
+		}
 	}
 	else if (client->whatToDo() == ON_BODY) {
 		client->pushBodyRequest(buff, n);
 	 	if (client->getReadyToParseBody()) {
-	 		_parseClientBody(client); //Parse body
+	 		_parseClientBody(client); // Parse body
 	 	}
 	}
 }

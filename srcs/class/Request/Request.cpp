@@ -75,6 +75,10 @@ void	Request::setSizeBody(unsigned int nb) {
 	_contentLenght = nb;
 }
 
+const unsigned int	&Request::getContentLenght(void) const {
+	return _contentLenght;
+}
+
 void Request::addRequestToMap(std::string key, std::string value) {
 	if (key == "HOST") {
 		if (_server->isServerHost(value) == false) { // check si le host est bien celui du server
@@ -104,7 +108,6 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 t_parse	Request::addBodyRequest(char *buff, int n) {
 	_request->appendBody(buff, n);
 	_request->BuffToRaw(buff, n);
-	std::cerr <<  std::endl << "body length == " << _request->getLenBody() << "/" << _contentLenght << std::endl;
 	if (_request->getLenBody() == _contentLenght) {
 		return READY_PARSE_BODY;
 	}

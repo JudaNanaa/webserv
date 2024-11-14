@@ -64,6 +64,7 @@ void RawBits::BuffToRaw(const char *buff, const int n) {
 	std::memcpy(&dest[_lenRequest], buff, n);
 	delete [] _request;
 	_request = dest;
+	_lenRequest += n;
 }
 
 long RawBits::find(const char *str) const {
@@ -85,6 +86,6 @@ void RawBits::splitRequest(void) {
 		_header.push_back(_request[i]);
 	}
 	sep += 4;
-	if (_lenRequest > sep)
+	if (_lenRequest - sep > 0)
 		appendBody(&_request[sep], _lenRequest - sep);
 }

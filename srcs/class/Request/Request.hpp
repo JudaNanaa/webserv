@@ -62,6 +62,7 @@ class Request {
 		RawBits *getRawRequest(void);
     	std::string getPath(void);
 		const t_state &getStatus(void) const;
+		const unsigned int	&getContentLenght(void) const;
 		
 		/*	SETTER	*/
 
