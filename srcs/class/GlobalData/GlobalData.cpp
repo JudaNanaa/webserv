@@ -121,19 +121,25 @@ void GlobalData::handleClientOut(int fd) {
 
 	// file.open("URIs/original.html");
 	Client *client = searchClient(fd);
-	// if (client.isReadyToResponse() == false) {
-	// 	return;
-	// }
-	file.open((client->_server->_data->_root + client->_server->_data->_index).c_str());
+	if (client->isReadyToResponse() == false) { return; }
+  if (client->getRequest()->path() == "/")
+	  file.open((client->_server->_data->_root + client->_server->_data->_index).c_str());
+  else
+    file.open((client->_server->_data->_root + client->getRequest()->path()).c_str());
+  std::cout << "if no root : " << client->_server->_data->_root + client->getRequest()->path() << std::endl;
+  std::cout << "if root : " << client->_server->_data->_root + client->_server->_data->_index << std::endl;
+  std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
 	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
 	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
 	if (file.fail()) {
 		throw std::runtime_error("Can't open the file");
 	}
 
-    std::ostringstream buffer;
-    buffer << file.rdbuf();
-    std::string html_content = buffer.str();
+
+  /*std::cout << "SEND RESPONSE" << std::endl;*/
+  std::ostringstream buffer;
+  buffer << file.rdbuf();
+  std::string html_content = buffer.str();
 
 	std::ostringstream oss;
     std::string response = "HTTP/1.1 200 OK\r\n";

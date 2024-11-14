@@ -172,6 +172,7 @@ void Server::_parseClientHeader(Client *client) {
 	checkAllowMethodes(lineSplit[0]);
 
 	clientRequest->path(lineSplit[1]);
+  std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
 
 	if (lineSplit[2].compare("HTTP/1.1") != 0) {
 		// le htpp nest pas bon !!
@@ -182,13 +183,13 @@ void Server::_parseClientHeader(Client *client) {
 	if (lineSplit.size() != 2) {
 		throw std::invalid_argument("Error header: " + headerSplit[1]);
 	}
-	if (lineSplit[0].compare("Host") != 0) {
-		throw std::invalid_argument("Error header: " + headerSplit[1]);
-	}
-	clientRequest->host(lineSplit[1]);
-	if (isServerHost(clientRequest->host()) == false) { // check si le host est bien celui du server
-		throw std::invalid_argument("Error header: Not the server host: " + lineSplit[1]);
-	}
+	/*if (lineSplit[0] != "Host") {*/
+	/*	throw std::invalid_argument("Error header: " + headerSplit[1]);*/
+	/*}*/
+	/*clientRequest->host(lineSplit[1]);*/
+	/*if (isServerHost(clientRequest->host()) == false) { // check si le host est bien celui du server*/
+	/*	throw std::invalid_argument("Error header: Not the server host: " + lineSplit[1]);*/
+	/*}*/
 
 	for (std::vector<std::string>::const_iterator it = headerSplit.begin() + 2, ite = headerSplit.end();
 			it != ite; it++) {
@@ -216,10 +217,10 @@ void Server::_parseClientBody(Client *client) {
 void Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE + 1];
 	int n;
-	// Client *client;
-	// static int ok;
+	Client *client;
+	/*static int ok;*/
 
-	// client = getClient(fd);
+	client = getClient(fd);
 	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
 	if (n == -1) {
 		throw std::runtime_error("Can't recv the message !");
@@ -228,18 +229,18 @@ void Server::addClientRequest(int fd) {
 		return;
 	buff[n] = '\0';
 	std::cout << buff << std::endl << "n == " << n << std::endl;
-	// if (client->whatToDo() == ON_HEADER) {
-	// 	client->pushHeaderRequest(buff);
-	// 	if (client->getReadyToParseHeader()) {
-	// 		_parseClientHeader(client);
-	// 	}
-	// }
-	// else if (client->whatToDo() == ON_BODY) {
-	// 	client->pushBodyRequest(buff, n);
-	// 	if (client->getReadyToParseBody()) {
-	// 		_parseClientBody(client); //Parse body
-	// 	}
-	// }
+	if (client->whatToDo() == ON_HEADER) {
+	 	client->pushHeaderRequest(buff);
+	 	if (client->getReadyToParseHeader()) {
+	 		_parseClientHeader(client);
+	  }
+	}
+	else if (client->whatToDo() == ON_BODY) {
+		client->pushBodyRequest(buff, n);
+	 	if (client->getReadyToParseBody()) {
+	 		_parseClientBody(client); //Parse body
+	 	}
+	}
 	std::cout << std::endl << "nb of time == "  << std::endl;
 }
 
