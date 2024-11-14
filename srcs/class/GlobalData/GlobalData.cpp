@@ -1,6 +1,6 @@
 #include "GlobalData.hpp"
 #include "../Client/Client.hpp"
-#include "../../../includes/RawBits.hpp"
+#include "../RawBits/RawBits.hpp"
 #include "../Parser/Parser.hpp"
 #include "../../../includes/includes.hpp"
 #include <algorithm>
@@ -121,14 +121,15 @@ void GlobalData::handleClientOut(int fd) {
 
 	// file.open("URIs/original.html");
 	Client *client = searchClient(fd);
-	if (client->isReadyToResponse() == false) { return; }
-  if (client->getRequest()->path() == "/")
-	  file.open((client->_server->_data->_root + client->_server->_data->_index).c_str());
-  else
-    file.open((client->_server->_data->_root + client->getRequest()->path()).c_str());
-  std::cout << "if no root : " << client->_server->_data->_root + client->getRequest()->path() << std::endl;
-  std::cout << "if root : " << client->_server->_data->_root + client->_server->_data->_index << std::endl;
-  std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
+	if (client->isReadyToResponse() == false)
+		return;
+	if (client->getRequest()->path() == "/")
+		file.open((client->_server->_data->_root + client->_server->_data->_index).c_str());
+	else
+		file.open((client->_server->_data->_root + client->getRequest()->path()).c_str());
+	std::cout << "if no root : " << client->_server->_data->_root + client->getRequest()->path() << std::endl;
+	std::cout << "if root : " << client->_server->_data->_root + client->_server->_data->_index << std::endl;
+	std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
 	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
 	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
 	if (file.fail()) {
@@ -186,7 +187,7 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 				if (this->_events[i].events & EPOLLIN) {
 					this->handleClientIn(fd);
 				}
-				if (this->_events[i].events & EPOLLOUT) {
+				else if (this->_events[i].events & EPOLLOUT) {
 					this->handleClientOut(fd);
 				}
 			}

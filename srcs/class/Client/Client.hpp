@@ -1,7 +1,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#include "../../../includes/RawBits.hpp"
+#include "../RawBits/RawBits.hpp"
 #include "../Request/Request.hpp"
 // #include "Server.hpp"
 
@@ -22,11 +22,10 @@ class Client {
 		Client &operator=(Client const &other);
 		Server *_server;
 		int getClientFd(void) const;
-		RawBits *getBodyRequest(void);
 		void setReadyToresponse(bool boolean);
 		bool const &isReadyToResponse(void) const; 
-		void pushHeaderRequest(char str[BUFFER_SIZE + 1]);
-		void pushBodyRequest(char str[BUFFER_SIZE + 1], int n);
+		void pushHeaderRequest(char *str, int n);
+		void pushBodyRequest(char *str, int n);
     	void setServerReq(Server *server);
 		const t_state &whatToDo(void) const;
 		const bool &getReadyToParseHeader(void) const;

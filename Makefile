@@ -37,7 +37,9 @@ PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp Location.cpp)
 
 UTILS = $(addprefix Utils/, utils.cpp)
 
-CLASS = $(addprefix class/, RawBits.cpp $(PARSER) $(GLOBALDATA) $(CLIENT) $(SERVER) $(REQUEST) )
+RAW_BITS = $(addprefix RawBits/, RawBits.cpp)
+
+CLASS = $(addprefix class/, $(PARSER) $(GLOBALDATA) $(CLIENT) $(SERVER) $(REQUEST) $(RAW_BITS))
 
 SRCS = main.cpp $(CLASS) $(UTILS)
 

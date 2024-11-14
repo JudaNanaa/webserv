@@ -23,10 +23,13 @@
 Request::Request() {
 	_method = 0;
 	_state = ON_HEADER;
-	_sizeBody = 0;
+	_contentLenght = 0;
+	_request = new RawBits();
 }
 
 Request::~Request() {
+	if (_request)
+		delete _request;
 }
 
 int	Request::method( void	) const {
@@ -52,8 +55,8 @@ const t_state &Request::getStatus(void) const {
 	return _state;
 }
 
-RawBits *Request::getBody(void) {
-	return _body;
+RawBits *Request::getRawRequest(void) {
+	return _request;
 }
 
 void	Request::method( int newMethod ) {
@@ -69,16 +72,14 @@ void	Request::path( std::string newPath ) {
 }
 
 void	Request::setSizeBody(unsigned int nb) {
-	_sizeBody = nb;
-}
-
-std::string &Request::getHeader(void) {
-	return _header;
+	_contentLenght = nb;
 }
 
 void Request::addRequestToMap(std::string key, std::string value) {
 	if (key == "HOST") {
-		throw std::invalid_argument("duplicate argument: HOST");
+		if (_server->isServerHost(value) == false) { // check si le host est bien celui du server
+			throw std::invalid_argument("Error header: Not the server host: " + value);
+		}
 	}
 	if (_others.find(key) != _others.end()) {	// key already seen
 		throw std::invalid_argument("duplicate argument: " + key);
@@ -90,26 +91,25 @@ bool Request::isKeyfindInHeader(std::string const &key) const {
 	return _others.find(key) != _others.end();
 }
 
-t_parse	Request::addHeaderRequest(std::string str) {
-	_request += str;
-	if (_request.find("\r\n\r\n") == std::string::npos) {
+t_parse	Request::addHeaderRequest(char *buff, int n) {
+	_request->BuffToRaw(buff, n);
+	if (_request->find("\r\n\r\n") == -1) {
 		return NOT_READY;
 	}
-	_header = _request.substr(0, _request.find("\r\n\r\n"));
-	std::string body = _request.substr(_request.find("\r\n\r\n") + 4);
-	for (int i = 0; body[i]; i++) {
-		_body->pushBack(body[i]);
-	}
+	_request->splitRequest();
 	_state = ON_BODY;
 	return READY_PARSE_HEADER;
 }
 
-t_parse	Request::addBodyRequest(char buff[BUFFER_SIZE + 1], int n) {
-	for (int i = 0; i < n && _body->getLen() < _sizeBody; i++) {
-		_body->pushBack(buff[i]);
-	}
-	if (_body->getLen() == _sizeBody) {
+t_parse	Request::addBodyRequest(char *buff, int n) {
+	_request->appendBody(buff, n);
+	_request->BuffToRaw(buff, n);
+	std::cerr <<  std::endl << "_request->getLenBody() == " << _request->getLenBody() << std::endl;
+	if (_request->getLenBody() == _contentLenght) {
 		return READY_PARSE_BODY;
+	}
+	else if (_request->getLenBody() > _contentLenght) {
+		// TODO: faire un truc car body supperieur a content Lenght
 	}
 	return NOT_READY;
 }

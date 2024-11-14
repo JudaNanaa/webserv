@@ -14,7 +14,7 @@
 # define REQUEST_HPP
 
 #include "../../../includes/includes.hpp"
-#include "../../../includes/RawBits.hpp"
+#include "../RawBits/RawBits.hpp"
 #include <map>
 #include <ostream>
 #include <string>
@@ -39,15 +39,13 @@ class Server;
 class Request {
 	private:
 		t_state _state;
-		std::string _header;
-		RawBits *_body;
+		RawBits *_request;
 		int	_method;
 		std::string	_path;
 		std::string	_Host;
 		std::map<std::string, std::string>	_others;
-		std::string	_request;
 		Server *_server;
-		unsigned int _sizeBody;
+		unsigned int _contentLenght;
 
 		void	parseRequest(void);
 		void	parseRequestLine( std::string line );
@@ -61,9 +59,8 @@ class Request {
 		const std::string& path( void ) const;
 		const std::string& host( void ) const;
 		const std::string& find( std::string key ) const;
-		std::string &getHeader(void);
-		RawBits *getBody(void);
-    std::string getPath(void);
+		RawBits *getRawRequest(void);
+    	std::string getPath(void);
 		const t_state &getStatus(void) const;
 		
 		/*	SETTER	*/
@@ -74,8 +71,8 @@ class Request {
 		void	add( std::string key, std::string value );
 		void	setSizeBody(unsigned int nb);
 		
-		t_parse addHeaderRequest(std::string str);
-		t_parse addBodyRequest(char buff[BUFFER_SIZE + 1], int n);
+		t_parse addHeaderRequest(char *buff, int n);
+		t_parse addBodyRequest(char *buff, int n);
     	void addServer(Server* server);
 		void addRequestToMap(std::string key, std::string value);
 		bool isKeyfindInHeader(std::string const &key) const;

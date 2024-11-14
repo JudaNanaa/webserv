@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/RawBits.hpp"
+#include "../class/RawBits/RawBits.hpp"
 #include <cstring>
 #include <exception>
 #include <stdexcept>

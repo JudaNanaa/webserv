@@ -58,20 +58,16 @@ Request *Client::getRequest(void) {
 	return _request; 
 }
 
-RawBits *Client::getBodyRequest(void) {
-	return _request->getBody();
-}
-
-void Client::pushHeaderRequest(char str[BUFFER_SIZE + 1]) {
+void Client::pushHeaderRequest(char *str, int n) {
 	t_parse result;
 
-	result = this->_request->addHeaderRequest(str);
+	result = this->_request->addHeaderRequest(str, n);
 	if (result == READY_PARSE_HEADER) {
 		_readyToParseHeader = true;
 	}
 }
 
-void Client::pushBodyRequest(char str[BUFFER_SIZE + 1], int n) {
+void Client::pushBodyRequest(char *str, int n) {
 	t_parse result;
 
 	result = this->_request->addBodyRequest(str, n);

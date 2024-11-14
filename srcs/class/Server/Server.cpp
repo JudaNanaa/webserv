@@ -31,7 +31,7 @@
 #include <cstddef>
 #include "Server.hpp"
 #include "../../../includes/utils.hpp"
-#include "../../../includes/RawBits.hpp"
+#include "../RawBits/RawBits.hpp"
 #include "../Request/Request.hpp"
 #include "../GlobalData/GlobalData.hpp"
 #include "../Parser/Parser.hpp"
@@ -42,8 +42,8 @@ Server::Server(void)
 }
 
 Server::~Server(void) {
-	// if (this->_socket_fd != -1)
-	// 	close(this->_socket_fd);
+	if (this->_socket_fd != -1)
+		close(this->_socket_fd);
 }
 
 void Server::addData(Data* data) {
@@ -152,12 +152,11 @@ void Server::_parseClientHeader(Client *client) {
 	std::vector<std::string> lineSplit;
 
 	clientRequest = client->getRequest();
-	header = clientRequest->getHeader();
+	header = clientRequest->getRawRequest()->getHeader();
 	std::cout << "Request incoming..." << std::endl;
 	headerSplit = split(header, "\r\n");
 
-	// std::cout << "DEBUG HEADER: \n" << header << std::endl;
-
+	std::cout << "DEBUG HEADER: \n" << header << std::endl;
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		throw std::invalid_argument("Error header: " + headerSplit[0]);
@@ -179,10 +178,10 @@ void Server::_parseClientHeader(Client *client) {
 		throw std::invalid_argument("Error header: " + headerSplit[2]);
 	}
 
-	lineSplit = split(headerSplit[1], ": "); // check line host
-	if (lineSplit.size() != 2) {
-		throw std::invalid_argument("Error header: " + headerSplit[1]);
-	}
+	// lineSplit = split(headerSplit[1], ": "); // check line host
+	// if (lineSplit.size() != 2) {
+	// 	throw std::invalid_argument("Error header: " + headerSplit[1]);
+	// }
 	/*if (lineSplit[0] != "Host") {*/
 	/*	throw std::invalid_argument("Error header: " + headerSplit[1]);*/
 	/*}*/
@@ -191,7 +190,7 @@ void Server::_parseClientHeader(Client *client) {
 	/*	throw std::invalid_argument("Error header: Not the server host: " + lineSplit[1]);*/
 	/*}*/
 
-	for (std::vector<std::string>::const_iterator it = headerSplit.begin() + 2, ite = headerSplit.end();
+	for (std::vector<std::string>::const_iterator it = headerSplit.begin() + 1, ite = headerSplit.end();
 			it != ite; it++) {
 		_parseRequestLine(*it, clientRequest);
 	}
@@ -207,10 +206,10 @@ void Server::_parseClientHeader(Client *client) {
 }
 
 void Server::_parseClientBody(Client *client) {
-	RawBits *clientBody;
+	const char *clientBody;
 
-	clientBody = client->getBodyRequest();
-	std::cout << clientBody->getContent() << std::endl;
+	clientBody = client->getRequest()->getRawRequest()->getBody();
+	// std::cout << clientBody->getContent() << std::endl;
 	client->setReadyToresponse(true);
 }
 
@@ -230,7 +229,7 @@ void Server::addClientRequest(int fd) {
 	buff[n] = '\0';
 	std::cout << buff << std::endl << "n == " << n << std::endl;
 	if (client->whatToDo() == ON_HEADER) {
-	 	client->pushHeaderRequest(buff);
+	 	client->pushHeaderRequest(&buff[0], n);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
 	  }
