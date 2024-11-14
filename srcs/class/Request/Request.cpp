@@ -52,7 +52,7 @@ const t_state &Request::getStatus(void) const {
 	return _state;
 }
 
-RawBits &Request::getBody(void) {
+RawBits *Request::getBody(void) {
 	return _body;
 }
 
@@ -98,21 +98,22 @@ t_parse	Request::addHeaderRequest(std::string str) {
 	_header = _request.substr(0, _request.find("\r\n\r\n"));
 	std::string body = _request.substr(_request.find("\r\n\r\n") + 4);
 	for (int i = 0; body[i]; i++) {
-		_body.pushBack(body[i]);
+		_body->pushBack(body[i]);
 	}
 	_state = ON_BODY;
 	return READY_PARSE_HEADER;
 }
 
 t_parse	Request::addBodyRequest(char buff[BUFFER_SIZE + 1], int n) {
-	for (int i = 0; i < n && _body.getLen() < _sizeBody; i++) {
-		_body.pushBack(buff[i]);
+	for (int i = 0; i < n && _body->getLen() < _sizeBody; i++) {
+		_body->pushBack(buff[i]);
 	}
-	if (_body.getLen() == _sizeBody) {
+	if (_body->getLen() == _sizeBody) {
 		return READY_PARSE_BODY;
 	}
 	return NOT_READY;
 }
+
 // void	Request::parseRequestLine( std::string line ) {
 
 // 	if (line.find(": ") == std::string::npos)

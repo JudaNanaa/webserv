@@ -41,4 +41,5 @@ void RawBits::pushBack(unsigned char c) {
 	delete [] _content;
 	_content = dest;
 	_len++;
+	// std::cerr << c;
 }

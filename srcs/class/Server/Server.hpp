@@ -28,12 +28,12 @@ class Server {
 	private:
 		int _socket_fd;
 		std::string _host[2];
-		std::map<int, Client> _clientMap;
+		std::map<int, Client*> _clientMap;
 		void addToEpoll(int fd, uint32_t events);
 			int waitFdsToBeReady(void);
-		void _parseClientHeader(Client &client);
-		void _parseClientBody(Client &client);
-		void	_parseRequestLine( std::string line, Request &clientRequest);
+		void _parseClientHeader(Client *client);
+		void _parseClientBody(Client *client);
+		void	_parseRequestLine( std::string line, Request *clientRequest);
 	public:
 		Server();
 		
@@ -41,9 +41,9 @@ class Server {
 
 		void	init();
 		// static void	handleClient( int clientFd );
-		void addClientToMap(Client &client);
+		void addClientToMap(Client *client);
 		bool ifClientInServer(int fd) const;
-		Client &getClient(int fd);
+		Client *getClient(int fd);
 		void removeClientInMap(int fd);
     	void addData(Data* data);
 		int getSocketFd() const;

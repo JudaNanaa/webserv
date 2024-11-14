@@ -15,7 +15,7 @@ class GlobalData {
 		struct epoll_event _events[MAX_EVENTS];
 		void addToEpoll(int fd, uint32_t events);
 		int waitFdsToBeReady(void);
-		Client &searchClient(const int fd);
+		Client *searchClient(const int fd);
 		void addNewClient(Server &server);
 		void initServers(std::vector<Server> &servVec);
 		void handleClientIn(int fd);

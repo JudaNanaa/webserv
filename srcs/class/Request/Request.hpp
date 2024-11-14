@@ -40,7 +40,7 @@ class Request {
 	private:
 		t_state _state;
 		std::string _header;
-		RawBits _body;
+		RawBits *_body;
 		int	_method;
 		std::string	_path;
 		std::string	_Host;
@@ -62,7 +62,7 @@ class Request {
 		const std::string& host( void ) const;
 		const std::string& find( std::string key ) const;
 		std::string &getHeader(void);
-		RawBits &getBody(void);
+		RawBits *getBody(void);
 		const t_state &getStatus(void) const;
 		
 		/*	SETTER	*/

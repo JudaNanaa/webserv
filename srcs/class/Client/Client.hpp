@@ -13,7 +13,7 @@ class Client {
 		bool _readyToParseHeader;
 		bool _readyToParseBody;
 		bool _readyToResponse;
-		Request _request;
+		Request *_request;
 	public:
 		Client();
 		Client(int const fd, Server *server);
@@ -22,7 +22,7 @@ class Client {
 		Client &operator=(Client const &other);
 		Server *_server;
 		int getClientFd(void) const;
-		RawBits &getBodyRequest(void);
+		RawBits *getBodyRequest(void);
 		void setReadyToresponse(bool boolean);
 		bool const &isReadyToResponse(void) const; 
 		void pushHeaderRequest(char str[BUFFER_SIZE + 1]);
@@ -31,7 +31,7 @@ class Client {
 		const t_state &whatToDo(void) const;
 		const bool &getReadyToParseHeader(void) const;
 		const bool &getReadyToParseBody(void) const;
-		Request &getRequest(void);
+		Request *getRequest(void);
 
 };
 

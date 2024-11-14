@@ -104,8 +104,8 @@ void Server::init(void) {
 	std::cout << "server on : http://" << this->_host[0] << std::endl;
 }
 
-void Server::addClientToMap(Client &client) {
-	this->_clientMap[client.getClientFd()] = client;
+void Server::addClientToMap(Client *client) {
+	this->_clientMap[client->getClientFd()] = client;
 }
 
 bool Server::ifClientInServer(int fd) const {
@@ -115,7 +115,7 @@ bool Server::ifClientInServer(int fd) const {
 	return true;
 }
 
-Client &Server::getClient(int fd) {
+Client *Server::getClient(int fd) {
 	return this->_clientMap[fd];
 }
 
@@ -134,7 +134,7 @@ bool Server::isServerHost(std::string const &str) const {
 	return false;
 }
 
-void	Server::_parseRequestLine( std::string line, Request &clientRequest) {
+void	Server::_parseRequestLine( std::string line, Request *clientRequest) {
 
 	if (line.find(": ") == std::string::npos)
 		throw std::invalid_argument("invalid line: " + line);
@@ -142,21 +142,21 @@ void	Server::_parseRequestLine( std::string line, Request &clientRequest) {
 	std::string	value = line.substr(line.find(": ") + 2);
 
 	std::string key = line.erase(line.find(": "));	// erase the value (keep the key)
-	clientRequest.addRequestToMap(key, value);
+	clientRequest->addRequestToMap(key, value);
 }
 
-void Server::_parseClientHeader(Client &client) {
-	Request clientRequest;
+void Server::_parseClientHeader(Client *client) {
+	Request *clientRequest;
 	std::string header;
 	std::vector<std::string> headerSplit;
 	std::vector<std::string> lineSplit;
 
-	clientRequest = client.getRequest();
-	header = clientRequest.getHeader();
+	clientRequest = client->getRequest();
+	header = clientRequest->getHeader();
 	std::cout << "Request incoming..." << std::endl;
 	headerSplit = split(header, "\r\n");
 
-	std::cout << "DEBUG HEADER: \n" << header << std::endl;
+	// std::cout << "DEBUG HEADER: \n" << header << std::endl;
 
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
@@ -171,7 +171,7 @@ void Server::_parseClientHeader(Client &client) {
 
 	checkAllowMethodes(lineSplit[0]);
 
-	clientRequest.path(lineSplit[1]);
+	clientRequest->path(lineSplit[1]);
 
 	if (lineSplit[2].compare("HTTP/1.1") != 0) {
 		// le htpp nest pas bon !!
@@ -185,8 +185,8 @@ void Server::_parseClientHeader(Client &client) {
 	if (lineSplit[0].compare("Host") != 0) {
 		throw std::invalid_argument("Error header: " + headerSplit[1]);
 	}
-	clientRequest.host(lineSplit[1]);
-	if (isServerHost(clientRequest.host()) == false) { // check si le host est bien celui du server
+	clientRequest->host(lineSplit[1]);
+	if (isServerHost(clientRequest->host()) == false) { // check si le host est bien celui du server
 		throw std::invalid_argument("Error header: Not the server host: " + lineSplit[1]);
 	}
 
@@ -195,53 +195,52 @@ void Server::_parseClientHeader(Client &client) {
 		_parseRequestLine(*it, clientRequest);
 	}
 
-	std::cout << "REQUEST:\n" << clientRequest << std::endl;
+	// std::cout << "REQUEST:\n" << *clientRequest << std::endl;
 
-	if (clientRequest.isKeyfindInHeader("Content-Length") == true) {
-		clientRequest.setSizeBody(atoi(clientRequest.find("Content-Length").c_str()));
+	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
+		clientRequest->setSizeBody(atoi(clientRequest->find("Content-Length").c_str()));
 	}
 	else {
-		client.setReadyToresponse(true);
+		client->setReadyToresponse(true);
 	}
 }
 
-void Server::_parseClientBody(Client &client) {
-	RawBits clientBody;
+void Server::_parseClientBody(Client *client) {
+	RawBits *clientBody;
 
-	clientBody = client.getBodyRequest();
-	std::cout << clientBody.getContent() << std::endl;
-	client.setReadyToresponse(true);
+	clientBody = client->getBodyRequest();
+	std::cout << clientBody->getContent() << std::endl;
+	client->setReadyToresponse(true);
 }
 
 void Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE + 1];
 	int n;
-	Client client;
+	// Client *client;
+	// static int ok;
 
-	client = getClient(fd);
-	while (true) {
-		n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
-		if (n == -1) {
-			throw std::runtime_error("Can't recv the message !");
-		}
-		if (n == 0)
-			break;
-		buff[n] = '\0';
-		// std::cerr << buff;
-		if (client.whatToDo() == ON_HEADER) {
-			client.pushHeaderRequest(buff);
-			if (client.getReadyToParseHeader()) {
-				_parseClientHeader(client);
-			}
-		}
-		else if (client.whatToDo() == ON_BODY) {
-			client.pushBodyRequest(buff, n);
-			if (client.getReadyToParseBody()) {
-				_parseClientBody(client); //Parse body
-			}
-		}
+	// client = getClient(fd);
+	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
+	if (n == -1) {
+		throw std::runtime_error("Can't recv the message !");
 	}
-	std::cerr<< std::endl;
+	if (n < 0)
+		return;
+	buff[n] = '\0';
+	std::cout << buff << std::endl << "n == " << n << std::endl;
+	// if (client->whatToDo() == ON_HEADER) {
+	// 	client->pushHeaderRequest(buff);
+	// 	if (client->getReadyToParseHeader()) {
+	// 		_parseClientHeader(client);
+	// 	}
+	// }
+	// else if (client->whatToDo() == ON_BODY) {
+	// 	client->pushBodyRequest(buff, n);
+	// 	if (client->getReadyToParseBody()) {
+	// 		_parseClientBody(client); //Parse body
+	// 	}
+	// }
+	std::cout << std::endl << "nb of time == "  << std::endl;
 }
 
 bool Server::checkAllowMethodes(std::string methode) {

@@ -75,10 +75,10 @@ void GlobalData::addNewClient(Server &server) {
 
 	client = new Client(clientFd, &server);
 	client->setServerReq(&server);
-	server.addClientToMap(*client);
+	server.addClientToMap(client);
 }
 
-Client &GlobalData::searchClient(const int fd)  {
+Client *GlobalData::searchClient(const int fd)  {
 	std::map<int, Server>::iterator it = this->_servMap.begin();
 	std::map<int, Server>::iterator end = this->_servMap.end();
 
@@ -120,11 +120,11 @@ void GlobalData::handleClientOut(int fd) {
 	std::ifstream file;
 
 	// file.open("URIs/original.html");
-	Client client = searchClient(fd);
+	Client *client = searchClient(fd);
 	// if (client.isReadyToResponse() == false) {
 	// 	return;
 	// }
-	file.open((client._server->_data->_root + client._server->_data->_index).c_str());
+	file.open((client->_server->_data->_root + client->_server->_data->_index).c_str());
 	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
 	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
 	if (file.fail()) {
