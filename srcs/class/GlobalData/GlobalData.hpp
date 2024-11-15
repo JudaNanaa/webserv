@@ -23,6 +23,7 @@ class GlobalData {
 		void removeClient(int fd);
 		bool isServerFd(const int &fd) const;
 		Server *getServerWithClientFd(const int fd);
+		void sendResponse(std::ifstream &file, int fd, Client *client);
 	public:
 		GlobalData();
 

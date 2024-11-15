@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/10 18:33:13 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/15 18:43:33 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,23 +35,25 @@ typedef enum s_state
 }t_state;
 
 class Server;
+class Client;
 
-class Request {
+class Request : public RawBits {
 	private:
 		t_state _state;
-		RawBits *_request;
 		int	_method;
 		std::string	_path;
 		std::string	_Host;
+		std::string _ResponsCode;
 		std::map<std::string, std::string>	_others;
 		Server *_server;
 		unsigned int _contentLenght;
+		Client *_client;
 
 		void	parseRequest(void);
 		void	parseRequestLine( std::string line );
 
 	public:
-		Request();
+		Request(Client *client);
 		~Request();
 
 		/*	GETTER	*/
@@ -63,6 +65,8 @@ class Request {
     	std::string getPath(void);
 		const t_state &getStatus(void) const;
 		const unsigned int	&getContentLenght(void) const;
+		const int &getMethode(void) const;
+		const std::string &getResponsCode(void) const;
 		
 		/*	SETTER	*/
 
@@ -71,6 +75,8 @@ class Request {
 		void	path( std::string newPath );
 		void	add( std::string key, std::string value );
 		void	setSizeBody(unsigned int nb);
+		void setMethode(std::string methode);
+		void setResponsCode(std::string code);
 		
 		t_parse addHeaderRequest(char *buff, int n);
 		t_parse addBodyRequest(char *buff, int n);

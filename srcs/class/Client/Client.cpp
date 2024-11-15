@@ -4,7 +4,7 @@
 
 Client::Client(int const fd, Server *server)
 	: _fd(fd), _server(server) {
-	_request = new Request();
+	_request = new Request(this);
 	this->_readyToResponse = false;
 	_readyToParseHeader = false;
 }
@@ -79,5 +79,5 @@ void Client::setServerReq(Server *server) {
 void	Client::cleanRequest( void ) {
 	if (_request != NULL)
 		delete _request;
-	_request = new Request();
+	_request = new Request(this);
 }

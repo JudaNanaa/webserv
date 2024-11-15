@@ -20,16 +20,15 @@
 #include <variant>
 #include <vector>
 
-Request::Request() {
+Request::Request(Client *client) : RawBits() {
 	_method = 0;
 	_state = ON_HEADER;
 	_contentLenght = 0;
-	_request = new RawBits();
+	_client = client;
 }
 
 Request::~Request() {
-	if (_request)
-		delete _request;
+
 }
 
 int	Request::method( void	) const {
@@ -53,10 +52,6 @@ const std::string&	Request::find( std::string key ) const {
 
 const t_state &Request::getStatus(void) const {
 	return _state;
-}
-
-RawBits *Request::getRawRequest(void) {
-	return _request;
 }
 
 void	Request::method( int newMethod ) {
@@ -96,22 +91,22 @@ bool Request::isKeyfindInHeader(std::string const &key) const {
 }
 
 t_parse	Request::addHeaderRequest(char *buff, int n) {
-	_request->BuffToRaw(buff, n);
-	if (_request->find("\r\n\r\n") == -1) {
+	RawBits::BuffToRaw(buff, n);
+	if (RawBits::find("\r\n\r\n") == -1) {
 		return NOT_READY;
 	}
-	_request->splitRequest();
+	RawBits::splitRequest();
 	_state = ON_BODY;
 	return READY_PARSE_HEADER;
 }
 
 t_parse	Request::addBodyRequest(char *buff, int n) {
-	_request->appendBody(buff, n);
-	_request->BuffToRaw(buff, n);
-	if (_request->getLenBody() == _contentLenght) {
+	RawBits::appendBody(buff, n);
+	RawBits::BuffToRaw(buff, n);
+	if (RawBits::getLenBody() == _contentLenght) {
 		return READY_PARSE_BODY;
 	}
-	else if (_request->getLenBody() > _contentLenght) {
+	else if (RawBits::getLenBody() > _contentLenght) {
 		// TODO: faire un truc car body supperieur a content Lenght
 	}
 	return NOT_READY;
@@ -230,3 +225,25 @@ std::ostream& operator<<(std::ostream& os, const Request& request ) {
 void	Request::addServer(Server* server) {
   _server = server;
 } 
+
+void Request::setMethode(std::string methode) {
+	if (methode == "GET")
+		_method = GET_;
+	else if (methode == "POST")
+		_method = POST_; 
+	else if (methode == "DELETE")
+		_method = DELETE_;
+}
+
+const int& Request::getMethode(void) const {
+	return _method;
+}
+
+void Request::setResponsCode(std::string code) {
+	_client->setReadyToresponse(true);
+	_ResponsCode = code;
+}
+
+const std::string& Request::getResponsCode(void) const {
+	return _ResponsCode;
+}

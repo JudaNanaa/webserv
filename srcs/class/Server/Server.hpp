@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/10 18:59:39 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/15 18:43:15 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "../../../includes/includes.hpp"
 #include "../Client/Client.hpp"
 #include "../Request/Request.hpp"
+#include <exception>
 #include <map>
 #include <ostream>
 
@@ -41,11 +42,12 @@ class Server {
 
 		void	init();
 		// static void	handleClient( int clientFd );
+		void checkBoundaries( void );
 		void addClientToMap(Client *client);
 		bool ifClientInServer(int fd) const;
 		Client *getClient(int fd);
 		void removeClientInMap(int fd);
-    	void addData(Data* data);
+  		void addData(Data* data);
 		int getSocketFd() const;
 		bool isServerHost(std::string const &str) const;
 		int nbOfClient(void) const;

@@ -118,6 +118,7 @@ void GlobalData::handleClientIn(int fd) {
 
 void GlobalData::handleClientOut(int fd) {
 	std::ifstream file;
+	std::string return_code = "200";
 
 	// file.open("URIs/original.html");
 	Client *client = searchClient(fd);
@@ -137,28 +138,19 @@ void GlobalData::handleClientOut(int fd) {
 	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
 	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
 	if (file.fail()) {
-		throw std::runtime_error("Can't open the file");
+		return_code = "404";
 	}
 
 
   /*std::cout << "SEND RESPONSE" << std::endl;*/
-  std::ostringstream buffer;
-  buffer << file.rdbuf();
-  std::string html_content = buffer.str();
 
-	std::ostringstream oss;
-    std::string response = "HTTP/1.1 200 OK\r\n";
-    response += "Content-Type: text/html\r\n";
-	oss << html_content.size();
-    response += "Content-Length: " + oss.str() + "\r\n";
-    response += "\r\n";
-
-    response += html_content;
-
-	send(fd, response.c_str(), response.size(), MSG_EOR);
+	// send(fd, response.c_str(), response.size(), MSG_EOR);
+ sendResponse(file, fd, client); //this methode send response with appropriate code
 	client->cleanRequest();
 	client->setReadyToresponse(false);
 }
+
+
 
 void GlobalData::removeClient(int fd) {
 	Server *server;
@@ -193,7 +185,6 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 			}
 			else {
 				if (this->_events[i].events & EPOLLIN) {
-				std::cout << "\n--------------------NEW REQUEST--------------------\n" << std::endl;
 					this->handleClientIn(fd);
 				}
 				else if (this->_events[i].events & EPOLLOUT) {

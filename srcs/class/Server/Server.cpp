@@ -15,6 +15,7 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 #include <exception>
 #include <fcntl.h>
 #include <iomanip>
@@ -152,7 +153,7 @@ void Server::_parseClientHeader(Client *client) {
 	std::vector<std::string> lineSplit;
 
 	clientRequest = client->getRequest();
-	header = clientRequest->getRawRequest()->getHeader();
+	header = clientRequest->getHeader();
 	headerSplit = split(header, "\r\n");
 
 	std::cout << "DEBUG HEADER: \n" << header << std::endl;
@@ -167,27 +168,22 @@ void Server::_parseClientHeader(Client *client) {
 		throw std::invalid_argument("Error header: " + headerSplit[0]);
 	}
 
-	checkAllowMethodes(lineSplit[0]);
+	try {
+		checkAllowMethodes(lineSplit[0]);
+	} catch (...) {
+		clientRequest->setResponsCode("405");
+		return;
+	}
+	clientRequest->setMethode(lineSplit[0]);
 
 	clientRequest->path(lineSplit[1]);
   std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
 
 	if (lineSplit[2].compare("HTTP/1.1") != 0) {
 		// le htpp nest pas bon !!
-		throw std::invalid_argument("Error header: " + headerSplit[2]);
+		clientRequest->setResponsCode("505");
+		return;
 	}
-
-	// lineSplit = split(headerSplit[1], ": "); // check line host
-	// if (lineSplit.size() != 2) {
-	// 	throw std::invalid_argument("Error header: " + headerSplit[1]);
-	// }
-	/*if (lineSplit[0] != "Host") {*/
-	/*	throw std::invalid_argument("Error header: " + headerSplit[1]);*/
-	/*}*/
-	/*clientRequest->host(lineSplit[1]);*/
-	/*if (isServerHost(clientRequest->host()) == false) { // check si le host est bien celui du server*/
-	/*	throw std::invalid_argument("Error header: Not the server host: " + lineSplit[1]);*/
-	/*}*/
 
 	for (std::vector<std::string>::const_iterator it = headerSplit.begin() + 1, ite = headerSplit.end();
 			it != ite; it++) {
@@ -198,16 +194,39 @@ void Server::_parseClientHeader(Client *client) {
 
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
 		clientRequest->setSizeBody(atoi(clientRequest->find("Content-Length").c_str()));
+		std::string bondary;
+		bondary = clientRequest->find("Content-Type").substr(clientRequest->find("Content-Type").find("boundary=") + 9);
+		clientRequest->setBondary(const_cast<char*>(bondary.c_str()));
 	} else {
 		client->setReadyToresponse(true);
 	}
 }
 
+std::string generateFilename(const std::string &baseName, const std::string& extension) {
+		std::time_t now = std::time(NULL);
+		std::tm* now_tm = std::localtime(&now);
+
+		char timeBuffer[20];
+		std::strftime(timeBuffer, sizeof(timeBuffer), "%Y%m%d_%H%M%S", now_tm);
+
+		std::ostringstream oss;
+		oss << baseName << "_"
+						<< timeBuffer 
+						<< extension;
+		return oss.str();
+}
+
 void Server::_parseClientBody(Client *client) {
 	// const char *clientBody;
-
+	std::string filename;
 	// clientBody = client->getRequest()->getRawRequest()->getBody();
 	// std::cout << clientBody->getContent() << std::endl;
+	client->getRequest()->printBody();
+	if (client->getRequest()->path() != "/")
+		filename = client->getRequest()->path();
+	else
+		filename = generateFilename("URIs/uploads/upload", "find extension in boundary"); // need file extension
+	
 	client->setReadyToresponse(true);
 }
 
@@ -228,7 +247,7 @@ void Server::addClientRequest(int fd) {
 	 	client->pushHeaderRequest(buff, n);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
-			if (client->getRequest()->isKeyfindInHeader("Content-Length") && client->getRequest()->getRawRequest()->getLenBody() == client->getRequest()->getContentLenght()) {
+			if (client->getRequest()->getMethode() == POST_ && client->getRequest()->getLenBody() == client->getRequest()->getContentLenght()) {
 				_parseClientBody(client); // Parse body
 			}
 		}
