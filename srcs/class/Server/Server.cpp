@@ -224,12 +224,11 @@ void Server::addClientRequest(int fd) {
 	if (n < 0)
 		return;
 	buff[n] = '\0';
-	std::cout << buff << std::endl;
 	if (client->whatToDo() == ON_HEADER) {
-	 	client->pushHeaderRequest(&buff[0], n);
+	 	client->pushHeaderRequest(buff, n);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
-			if (client->getRequest()->getRawRequest()->getLenBody() == client->getRequest()->getContentLenght()) {
+			if (client->getRequest()->isKeyfindInHeader("Content-Length") && client->getRequest()->getRawRequest()->getLenBody() == client->getRequest()->getContentLenght()) {
 				_parseClientBody(client); // Parse body
 			}
 		}

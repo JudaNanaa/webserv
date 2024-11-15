@@ -24,10 +24,10 @@ RawBits::RawBits(void) {
 }
 
 RawBits::~RawBits(void) {
-	// std::cerr << "test moussa" << std::endl;
-	// if (_content)
-	// 	delete[] _content;
-	// _content = NULL;
+	if (_body)
+		delete [] _body;
+	if (_request)
+		delete [] _request;
 }
 
 const std::string &RawBits::getHeader(void) const {
@@ -48,31 +48,33 @@ const unsigned int &RawBits::getLenBody(void) const {
 
 void RawBits::appendBody(const char *str, const int n) {
 	char *dest = new char[_lenBody + n];
-	if (_body)
+	if (_body) {
 		std::memmove(dest, _body, _lenBody);
+		delete [] _body;
+	}
 	std::memcpy(&dest[_lenBody], str, n);
-	delete [] _body;
 	_body = dest;
 	_lenBody += n;
-	std::cerr <<  std::endl << "len body == " << _lenBody << std::endl;
 }
 
 void RawBits::BuffToRaw(const char *buff, const int n) {
 	char *dest = new char[_lenRequest + n];
-	if (_request)
+	if (_request) {
 		std::memmove(dest, _request, _lenRequest);
+		delete [] _request;
+	}
 	std::memcpy(&dest[_lenRequest], buff, n);
-	delete [] _request;
 	_request = dest;
 	_lenRequest += n;
 }
 
 long RawBits::find(const char *str) const {
-	for (unsigned int i = 0; i < _lenRequest - strlen(str); i++) {
-		if (std::memcmp(&_request[i], str, strlen(str)) == 0)
-			return i;
-	}
-	return -1;
+    size_t lenStr = strlen(str);
+    for (unsigned int i = 0; i <= _lenRequest - lenStr; i++) {
+        if (std::memcmp(&_request[i], str, lenStr) == 0)
+            return i;
+    }
+    return -1;
 }
 
 void RawBits::setHeader(std::string header) {

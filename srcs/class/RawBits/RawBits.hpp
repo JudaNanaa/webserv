@@ -22,7 +22,6 @@ class RawBits {
 		char *_request;
 		unsigned int		_lenBody;
 		unsigned int		_lenRequest;
-		std::vector<char *> split(char *s, char *c);
 	public:
 		RawBits(void);
 		~RawBits();
@@ -37,7 +36,6 @@ class RawBits {
 		long find(const char *str) const;
 		void setHeader(std::string header);
 		const unsigned int &getLenBody(void) const;
-		char *decode(void);
 };
 
 #endif
