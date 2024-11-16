@@ -67,6 +67,7 @@ class Request : public RawBits {
 		const unsigned int	&getContentLenght(void) const;
 		const int &getMethode(void) const;
 		const std::string &getResponsCode(void) const;
+    const std::vector<File>& getFile(void) const;
 		
 		/*	SETTER	*/
 

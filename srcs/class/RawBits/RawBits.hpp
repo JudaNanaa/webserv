@@ -40,6 +40,7 @@ class RawBits {
 		const std::string&	getHeader(void) const; 
 		const char *		getBody(void) const; 
 		const char *		getRequest(void) const;
+    const std::vector<File>& getRawFile(void) const;
 		void 				setBondary(char *str);
 		void 				BuffToRaw(const char *buff, const int n);
 		void 				appendBody(const char *str, const int n);

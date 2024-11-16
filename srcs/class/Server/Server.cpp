@@ -170,15 +170,17 @@ void Server::_parseClientHeader(Client *client) {
 
 	try {
 		checkAllowMethodes(lineSplit[0]);
+    clientRequest->setMethode(lineSplit[0]);
 	} catch (...) {
 		clientRequest->setResponsCode("405");
 		return;
 	}
-	clientRequest->setMethode(lineSplit[0]);
 
 	clientRequest->path(lineSplit[1]);
   std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
 
+  
+  
 	if (lineSplit[2].compare("HTTP/1.1") != 0) {
 		// le htpp nest pas bon !!
 		clientRequest->setResponsCode("505");
@@ -222,10 +224,20 @@ void Server::_parseClientBody(Client *client) {
 	// clientBody = client->getRequest()->getRawRequest()->getBody();
 	// std::cout << clientBody->getContent() << std::endl;
 	client->getRequest()->printBody();
+  client->getRequest()->checkBondaries();
+  std::vector<File> files = client->getRequest()->getFile();
+  
+  for (size_t i = 0; i < files.size(); i++) {
+    std::cout << "BOUNDARY DEBUG : " << std::endl;
+    std::cout << "\tfilename : '" + files[i].filename() + "'" << std::endl;
+    // std::cout << "\tcontent type : '" + files[i].contentType() + "'" << std::endl;
+    // std::cout << "\tcontent disposition : '" + files[i].contentDisposition() + "'" << std::endl;
+    // std::cout << "\tname : '" + files[i].name() + "'" << std::endl;
+  }
 	if (client->getRequest()->path() != "/")
 		filename = client->getRequest()->path();
 	else
-		filename = generateFilename("URIs/uploads/upload", "find extension in boundary"); // need file extension
+		filename = generateFilename("URIs/uploads/" + files[0].filename(), "find extension in boundary"); // need file extension
 	
 	client->setReadyToresponse(true);
 }

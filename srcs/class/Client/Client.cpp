@@ -58,18 +58,20 @@ void Client::pushHeaderRequest(char *str, int n) {
 	t_parse result;
 
 	result = this->_request->addHeaderRequest(str, n);
-	if (result == READY_PARSE_HEADER) {
+	if (result == READY_PARSE_HEADER)
 		_readyToParseHeader = true;
-	}
+  else
+    _readyToParseBody = false;
 }
 
 void Client::pushBodyRequest(char *str, int n) {
 	t_parse result;
 
 	result = this->_request->addBodyRequest(str, n);
-	if (result == READY_PARSE_BODY) {
+	if (result == READY_PARSE_BODY)
 		_readyToParseBody = true;
-	}
+  else
+    _readyToParseBody = false;
 }
 
 void Client::setServerReq(Server *server) {

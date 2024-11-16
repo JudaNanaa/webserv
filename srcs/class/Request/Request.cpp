@@ -108,6 +108,7 @@ t_parse	Request::addBodyRequest(char *buff, int n) {
 	}
 	else if (RawBits::getLenBody() > _contentLenght) {
 		// TODO: faire un truc car body supperieur a content Lenght
+    setResponsCode("400");
 	}
 	return NOT_READY;
 }
@@ -246,4 +247,8 @@ void Request::setResponsCode(std::string code) {
 
 const std::string& Request::getResponsCode(void) const {
 	return _ResponsCode;
+}
+
+const std::vector<File>& Request::getFile(void) const{
+  return RawBits::getRawFile();
 }

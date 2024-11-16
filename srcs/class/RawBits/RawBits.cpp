@@ -25,7 +25,7 @@ RawBits::RawBits(void) {
 	_body = NULL;
 	_lenBody = 0;
 	_lenRequest = 0;
-	_bondary[0] = '\0';
+	_bondary = NULL;
 }
 
 RawBits::~RawBits(void) {
@@ -111,7 +111,7 @@ void RawBits::printBody(void) const {
 
 void	RawBits::checkFileHeader( std::string body, File& file) {
 	if (body.find("\r\n") == std::string::npos) {
-		throw std::invalid_argument("invalid boundaries: no headers");
+		throw std::invalid_argument("invalid boundaries: no headers"); //code erreur 400
 	}
 
 	for (std::string line = ""; line != "\r\n";) {
@@ -137,7 +137,7 @@ void	RawBits::checkFileHeader( std::string body, File& file) {
 				file.contentDisposition(value);
 			} else {										/* others */
 				std::string	key;
-				int			delim;
+				size_t			delim;
 				bool		semicolon = line.find(";") != std::string::npos;	/*	semicolon at the end	*/
 
 				delim = line.find(":");			/* format: "key:value" ? */
@@ -163,22 +163,23 @@ void	RawBits::checkFileHeader( std::string body, File& file) {
 
 }
 
-std::size_t	nextBoundary(std::string& body) {
-	std::size_t pos = 0;
-
-	while (true) {
-		pos = body
-	}
-}
+// std::size_t	nextBoundary(std::string& body) {
+// 	std::size_t pos = 0;
+//
+// 	while (true) {
+// 		pos = body;
+// 	}
+// }
 
 void	RawBits::checkBondaries( void  ) {
 
-	if (_bondary[0] == '\0') {		/* no bondary */
+	if (_bondary == NULL) {		/* no bondary */
 		return ;
 	}
 
 	std::string body(_body);
-	int			bondaryPos = 0;
+	size_t			bondaryPos = 0;
+  std::cerr << "debug boundary : " << _bondary << std::endl;
 	const int	bondarySize = std::strlen(_bondary);
 
 	bondaryPos = body.find(_bondary, bondaryPos);	/* no "--" before bondary */
@@ -190,8 +191,8 @@ void	RawBits::checkBondaries( void  ) {
 		throw std::invalid_argument("invalid bondaries");
 	}
 
-	int			fileStart;
-	int			fileEnd;
+	size_t			fileStart;
+	size_t			fileEnd;
 
 	fileStart = bondaryPos + bondarySize;
 	while (true) {
@@ -212,7 +213,8 @@ void	RawBits::checkBondaries( void  ) {
 			break;
 		}
 	}
+}
 
-	
-	
+const std::vector<File>& RawBits::getRawFile(void) const {
+  return _files;
 }

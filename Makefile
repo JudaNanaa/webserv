@@ -27,7 +27,9 @@ C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3
 
 REQUEST = $(addprefix Request/, Request.cpp)
 
-GLOBALDATA = $(addprefix GlobalData/, GlobalData.cpp)
+FILE = $(addprefix File/, File.cpp)
+
+GLOBALDATA = $(addprefix GlobalData/, GlobalData.cpp Response.cpp)
 
 CLIENT = $(addprefix Client/, Client.cpp)
 
@@ -39,7 +41,7 @@ UTILS = $(addprefix Utils/, utils.cpp)
 
 RAW_BITS = $(addprefix RawBits/, RawBits.cpp)
 
-CLASS = $(addprefix class/, $(PARSER) $(GLOBALDATA) $(CLIENT) $(SERVER) $(REQUEST) $(RAW_BITS))
+CLASS = $(addprefix class/, $(PARSER) $(GLOBALDATA) $(CLIENT) $(SERVER) $(REQUEST) $(RAW_BITS) $(FILE))
 
 SRCS = main.cpp $(CLASS) $(UTILS)
 
