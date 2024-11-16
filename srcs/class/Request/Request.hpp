@@ -68,6 +68,7 @@ class Request : public RawBits {
 		const int &getMethode(void) const;
 		const std::string &getResponsCode(void) const;
     const std::vector<File>& getFile(void) const;
+    std::string& getMap(std::string key);
 		
 		/*	SETTER	*/
 

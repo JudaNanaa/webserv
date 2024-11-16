@@ -179,8 +179,6 @@ void Server::_parseClientHeader(Client *client) {
 	clientRequest->path(lineSplit[1]);
   std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
 
-  
-  
 	if (lineSplit[2].compare("HTTP/1.1") != 0) {
 		// le htpp nest pas bon !!
 		clientRequest->setResponsCode("505");
@@ -191,7 +189,7 @@ void Server::_parseClientHeader(Client *client) {
 			it != ite; it++) {
 		_parseRequestLine(*it, clientRequest);
 	}
-
+  clientRequest->setBondary(clientRequest->getMap("Content-Type"));
 	// std::cout << "REQUEST:\n" << *clientRequest << std::endl;
 
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {

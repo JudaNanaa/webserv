@@ -26,11 +26,11 @@ class RawBits {
 		std::vector<File> _files;
 		char *_body;
 		char *_request;
-		char *_bondary;
+    std::string _boundary;
 		unsigned int		_lenBody;
 		unsigned int		_lenRequest;
 
-		void				checkFileHeader( std::string body, File& file );
+		void				checkFileHeader( File& file );
 	public:
 		RawBits(void);
 		~RawBits();
@@ -41,14 +41,18 @@ class RawBits {
 		const char *		getBody(void) const; 
 		const char *		getRequest(void) const;
     const std::vector<File>& getRawFile(void) const;
-		void 				setBondary(char *str);
+		void 				setBondary(std::string str);
 		void 				BuffToRaw(const char *buff, const int n);
 		void 				appendBody(const char *str, const int n);
 		void 				splitRequest(void);
 		void 				printBody(void) const;
 		long 				find(const char *str) const;
+    long        findInBody(const char *str) const;
+    long        findInBody(const char *str, size_t n) const;
 		void 				setHeader(std::string header);
+    char*       substrBody(size_t pos, size_t n);
 		const unsigned int&	getLenBody(void) const;
+    int         compareInBody(char *s, size_t n);
 };
 
 #endif

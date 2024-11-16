@@ -113,6 +113,10 @@ t_parse	Request::addBodyRequest(char *buff, int n) {
 	return NOT_READY;
 }
 
+std::string& Request::getMap(std::string key) {
+  return _others[key];
+}
+
 // void	Request::parseRequestLine( std::string line ) {
 
 // 	if (line.find(": ") == std::string::npos)
