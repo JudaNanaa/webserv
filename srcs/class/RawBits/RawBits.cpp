@@ -121,12 +121,13 @@ char* RawBits::substrBody(size_t pos, size_t n) {
 //   std::cerr << "debug alloc len : " << n - pos << std::endl; 
 //   std::cerr << "debug n : " << n << std::endl; 
 //   std::cerr << "debug pos : " << pos << std::endl; 
-  char *result = new char[n];
+  char *result = new char[n + 1];
   size_t i = 0;
   while (i < n) {
     result[i] = _body[pos + i];
     i++;
   }
+  result[i] = '\0';
   return result; 
 }
 
@@ -215,7 +216,7 @@ void	RawBits::checkBondaries( void  ) {
 		}
 
 		file.content(substrBody(fileStart, fileEnd - fileStart));	/* creating File */
-		std::cerr << "conttent :\n[" << file.content() << "]" << std::endl;
+		std::cerr << "content :\n[" << file.content() << "]" << std::endl;
 		checkFileHeader(file, header);
 		_files.push_back(file);
 
