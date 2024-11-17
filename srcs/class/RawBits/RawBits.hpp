@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RawBits.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/15 19:00:56 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/17 22:33:39 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ class RawBits {
 		unsigned int		_lenBody;
 		unsigned int		_lenRequest;
 
-		void				checkFileHeader( File& file );
+		void				checkFileHeader( File& file, std::string &header );
 	public:
 		RawBits(void);
 		~RawBits();
@@ -47,13 +47,12 @@ class RawBits {
 		void 				splitRequest(void);
 		void 				printBody(void) const;
 		long 				find(const char *str) const;
-    long        findInBody(const char *str) const;
-    long        findInBody(const char *str, size_t n) const;
+    	long        		findInBody(const char *str, size_t n = 0) const;
 		void 				setHeader(std::string header);
-    char*       substrBody(size_t pos, size_t n);
+    	char*       		substrBody(size_t pos, size_t n);
 		const unsigned int&	getLenBody(void) const;
-    int         compareInBody(char *s, size_t n);
-    void        eraseInBody(size_t pos, size_t n);
+    	int         		compareInBody(char *s, size_t n);
+    	void        		eraseInBody(size_t pos, size_t n);
 };
 
 #endif

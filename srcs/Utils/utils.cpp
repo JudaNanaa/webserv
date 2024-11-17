@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/09 17:44:55 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/17 20:32:43 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,3 +98,5 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
     res.push_back (s.substr (pos_start));
     return res;
 }
+
+
