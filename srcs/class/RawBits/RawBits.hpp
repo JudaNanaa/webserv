@@ -53,6 +53,7 @@ class RawBits {
     char*       substrBody(size_t pos, size_t n);
 		const unsigned int&	getLenBody(void) const;
     int         compareInBody(char *s, size_t n);
+    void        eraseInBody(size_t pos, size_t n);
 };
 
 #endif

@@ -139,6 +139,17 @@ char* RawBits::substrBody(size_t pos, size_t n) {
   return result;
 }
 
+
+void RawBits::eraseInBody(size_t pos, size_t n) {
+  char *newBody = new char[_lenBody - (n - pos)];
+  for (size_t i = 0; i < _lenBody; i++) {
+    if (i < pos || i > n)
+      newBody[i] = _body[i];
+  }
+  delete _body;
+  _body = newBody;
+}
+
 #include <cstring>
 
 void	RawBits::checkFileHeader(File& file) {
@@ -150,7 +161,7 @@ void	RawBits::checkFileHeader(File& file) {
 		line = substrBody(0, findInBody("\r\n") - 1);
 
 		if (line.empty())	{ break; }			/* end of the header */
-		else 				{ _body.erase(0, _body.find("\r\n") + 1); }		/*	erase line from body	*/		// (to be on the next line in the next loop)
+		else 				{ eraseInBody(0, findInBody("\r\n") + 1); }		/*	erase line from body	*/		// (to be on the next line in the next loop)
 
 		for (std::string value; line.empty() == false;) {
 			int	headerSize = 0;
