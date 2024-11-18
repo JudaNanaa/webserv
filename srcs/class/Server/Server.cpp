@@ -202,41 +202,33 @@ void Server::_parseClientHeader(Client *client) {
 	}
 }
 
-std::string generateFilename(const std::string &baseName, const std::string& extension) {
+std::string generateFilename(std::string baseName) {
 		std::time_t now = std::time(NULL);
 		std::tm* now_tm = std::localtime(&now);
 
+		baseName.erase(0, 1);
+		baseName.erase(baseName.size() - 1, 1);
 		char timeBuffer[20];
 		std::strftime(timeBuffer, sizeof(timeBuffer), "%Y%m%d_%H%M%S", now_tm);
-
 		std::ostringstream oss;
-		oss << baseName << "_"
-						<< timeBuffer 
-						<< extension;
+		oss << "URIs/uploads/" 
+			<< timeBuffer << "_"
+			<< baseName;
 		return oss.str();
 }
 
 void Server::_parseClientBody(Client *client) {
-	// const char *clientBody;
 	std::string filename;
-	// clientBody = client->getRequest()->getRawRequest()->getBody();
-	// std::cout << clientBody->getContent() << std::endl;
 	client->getRequest()->printBody();
-  client->getRequest()->checkBondaries();
-  std::vector<File> files = client->getRequest()->getFile();
-  
-  for (size_t i = 0; i < files.size(); i++) {
-    std::cout << "BOUNDARY DEBUG : " << std::endl;
-    std::cout << "\tfilename : '" + files[i].filename() + "'" << std::endl;
-    // std::cout << "\tcontent type : '" + files[i].contentType() + "'" << std::endl;
-    // std::cout << "\tcontent disposition : '" + files[i].contentDisposition() + "'" << std::endl;
-    // std::cout << "\tname : '" + files[i].name() + "'" << std::endl;
-  }
-	if (client->getRequest()->path() != "/")
-		filename = client->getRequest()->path();
-	else
-		filename = generateFilename("URIs/uploads/" + files[0].filename(), "find extension in boundary"); // need file extension
-	
+	client->getRequest()->checkBondaries();
+	std::vector<File*> files = client->getRequest()->getFile();
+
+	for (size_t i = 0; i < files.size(); i++) {
+		filename = generateFilename( files[i]->get("filename")); // need file extension
+		int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		write(fd, files[i]->content(), files[i]->lenFile());
+		close(fd);
+	}
 	client->setReadyToresponse(true);
 }
 

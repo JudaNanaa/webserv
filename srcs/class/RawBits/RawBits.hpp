@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/17 22:33:39 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/18 17:58:30 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,11 @@ class RawBits {
 	private:
 		std::string _header;
 		// 		 |  filename | content ...
-		std::vector<File> _files;
+		std::vector<File *> _files;
 		char *_body;
 		char *_request;
-    std::string _boundary;
+		std::string _boundary;
+		char *_tmp;
 		unsigned int		_lenBody;
 		unsigned int		_lenRequest;
 
@@ -37,10 +38,11 @@ class RawBits {
 
 		// RawBits &operator+=(const char *str);
 		void 				checkBondaries( void  );
+		void				deleteTmp(void);
 		const std::string&	getHeader(void) const; 
 		const char *		getBody(void) const; 
 		const char *		getRequest(void) const;
-    const std::vector<File>& getRawFile(void) const;
+    const std::vector<File*>& getRawFile(void) const;
 		void 				setBondary(std::string str);
 		void 				BuffToRaw(const char *buff, const int n);
 		void 				appendBody(const char *str, const int n);
@@ -53,6 +55,7 @@ class RawBits {
 		const unsigned int&	getLenBody(void) const;
     	int         		compareInBody(char *s, size_t n);
     	void        		eraseInBody(size_t pos, size_t n);
+		void				cleanFiles(void);
 };
 
 #endif

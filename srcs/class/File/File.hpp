@@ -6,11 +6,12 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 18:36:18 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/17 21:47:46 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/18 17:35:55 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/includes.hpp"
+#include <cstddef>
 #include <stdatomic.h>
 
 #ifndef FILE_HPP
@@ -41,6 +42,7 @@ class File {
 		const std::string&	extension( void );
 		const std::string&	filename( void );
 		const std::string&	contentType( void );
+		const size_t		&lenFile(void) const;
 		
 		// search a the value of key, throw an std::exception if not found
 		std::string			get( std::string key );
@@ -51,7 +53,9 @@ class File {
 		void	name( std::string newName );
 		void	filename( std::string newFilename );
 		void	contentType( std::string newContentType );
+		void	lenFile(size_t len);
 		void	set( std::string key, std::string value );
+		void	freeContent(void);
 };
 
 #endif

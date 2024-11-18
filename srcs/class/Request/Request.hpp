@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/15 18:43:33 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/18 17:31:44 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <ostream>
 #include <string>
 
-# define BUFFER_SIZE 4096
+# define BUFFER_SIZE 1000000
 
 typedef enum s_parse
 {
@@ -67,7 +67,7 @@ class Request : public RawBits {
 		const unsigned int	&getContentLenght(void) const;
 		const int &getMethode(void) const;
 		const std::string &getResponsCode(void) const;
-    const std::vector<File>& getFile(void) const;
+    const std::vector<File*>& getFile(void) const;
     std::string& getMap(std::string key);
 		
 		/*	SETTER	*/

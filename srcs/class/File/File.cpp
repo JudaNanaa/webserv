@@ -6,12 +6,13 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 18:46:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/17 22:33:39 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/18 17:47:35 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "File.hpp"
 #include <cstddef>
+#include <cstdlib>
 #include <cstring>
 #include <exception>
 #include <stdexcept>
@@ -20,6 +21,11 @@ File::File() {
 }
 
 File::~File() {
+	
+}
+
+void	File::freeContent(void) {
+	delete [] _content;
 }
 
 // File( const File& other );
@@ -84,3 +90,10 @@ void	File::set( std::string key, std::string value ) {
 	_infos[key] = value;
 }
 
+void	File::lenFile(size_t len) {
+	_lenFile = len;
+}
+
+const size_t &File::lenFile(void) const {
+	return _lenFile;
+}

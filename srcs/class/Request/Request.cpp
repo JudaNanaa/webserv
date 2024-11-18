@@ -28,7 +28,7 @@ Request::Request(Client *client) : RawBits() {
 }
 
 Request::~Request() {
-
+	
 }
 
 int	Request::method( void	) const {
@@ -253,6 +253,6 @@ const std::string& Request::getResponsCode(void) const {
 	return _ResponsCode;
 }
 
-const std::vector<File>& Request::getFile(void) const{
+const std::vector<File*>& Request::getFile(void) const{
   return RawBits::getRawFile();
 }

@@ -15,11 +15,15 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <fcntl.h>
+#include <fstream>
 #include <iostream>
 #include <iterator>
+#include <ostream>
 #include <stdexcept>
 #include <string>
 #include <sys/types.h>
+#include <unistd.h>
 #include <vector>
 
 RawBits::RawBits(void) {
@@ -34,6 +38,18 @@ RawBits::~RawBits(void) {
 		delete [] _body;
 	if (_request)
 		delete [] _request;
+}
+
+void RawBits::cleanFiles(void) {
+	for (std::vector<File *>::iterator it = _files.begin(); it != _files.end(); it++) {
+		(*it)->freeContent();
+		delete *it;
+	}
+}
+
+void	RawBits::deleteTmp(void) {
+	delete [] _tmp;
+	_tmp = NULL;
 }
 
 void RawBits::setBondary(std::string str) {
@@ -144,8 +160,7 @@ void RawBits::eraseInBody(size_t pos, size_t n) {
 
 void	RawBits::checkFileHeader(File& file, std::string &header) {
 	std::vector<std::string> fileHeaderSplit = split(header, "\r\n");
-	
-	std::cerr << "header : " << header << "|la fin" << std::endl;
+
 	for (std::vector<std::string>::iterator it = fileHeaderSplit.begin(); it != fileHeaderSplit.end(); it++) {
 		std::vector<std::string> elements = split(*it, ";");
 		for (std::vector<std::string>::iterator it2 = elements.begin(); it2 != elements.end(); it2++) {
@@ -187,17 +202,21 @@ void	RawBits::checkBondaries( void  ) {
 	}
 
 	size_t			boundaryPos = 0;
-  std::cerr << "debug boundary : " << _boundary << std::endl;
+	std::cerr << "debug boundary : " << _boundary << std::endl;
 	const int	boundarySize = _boundary.size();
 
 	// bondaryPos = findInBody(_bondary, bondaryPos);	/* no "--" before bondary */
-  boundaryPos = findInBody(_boundary.c_str(), boundaryPos);
-	if (boundaryPos < 2 || std::memcmp(substrBody(boundaryPos - 2, 2), "--", 2) != 0) {
+  	boundaryPos = findInBody(_boundary.c_str(), boundaryPos);
+	_tmp = substrBody(boundaryPos - 2, 2);
+	if (boundaryPos < 2 || std::memcmp(_tmp, "--", 2) != 0) {
 		throw std::invalid_argument("invalid bondaries 1");
-	} else if (std::memcmp(substrBody(boundaryPos + boundarySize, 2), "--", 2) == 0) { 	/* end bondary as first  */
+	}
+	deleteTmp();
+	_tmp = substrBody(boundaryPos + boundarySize, 2);
+	if (std::memcmp(_tmp, "--", 2) == 0) { 	/* end bondary as first  */
 		throw std::invalid_argument("invalid bondaries 2");
 	}
-
+	deleteTmp();
 	size_t			fileStart;
 	long			fileEnd;
 	std::string header;
@@ -208,24 +227,25 @@ void	RawBits::checkBondaries( void  ) {
 			break;
 		}
 		fileEnd = findInBody(_boundary.c_str(), fileStart) - 4;
-		header = substrBody(boundaryPos + boundarySize + 2, (fileStart - 4) - (boundaryPos + boundarySize + 2));
+		_tmp = substrBody(boundaryPos + boundarySize + 2, (fileStart - 4) - (boundaryPos + boundarySize + 2));
+		header = _tmp;
 		std::cerr << "header = ["<< header << "]"<< std::endl;
-		File 		file;
+		File 		*file = new File();
 		if (fileEnd == -1) {		/* bondary not found */
 			throw std::invalid_argument("invalid bondaries 3");
 		}
 
-		file.content(substrBody(fileStart, fileEnd - fileStart));	/* creating File */
-		std::cerr << "content :\n[" << file.content() << "]" << std::endl;
-		checkFileHeader(file, header);
+		file->content(substrBody(fileStart, fileEnd - fileStart));	/* creating File */
+		file->lenFile(fileEnd - fileStart);
+		checkFileHeader(*file, header);
+		deleteTmp();
 		_files.push_back(file);
 
 		boundaryPos = findInBody(_boundary.c_str(), fileEnd + 2);	/* next bondary */
 		// fileStart = boundaryPos + boundarySize;
-
 	}
 }
 
-const std::vector<File>& RawBits::getRawFile(void) const {
+const std::vector<File*>& RawBits::getRawFile(void) const {
   return _files;
 }
