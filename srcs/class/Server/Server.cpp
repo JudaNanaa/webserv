@@ -54,8 +54,6 @@ int Server::getSocketFd(void) const {
 	return this->_socket_fd;
 }
 
-
-
 void Server::init(void) {
 	struct sockaddr_in server_addr;
 	int opt = 1;
@@ -111,6 +109,10 @@ Client *Server::getClient(int fd) {
 }
 
 void Server::removeClientInMap(int fd) {
+	Client *client;
+
+	client = getClient(fd);
+	delete client;
 	this->_clientMap.erase(fd);
 }
 
@@ -232,14 +234,15 @@ void Server::addClientRequest(int fd) {
 	if (n == -1) {
 		throw std::runtime_error("Can't recv the message !");
 	}
-	if (n < 0)
+	if (n == 0)
 		return;
 	buff[n] = '\0';
 	if (client->whatToDo() == ON_HEADER) {
 	 	client->pushHeaderRequest(buff, n);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
-			if (client->getRequest()->getMethode() == POST_ && client->getRequest()->getLenBody() == client->getRequest()->getContentLenght()) {
+			Request *clientRequest = client->getRequest(); 
+			if (clientRequest->getMethode() == POST_ && clientRequest->getLenBody() == clientRequest->getContentLenght()) {
 				_parseClientBody(client); // Parse body
 			}
 		}
