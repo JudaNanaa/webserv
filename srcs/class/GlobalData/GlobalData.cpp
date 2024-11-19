@@ -117,39 +117,12 @@ void GlobalData::handleClientIn(int fd) {
 }
 
 void GlobalData::handleClientOut(int fd) {
+	Server *server;
 	std::ifstream file;
-	std::string return_code = "200";
 
-	// file.open("URIs/original.html");
-	Client *client = searchClient(fd);
-	if (client->isReadyToResponse() == false)
-		return;
-	if (client->getRequest()->path() == "/") {
-		file.open((client->_server->_data->_root + client->_server->_data->_index).c_str());
-		std::cout << "if root : " << client->_server->_data->_root + client->_server->_data->_index << std::endl;
-
-	}
-	else {
-
-		std::cout << "if no root : " << client->_server->_data->_root + client->getRequest()->path() << std::endl;
-		file.open((client->_server->_data->_root + client->getRequest()->path()).c_str());
-	}
-	// std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
-	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
-	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
-	if (file.fail()) {
-		return_code = "404";
-	}
-
-
-  /*std::cout << "SEND RESPONSE" << std::endl;*/
-
-	// send(fd, response.c_str(), response.size(), MSG_EOR);
- sendResponse(file, fd, client); //this methode send response with appropriate code
-	client->cleanRequest();
-	client->setReadyToresponse(false);
+	server = getServerWithClientFd(fd);
+	server->giveResponseToClient(fd);
 }
-
 
 
 void GlobalData::removeClient(int fd) {

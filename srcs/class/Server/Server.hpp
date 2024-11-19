@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/15 18:43:15 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/19 01:13:22 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,11 @@
 #include "../../../includes/includes.hpp"
 #include "../Client/Client.hpp"
 #include "../Request/Request.hpp"
+#include "../Parser/Parser.hpp"
 #include <exception>
 #include <map>
 #include <ostream>
+#include <fstream>
 
 # define MAX_CLIENTS 100
 # define MAX_EVENTS 1000
@@ -41,7 +43,6 @@ class Server {
 		~Server();
 
 		void	init();
-		// static void	handleClient( int clientFd );
 		void checkBoundaries( void );
 		void addClientToMap(Client *client);
 		bool ifClientInServer(int fd) const;
@@ -52,7 +53,9 @@ class Server {
 		bool isServerHost(std::string const &str) const;
 		int nbOfClient(void) const;
 		void addClientRequest(int fd);
-    Data *_data;
+		void sendResponse(std::ifstream &file, int fd, Client *client);
+		void giveResponseToClient(int fd);
+    	Data *_data;
 
     //request Parsing
     bool checkAllowMethodes(std::string methodes);

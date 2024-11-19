@@ -1,22 +1,18 @@
-#include "GlobalData.hpp"
-#include "../Client/Client.hpp"
-#include "../RawBits/RawBits.hpp"
-#include "../Parser/Parser.hpp"
-#include "../../../includes/includes.hpp"
-#include <algorithm>
-#include <cstdlib>
-#include <cstring>
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <map>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Response.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
+/*   Updated: 2024/11/19 01:12:18 by madamou          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Server.hpp"
 #include <ostream>
 #include <sstream>
-#include <stdexcept>
-#include <string>
-#include <sys/epoll.h>
-#include <sys/select.h>
-#include <vector>
 
 const std::string getMessageCode(int code) {
 	std::map<int, std::string> codes_responses;
@@ -108,15 +104,21 @@ const std::string getMessageCode(int code) {
 	return codes_responses[code];
 }
 
-void GlobalData::sendResponse(std::ifstream &file, int fd, Client *client) {
+void Server::sendResponse(std::ifstream &file, int fd, Client *client) {
 	std::ostringstream buffer;
+	Request *clientRequest;
+
+	clientRequest = client->getRequest();
+	if (clientRequest->getResponsCode() != "200")
+		file.open(("URIs/errors/" + clientRequest->getResponsCode() + ".html").c_str());
 	buffer << file.rdbuf();
 	std::string html_content = buffer.str();
 	int code;
 
-	code = atoi(client->getRequest()->getResponsCode().c_str());
+	code = atoi(clientRequest->getResponsCode().c_str());
+	std::cerr << "debug code : " << code << std::endl;
 	std::ostringstream oss;
-    std::string response = "HTTP/1.1" + client->getRequest()->getResponsCode() + getMessageCode(code)+ "\r\n";
+    std::string response = "HTTP/1.1 " + clientRequest->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
     response += "Content-Type: text/html\r\n";
 	oss << html_content.size();
     response += "Content-Length: " + oss.str() + "\r\n";
@@ -124,5 +126,44 @@ void GlobalData::sendResponse(std::ifstream &file, int fd, Client *client) {
 
     response += html_content;
 
+	// std::cerr << "RESPONSE : " << std::endl;
+	// std::cerr << response << std::endl;
+
 	send(fd, response.c_str(), response.size(), MSG_EOR);
+	file.close();
+}
+
+void Server::giveResponseToClient(int fd) {
+	Client *client;
+	std::ifstream file;
+
+	client = getClient(fd);
+	if (client->isReadyToResponse() == false)
+		return;
+	if (client->getRequest()->getResponsCode() == "200") {
+		if (client->getRequest()->path() == "/") {
+			
+			std::cerr << "root : " + _data->_root << std::endl;
+			file.open((_data->_root + _data->_index).c_str());
+			std::cerr << "if root : " << _data->_root + _data->_index << std::endl;
+
+		}
+		else {
+			std::cerr << "if no root : " << _data->_root + client->getRequest()->path() << std::endl;
+			file.open((_data->_root + client->getRequest()->path()).c_str());
+		}
+		if (file.fail()) {
+			std::cerr << "TRIGGER" << std::endl;
+			client->getRequest()->setResponsCode("404");
+		}
+	}
+	// std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
+	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
+	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
+
+  /*std::cout << "SEND RESPONSE" << std::endl;*/
+
+	sendResponse(file, fd, client); //this methode send response with appropriate code
+	client->cleanRequest();
+	client->setReadyToresponse(false);
 }

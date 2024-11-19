@@ -24,6 +24,7 @@ Request::Request(Client *client) : RawBits() {
 	_method = 0;
 	_state = ON_HEADER;
 	_contentLenght = 0;
+	_ResponsCode = "200";
 	_client = client;
 }
 
