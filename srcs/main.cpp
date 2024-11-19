@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/10 18:39:51 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/19 01:24:56 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,23 @@
 #include <exception>
 #include <iostream>
 #include <vector>
+#include <csignal>
+
+void ifSignal(int sig) {
+	(void)sig;
+	g_running = false;
+}
+
+void signalHandle(void) {
+	signal(SIGINT, ifSignal);
+	signal(SIGQUIT, ifSignal);
+	signal(SIGTSTP, ifSignal);
+}
 
 int main(int argc, char **argv) {
 	GlobalData data;
 	
+	signalHandle();
 	if (argc != 2) {
 		std::cerr << "Need only one argument" << std::endl;
 		return 1;

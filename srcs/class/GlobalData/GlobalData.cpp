@@ -29,7 +29,6 @@ GlobalData::~GlobalData() {
 		close(this->_epoll_fd);
 }
 
-
 void GlobalData::addToEpoll(int fd, uint32_t events)
 {
 	struct epoll_event ev;
@@ -121,7 +120,12 @@ void GlobalData::handleClientOut(int fd) {
 	std::ifstream file;
 
 	server = getServerWithClientFd(fd);
-	server->giveResponseToClient(fd);
+	try {
+		server->giveClientResponse(fd);
+	} catch (const std::exception &e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		removeClient(fd);
+	}
 }
 
 

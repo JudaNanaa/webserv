@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/19 01:13:22 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/19 01:19:11 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class Server {
 		int nbOfClient(void) const;
 		void addClientRequest(int fd);
 		void sendResponse(std::ifstream &file, int fd, Client *client);
-		void giveResponseToClient(int fd);
+		void giveClientResponse(int fd);
     	Data *_data;
 
     //request Parsing

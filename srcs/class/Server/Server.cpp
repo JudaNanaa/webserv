@@ -12,7 +12,6 @@
 
 #include <asm-generic/socket.h>
 #include <cerrno>
-#include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -55,16 +54,7 @@ int Server::getSocketFd(void) const {
 	return this->_socket_fd;
 }
 
-void ifSignal(int sig) {
-	(void)sig;
-	g_running = false;
-}
 
-void signalHandle(void) {
-	signal(SIGINT, ifSignal);
-	signal(SIGQUIT, ifSignal);
-	signal(SIGTSTP, ifSignal);
-}
 
 void Server::init(void) {
 	struct sockaddr_in server_addr;

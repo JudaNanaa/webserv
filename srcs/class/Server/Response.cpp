@@ -6,13 +6,14 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/19 01:12:18 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/19 01:20:27 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include <ostream>
 #include <sstream>
+#include <stdexcept>
 
 const std::string getMessageCode(int code) {
 	std::map<int, std::string> codes_responses;
@@ -129,11 +130,12 @@ void Server::sendResponse(std::ifstream &file, int fd, Client *client) {
 	// std::cerr << "RESPONSE : " << std::endl;
 	// std::cerr << response << std::endl;
 
-	send(fd, response.c_str(), response.size(), MSG_EOR);
 	file.close();
+	if (send(fd, response.c_str(), response.size(), MSG_EOR) == -1)
+		throw std::runtime_error("Can't send the message !");
 }
 
-void Server::giveResponseToClient(int fd) {
+void Server::giveClientResponse(int fd) {
 	Client *client;
 	std::ifstream file;
 
