@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/19 01:24:56 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/19 18:12:05 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,5 @@ int main(int argc, char **argv) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return (1);
 	}
-	std::cout << "ok" << std::endl;
 	return 0;
 }
