@@ -134,9 +134,6 @@ void RawBits::printBody(void) const {
 }
 
 char* RawBits::substrBody(size_t pos, size_t n) {
-//   std::cerr << "debug alloc len : " << n - pos << std::endl; 
-//   std::cerr << "debug n : " << n << std::endl; 
-//   std::cerr << "debug pos : " << pos << std::endl; 
   char *result = new char[n + 1];
   size_t i = 0;
   while (i < n) {
@@ -181,15 +178,6 @@ void	RawBits::checkFileHeader(File& file, std::string &header) {
 	std::cout << "filename : " << file.get("filename") << std::endl;
 	std::cout << "Content-Type : " << file.get("Content-Type") << std::endl;
 }
-
-// std::size_t	nextBoundary(std::string& body) {
-// 	std::size_t pos = 0;
-//
-// 	while (true) {
-// 		pos = body;
-// 	}
-// }
-
 
 int RawBits::compareInBody(char *s, size_t n) {
   return memcmp(_body, s, n);
