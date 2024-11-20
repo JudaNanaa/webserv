@@ -187,8 +187,11 @@ void Server::_parseClientHeader(Client *client) {
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
 		clientRequest->setSizeBody(atoi(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;
-		bondary = clientRequest->find("Content-Type").substr(clientRequest->find("Content-Type").find("boundary=") + 9);
-		clientRequest->setBondary(const_cast<char*>(bondary.c_str()));
+    //TODO : secure this (si Content-Lenght ou Content-Type ne sont pas present dans la requete on throw une exception et on ne renvoie pas de reponse au client)
+    if (clientRequest->isKeyfindInHeader("Content-Type") &&  clientRequest->isKeyfindInHeader("boundary=")) {
+      bondary = clientRequest->find("Content-Type").substr(clientRequest->find("Content-Type").find("boundary=") + 9);
+      clientRequest->setBondary(const_cast<char*>(bondary.c_str()));
+    }
 	} else {
 		client->setReadyToresponse(true);
 	}
