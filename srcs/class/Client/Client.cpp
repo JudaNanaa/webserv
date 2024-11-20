@@ -67,14 +67,8 @@ void Client::pushHeaderRequest(char *str, int n) {
 void Client::pushBodyRequest(char *str, int n) {
 	t_parse result;
 
-	std::cerr << "content length: " << _request->getContentLenght() << std::endl;
-	if (_request->getContentLenght() == 0) {
-		if (str != NULL) {
-			std::cerr << "Content too large" << std::endl;
-			setReadyToresponse(true);
-			return (getRequest()->setResponsCode("400"));
-		} else
-			return (setReadyToresponse(true));
+	if (_request->getContentLenght() == 0) {	//	normally not needed
+		return (setReadyToresponse(true));
 	}
 	
 	result = this->_request->addBodyRequest(str, n);

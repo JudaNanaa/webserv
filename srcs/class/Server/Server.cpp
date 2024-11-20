@@ -251,13 +251,11 @@ void Server::addClientRequest(int fd) {
 	 		_parseClientHeader(client);
 
 			Request *clientRequest = client->getRequest();
-			if (clientRequest->getMethode() == POST_) {
-					if (clientRequest->getLenBody() == clientRequest->getContentLenght()) {
-						_parseClientBody(client); // Parse body
-					} else if (clientRequest->getLenBody() > clientRequest->getContentLenght()) {
-						client->getRequest()->setResponsCode("400");
-						client->setReadyToresponse(true);
-					}
+			if (clientRequest->getLenBody() == clientRequest->getContentLenght()) {
+				_parseClientBody(client); // Parse body
+			} else if (clientRequest->getLenBody() > clientRequest->getContentLenght()) {
+				client->getRequest()->setResponsCode("400");
+				client->setReadyToresponse(true);
 			}
 		}
 	}
@@ -269,17 +267,21 @@ void Server::addClientRequest(int fd) {
 	 	}
 	}
 
-	unsigned int contentLength = client->getRequest()->getContentLenght();
-	unsigned int lenBody = client->getRequest()->getLenBody();
-	if (lenBody > contentLength) {
-		client->getRequest()->setResponsCode("400");	// body too large
-	} else {
+	bool			haveBody;
+	unsigned int	contentLength = client->getRequest()->getContentLenght();
+	unsigned int	lenBody = client->getRequest()->getLenBody();
+	try {
+		client->getRequest()->find("Content-Length");
+		haveBody = true;
+	} catch (std::exception &e) {
+		haveBody = false;
+	}
 
-		// std::string	content_type = client->getRequest()->getMap("Content-Type");
-		// bool		isMultiRequest = content_type.find("multipart") != std::string::npos || content_type.find("chunked") != std::string::npos;
-		// if (isMultiRequest == false && lenBody < contentLength) {		// all the content in one request
-		// 	client->getRequest()->setResponsCode("400");
-		// }
+	if (haveBody && lenBody > contentLength) {
+		client->getRequest()->setResponsCode("400");	// body too large
+	} else if (haveBody == false) {
+
+		client->setReadyToresponse(true);
 	}
 }
 
