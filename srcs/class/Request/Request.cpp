@@ -63,6 +63,10 @@ void	Request::host( std::string newHost ) {
 	_Host = newHost;
 }
 
+void	Request::setStatus( t_state newStatus ) {
+	_state = newStatus;
+}
+
 void	Request::path( std::string newPath ) {
 	_path = newPath;
 }

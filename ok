@@ -321,10 +321,123 @@ DEBUG HEADER:
 POST / HTTP/1.1
 Host: 127.0.0.1:8080
 User-Agent: insomnia/2022.7.0
-Content-Length: 0
+Content-Length: 20
 Content-Type: application/octet-stream
 Accept: */*
 -------------------------------------PATH : /
+ds
+--------------------ADDING CLIENT--------------------
+
+DEBUG HEADER: 
+GET /styles/error.css HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+Accept: text/css,*/*;q=0.1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US
+Sec-Fetch-Dest: style
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Site: cross-site
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Insomnia/2022.7.0 Chrome/108.0.5359.62 Electron/22.0.0 Safari/537.36
+sec-ch-ua: "Not?A_Brand";v="8", "Chromium";v="108"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+-------------------------------------PATH : /styles/error.css
+DEBUG HEADER: 
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: insomnia/2022.7.0
+Content-Length: 20
+Content-Type: application/octet-stream
+Accept: */*
+-------------------------------------PATH : /
+DEBUG HEADER: 
+GET /styles/error.css HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+Accept: text/css,*/*;q=0.1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US
+Sec-Fetch-Dest: style
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Site: cross-site
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Insomnia/2022.7.0 Chrome/108.0.5359.62 Electron/22.0.0 Safari/537.36
+sec-ch-ua: "Not?A_Brand";v="8", "Chromium";v="108"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+-------------------------------------PATH : /styles/error.css
+DEBUG HEADER: 
+GET /styles/error.css HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+Accept: text/css,*/*;q=0.1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US
+Sec-Fetch-Dest: style
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Site: cross-site
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Insomnia/2022.7.0 Chrome/108.0.5359.62 Electron/22.0.0 Safari/537.36
+sec-ch-ua: "Not?A_Brand";v="8", "Chromium";v="108"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+-------------------------------------PATH : /styles/error.css
+DEBUG HEADER: 
+GET /styles/error.css HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+Accept: text/css,*/*;q=0.1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US
+Sec-Fetch-Dest: style
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Site: cross-site
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Insomnia/2022.7.0 Chrome/108.0.5359.62 Electron/22.0.0 Safari/537.36
+sec-ch-ua: "Not?A_Brand";v="8", "Chromium";v="108"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+-------------------------------------PATH : /styles/error.css
+DEBUG HEADER: 
+GET /styles/error.css HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+Accept: text/css,*/*;q=0.1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US
+Sec-Fetch-Dest: style
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Site: cross-site
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Insomnia/2022.7.0 Chrome/108.0.5359.62 Electron/22.0.0 Safari/537.36
+sec-ch-ua: "Not?A_Brand";v="8", "Chromium";v="108"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+-------------------------------------PATH : /styles/error.css
 
 --------------------REMOVING CLIENT--------------------
 
+[+] connection closed
+
+--------------------ADDING CLIENT--------------------
+
+DEBUG HEADER: 
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: insomnia/2022.7.0
+Content-Length: 20
+Content-Type: application/octet-stream
+Accept: */*
+-------------------------------------PATH : /
+DEBUG HEADER: 
+GET /styles/error.css HTTP/1.1
+Host: 127.0.0.1:8080
+Connection: keep-alive
+Accept: text/css,*/*;q=0.1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US
+Sec-Fetch-Dest: style
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Site: cross-site
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Insomnia/2022.7.0 Chrome/108.0.5359.62 Electron/22.0.0 Safari/537.36
+sec-ch-ua: "Not?A_Brand";v="8", "Chromium";v="108"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+-------------------------------------PATH : /styles/error.css

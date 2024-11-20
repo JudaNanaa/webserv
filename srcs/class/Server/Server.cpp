@@ -181,17 +181,17 @@ void Server::_parseClientHeader(Client *client) {
 			it != ite; it++) {
 		_parseRequestLine(*it, clientRequest);
 	}
-  clientRequest->setBondary(clientRequest->getMap("Content-Type"));
 	// std::cout << "REQUEST:\n" << *clientRequest << std::endl;
-
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
 		clientRequest->setSizeBody(atoi(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;
 		//TODO : secure this (si Content-Lenght ou Content-Type ne sont pas present dans la requete on throw une exception et on ne renvoie pas de reponse au client)
-		if (clientRequest->isKeyfindInHeader("Content-Type") &&  clientRequest->isKeyfindInHeader("boundary=")) {
-			bondary = clientRequest->find("Content-Type").substr(clientRequest->find("Content-Type").find("boundary=") + 9);
-			clientRequest->setBondary(const_cast<char*>(bondary.c_str()));
-    	}
+		if (clientRequest->isKeyfindInHeader("Content-Type")) {
+			if (clientRequest->isKeyfindInHeader("boundary=")) {
+				bondary = clientRequest->find("Content-Type").substr(clientRequest->find("Content-Type").find("boundary=") + 9);
+				clientRequest->setBondary(const_cast<char*>(bondary.c_str()));
+			}
+		}
 	} else {
 		client->setReadyToresponse(true);
 	}
@@ -228,6 +228,7 @@ void Server::_parseClientBody(Client *client) {
 		write(fd, files[i]->content(), files[i]->lenFile());
 		close(fd);
 	}
+
 	client->setReadyToresponse(true);
 }
 
@@ -248,17 +249,36 @@ void Server::addClientRequest(int fd) {
 	 	client->pushHeaderRequest(buff, n);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
-			Request *clientRequest = client->getRequest(); 
-			if (clientRequest->getMethode() == POST_ && clientRequest->getLenBody() == clientRequest->getContentLenght()) {
-				_parseClientBody(client); // Parse body
-			}
+			Request *clientRequest = client->getRequest();
+			if (clientRequest->getMethode() == POST_) {
+					if (clientRequest->getLenBody() <= clientRequest->getContentLenght()) {
+						_parseClientBody(client); // Parse body
+					} else if (clientRequest->getLenBody() > clientRequest->getContentLenght()) {
+						client->getRequest()->setResponsCode("400");
+						client->setReadyToresponse(true);
+					}
+		}
 		}
 	}
 	else if (client->whatToDo() == ON_BODY) {
+		std::cerr << "ON BODY" << std::endl;
 		client->pushBodyRequest(buff, n);
 	 	if (client->getReadyToParseBody()) {
 	 		_parseClientBody(client); // Parse body
 	 	}
+	}
+
+	unsigned int contentLength = client->getRequest()->getContentLenght();
+	unsigned int lenBody = client->getRequest()->getLenBody();
+	if (lenBody > contentLength) {
+		client->getRequest()->setResponsCode("400");	// body too large
+	} else {
+
+		std::string	content_type = client->getRequest()->getMap("Content-Type");
+		bool		isMultiRequest = content_type.find("multipart") != std::string::npos || content_type.find("chunked") != std::string::npos;
+		if (isMultiRequest == false && lenBody < contentLength) {		// all the content in one request
+			client->getRequest()->setResponsCode("400");
+		}
 	}
 }
 

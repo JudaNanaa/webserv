@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/18 17:31:44 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/20 16:45:34 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,14 @@ class Request : public RawBits {
 		const unsigned int	&getContentLenght(void) const;
 		const int &getMethode(void) const;
 		const std::string &getResponsCode(void) const;
-    const std::vector<File*>& getFile(void) const;
-    std::string& getMap(std::string key);
+		const std::vector<File*>& getFile(void) const;
+		std::string& getMap(std::string key);
 		
 		/*	SETTER	*/
 
 		void	method( int newMethod );
 		void	host( std::string newHost );
+		void	setStatus( t_state newStatus );
 		void	path( std::string newPath );
 		void	add( std::string key, std::string value );
 		void	setSizeBody(unsigned int nb);
