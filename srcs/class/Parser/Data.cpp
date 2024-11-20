@@ -46,3 +46,7 @@ Data& Data::operator=(const Data& src) {
   }
   return *this;
 }
+
+bool Data::checkLocation(std::string path) {
+  return _locations.find(path) != _locations.end();
+}

@@ -32,6 +32,7 @@ class Server {
 		int _socket_fd;
 		std::string _host[2];
 		std::map<int, Client*> _clientMap;
+
 		void addToEpoll(int fd, uint32_t events);
 			int waitFdsToBeReady(void);
 		void _parseClientHeader(Client *client);
@@ -54,7 +55,11 @@ class Server {
 		int nbOfClient(void) const;
 		void addClientRequest(int fd);
 		void sendResponse(std::ifstream &file, int fd, Client *client);
+    void sendRedirect(std::string redirect, int fd, Client *client);
 		void giveClientResponse(int fd);
+    void giveClientResponseByLocation(int fd);
+    void MergeLocationData(std::string path);
+
     	Data *_data;
 
     //request Parsing

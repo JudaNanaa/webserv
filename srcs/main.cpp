@@ -38,9 +38,9 @@ int main(int argc, char **argv) {
 		std::cerr << "Need only one argument" << std::endl;
 		return 1;
 	}
-  	std::vector<Server> servVec;
-  	try {
-		servVec = Pars::parse(argv[1]);
+  std::vector<Server> servVec;
+  try {
+    servVec = Pars::parse(argv[1]);
 	} catch (std::exception &e) {
 		std::cout << "Error : " << e.what() << std::endl;
 		return 1;

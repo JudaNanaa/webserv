@@ -135,6 +135,44 @@ void Server::sendResponse(std::ifstream &file, int fd, Client *client) {
 		throw std::runtime_error("Can't send the message !");
 }
 
+void Server::sendRedirect(std::string redirect, int fd, Client *client) {
+	Request *clientRequest;
+
+	clientRequest = client->getRequest();
+	int code;
+
+	code = atoi(clientRequest->getResponsCode().c_str());
+  std::ostringstream oss;
+  oss << "HTTP/1.1 " << code << " " << getMessageCode(code) << "\r\n"; 
+  oss << "Location: " << redirect << "\r\n";
+  oss << "Content-Length: 0\r\n";
+  oss << "\r\n";
+
+  std::string response = oss.str();	// std::cerr << "RESPONSE : " << std::endl;
+	// std::cerr << response << std::endl;
+
+	if (send(fd, response.c_str(), response.size(), MSG_EOR) == -1)
+		throw std::runtime_error("Can't send the message !");
+}
+
+
+void Server::giveClientResponseByLocation(int fd) {
+  Client* client = getClient(fd);
+  Location location = _data->_locations[client->getRequest()->path()];
+  
+	if (client->isReadyToResponse() == false)
+		return;
+
+  if (!location.redirect().empty()) {
+	  client->getRequest()->setResponsCode("302");
+    std::cerr << "redirected on : " + location.redirect() << std::endl;
+    sendRedirect(location.redirect(), fd, client);
+  }
+  else {
+    std::cerr << "no redirect field" << _data->_root + client->getRequest()->path() << std::endl;
+  }
+}
+
 void Server::giveClientResponse(int fd) {
 	Client *client;
 	std::ifstream file;
@@ -142,7 +180,12 @@ void Server::giveClientResponse(int fd) {
 	client = getClient(fd);
 	if (client->isReadyToResponse() == false)
 		return;
-	if (client->getRequest()->getResponsCode() == "200") {
+  if (_data->checkLocation(client->getRequest()->path())) {
+    std::cerr << "location find !" << std::endl;
+    giveClientResponseByLocation(fd);
+    return ;
+  }
+  else if (client->getRequest()->getResponsCode() == "200") {
 		if (client->getRequest()->path() == "/") {
 			
 			std::cerr << "root : " + _data->_root << std::endl;
@@ -155,7 +198,6 @@ void Server::giveClientResponse(int fd) {
 			file.open((_data->_root + client->getRequest()->path()).c_str());
 		}
 		if (file.fail()) {
-			std::cerr << "TRIGGER" << std::endl;
 			client->getRequest()->setResponsCode("404");
 		}
 	}

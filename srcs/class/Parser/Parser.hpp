@@ -25,6 +25,8 @@ struct Data {
     Data();
     ~Data();
     Data& operator=(const Data& src);
+    bool checkLocation(std::string path);
+
     int				_port;
     std::string		_serverName;
     std::string		_root;
