@@ -168,6 +168,7 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 					this->handleClientOut(fd);
 				}
 			}
+
 		}
 	}
 }

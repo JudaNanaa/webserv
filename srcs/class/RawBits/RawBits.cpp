@@ -97,7 +97,7 @@ void RawBits::BuffToRaw(const char *buff, const int n) {
 long RawBits::find(const char *str) const {
     size_t lenStr = strlen(str);
     for (unsigned int i = 0; i <= _lenRequest - lenStr; i++) {
-        if (std::memcmp(&_request[i], str, lenStr) == 0)
+		if (std::memcmp(&_request[i], str, lenStr) == 0)
             return i;
     }
     return -1;
