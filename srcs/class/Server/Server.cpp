@@ -151,13 +151,13 @@ void Server::_parseClientHeader(Client *client) {
 	std::cout << "DEBUG HEADER: \n" << header << std::endl;
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
-		throw std::invalid_argument("Error header: " + headerSplit[0]);
+		throw std::invalid_argument("Error header 1: " + headerSplit[0]);
 	}
 
 	lineSplit = split(headerSplit[0], " ");
 	if (lineSplit.size() != 3) { // not always 3 part
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
-		throw std::invalid_argument("Error header: " + headerSplit[0]);
+		throw std::invalid_argument("Error header 2: " + headerSplit[0]);
 	}
 
 	try {
@@ -249,15 +249,16 @@ void Server::addClientRequest(int fd) {
 	 	client->pushHeaderRequest(buff, n);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
+
 			Request *clientRequest = client->getRequest();
 			if (clientRequest->getMethode() == POST_) {
-					if (clientRequest->getLenBody() <= clientRequest->getContentLenght()) {
+					if (clientRequest->getLenBody() == clientRequest->getContentLenght()) {
 						_parseClientBody(client); // Parse body
 					} else if (clientRequest->getLenBody() > clientRequest->getContentLenght()) {
 						client->getRequest()->setResponsCode("400");
 						client->setReadyToresponse(true);
 					}
-		}
+			}
 		}
 	}
 	else if (client->whatToDo() == ON_BODY) {
@@ -274,11 +275,11 @@ void Server::addClientRequest(int fd) {
 		client->getRequest()->setResponsCode("400");	// body too large
 	} else {
 
-		std::string	content_type = client->getRequest()->getMap("Content-Type");
-		bool		isMultiRequest = content_type.find("multipart") != std::string::npos || content_type.find("chunked") != std::string::npos;
-		if (isMultiRequest == false && lenBody < contentLength) {		// all the content in one request
-			client->getRequest()->setResponsCode("400");
-		}
+		// std::string	content_type = client->getRequest()->getMap("Content-Type");
+		// bool		isMultiRequest = content_type.find("multipart") != std::string::npos || content_type.find("chunked") != std::string::npos;
+		// if (isMultiRequest == false && lenBody < contentLength) {		// all the content in one request
+		// 	client->getRequest()->setResponsCode("400");
+		// }
 	}
 }
 
