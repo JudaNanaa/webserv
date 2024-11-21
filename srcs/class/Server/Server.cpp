@@ -256,33 +256,40 @@ void Server::addClientRequest(int fd) {
 			} else if (clientRequest->getLenBody() > clientRequest->getContentLenght()) {
 				client->getRequest()->setResponsCode("400");
 				client->setReadyToresponse(true);
-			}
+			} else {
+				
+				try {
+					if (client->getRequest()->find("Content-Type").find("multipart") == std::string::npos) {		// body in 1 request
+						if (clientRequest->getLenBody() < clientRequest->getContentLenght()) {
+							client->getRequest()->setResponsCode("400");
+							client->setReadyToresponse(true);
+						}
+					}
+				} catch (...) {}
+			}	
 		}
 	}
 	else if (client->whatToDo() == ON_BODY) {
-		std::cerr << "ON BODY" << std::endl;
 		client->pushBodyRequest(buff, n);
 	 	if (client->getReadyToParseBody()) {
 	 		_parseClientBody(client); // Parse body
 	 	}
 	}
 
-	bool			haveBody;
 	unsigned int	contentLength = client->getRequest()->getContentLenght();
 	unsigned int	lenBody = client->getRequest()->getLenBody();
 	try {
 		client->getRequest()->find("Content-Length");
-		haveBody = true;
-	} catch (std::exception &e) {
-		haveBody = false;
-	}
+		bool haveBody = true;
+		if (haveBody && lenBody > contentLength) {
+			client->getRequest()->setResponsCode("400");	// body too large
+		} else if (haveBody == false) {
 
-	if (haveBody && lenBody > contentLength) {
-		client->getRequest()->setResponsCode("400");	// body too large
-	} else if (haveBody == false) {
+			client->setReadyToresponse(true);
+		}
+	} catch (std::exception &e) {}
 
-		client->setReadyToresponse(true);
-	}
+	
 }
 
 bool Server::checkAllowMethodes(std::string methode) {
