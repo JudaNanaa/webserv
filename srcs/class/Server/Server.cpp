@@ -154,24 +154,12 @@ void Server::_parseClientHeader(Client *client) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		throw std::invalid_argument("Error header 1: " + headerSplit[0]);
 	}
-
 	lineSplit = split(headerSplit[0], " ");
 	if (lineSplit.size() != 3) { // not always 3 part
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		throw std::invalid_argument("Error header 2: " + headerSplit[0]);
 	}
-
-	try {
-		checkAllowMethodes(lineSplit[0]);
-   		clientRequest->setMethode(lineSplit[0]);
-	} catch (...) {
-		clientRequest->setResponsCode("405");
-		return;
-	}
-
-	clientRequest->path(lineSplit[1]);
-  std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
-
+	// clientRequest->path(lineSplit[1]);
 	if (lineSplit[2].compare("HTTP/1.1") != 0) {
 		// le htpp nest pas bon !!
 		clientRequest->setResponsCode("505");
@@ -182,7 +170,7 @@ void Server::_parseClientHeader(Client *client) {
 			it != ite; it++) {
 		_parseRequestLine(*it, clientRequest);
 	}
-	// std::cout << "REQUEST:\n" << *clientRequest << std::endl;
+	// std::cout << "REQUEST:\n" << *clientRequest << std::endl; 
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
 		clientRequest->setSizeBody(atoi(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;
@@ -195,9 +183,8 @@ void Server::_parseClientHeader(Client *client) {
 			}
 		}
 	} else {
-		client->setReadyToresponse(true);
+		client->setReadyToresponse(true); 
 	}
-
 }
 
 std::string generateFilename(std::string baseName) {
@@ -221,6 +208,8 @@ void Server::_parseClientBody(Client *client) {
 	// }
 	std::string filename;
 	client->getRequest()->printBody();
+	// TODO: Si path != cgi et pas de multipart form data  alors return instant et repondre 200
+	// if path request == cgi alors envoye le contenu du body dans l'entree standart du cgi
 	client->getRequest()->checkBondaries();
 	std::vector<File*> files = client->getRequest()->getFile();
 	std::cerr << "test okoo" << std::endl;
@@ -247,37 +236,16 @@ void Server::addClientRequest(int fd) {
 	if (n == -1) {
 		throw std::runtime_error("Can't recv the message !");
 	}
-	if (n == 0)
-		return;
 	buff[n] = '\0';
 	if (client->whatToDo() == ON_HEADER) {
 	 	client->pushHeaderRequest(buff, n);
-			client->setUseBuffer(false);
+		client->setUseBuffer(false);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
-
-			Request *clientRequest = client->getRequest();
-    //   // TODO: ⬇️   on dois seulement se baser sur le state pour savoir si on dois parser ⬇
-			if (clientRequest->getLenBody() == clientRequest->getContentLenght()) {
-				_parseClientBody(client); // Parse body
-			} else if (clientRequest->getLenBody() > clientRequest->getContentLenght()) {
-				client->getRequest()->setResponsCode("400");
-				client->setReadyToresponse(true);
-			} else {
-				
-				try {
-          //TODO: ⬇️  c'est pas ici qu'on doit checker ca ⬇
-					if (client->getRequest()->find("Content-Type").find("multipart") == std::string::npos) {		// body in 1 request
-						if (clientRequest->getLenBody() < clientRequest->getContentLenght()) {
-							client->getRequest()->setResponsCode("400");
-							client->setReadyToresponse(true);
-						}
-					}
-				} catch (...) {}
-			}
 		}
 	}
 	if (client->whatToDo() == ON_BODY) {
+		std::cerr << "on lit le buffer : " << client->getUseBuffer() << std::endl;
 		client->pushBodyRequest(buff, n);
 	 	if (client->getReadyToParseBody()) {
 	 		_parseClientBody(client); // Parse body
@@ -288,16 +256,13 @@ void Server::addClientRequest(int fd) {
 	unsigned int	contentLength = client->getRequest()->getContentLenght();
 	unsigned int	lenBody = client->getRequest()->getLenBody();
 	try {
-		client->getRequest()->find("Content-Length");
-		bool haveBody = true; // ???????????????????
-		if (haveBody && lenBody > contentLength) {
+		client->getRequest()->find("Content-Length");		// throw if not found
+		if (lenBody > contentLength) {
 			client->getRequest()->setResponsCode("400");	// body too large
-		} else if (haveBody == false) { //comment il peu etre false ?? tu le definie a true sans jamais change sa valeur
-
-			client->setReadyToresponse(true);
 		}
-	} catch (std::exception &e) {}
-	
+	} catch (std::exception &e) {
+		client->setReadyToresponse(true);
+	}
 }
 
 bool Server::checkAllowMethodes(std::string methode) {

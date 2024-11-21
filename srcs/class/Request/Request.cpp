@@ -32,6 +32,14 @@ Request::~Request() {
 	
 }
 
+void Request::setIsACgi(bool boolean) {
+	_isCgi = boolean;
+}
+
+bool Request::isACgi(void) const {
+	return _isCgi;
+}
+
 int	Request::method( void	) const {
 	return (_method);
 }
@@ -116,7 +124,6 @@ t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 	else if (RawBits::getLenBody() > _contentLenght) {
    		setResponsCode("400");
 		return READY_PARSE_BODY;
-
 	}
 	return NOT_READY;
 }
