@@ -186,6 +186,7 @@ void Server::_parseClientHeader(Client *client) {
 		clientRequest->setSizeBody(atoi(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;
 		//TODO : secure this (si Content-Lenght ou Content-Type ne sont pas present dans la requete on throw une exception et on ne renvoie pas de reponse au client)
+    //alors qu'on doit en renvoyer une
 		if (clientRequest->isKeyfindInHeader("Content-Type")) {
 			if (clientRequest->isKeyfindInHeader("boundary=")) {
 				bondary = clientRequest->find("Content-Type").substr(clientRequest->find("Content-Type").find("boundary=") + 9);
@@ -251,6 +252,7 @@ void Server::addClientRequest(int fd) {
 	 		_parseClientHeader(client);
 
 			Request *clientRequest = client->getRequest();
+      // TODO: ⬇️   on dois seulement se baser sur le state pour savoir si on dois parser ⬇
 			if (clientRequest->getLenBody() == clientRequest->getContentLenght()) {
 				_parseClientBody(client); // Parse body
 			} else if (clientRequest->getLenBody() > clientRequest->getContentLenght()) {
@@ -259,6 +261,7 @@ void Server::addClientRequest(int fd) {
 			} else {
 				
 				try {
+          //TODO: ⬇️  c'est pas ici qu'on doit checker ca ⬇
 					if (client->getRequest()->find("Content-Type").find("multipart") == std::string::npos) {		// body in 1 request
 						if (clientRequest->getLenBody() < clientRequest->getContentLenght()) {
 							client->getRequest()->setResponsCode("400");
@@ -280,10 +283,10 @@ void Server::addClientRequest(int fd) {
 	unsigned int	lenBody = client->getRequest()->getLenBody();
 	try {
 		client->getRequest()->find("Content-Length");
-		bool haveBody = true;
+		bool haveBody = true; // ???????????????????
 		if (haveBody && lenBody > contentLength) {
 			client->getRequest()->setResponsCode("400");	// body too large
-		} else if (haveBody == false) {
+		} else if (haveBody == false) { //comment il peu etre false ?? tu le definie a true sans jamais change sa valeur
 
 			client->setReadyToresponse(true);
 		}
