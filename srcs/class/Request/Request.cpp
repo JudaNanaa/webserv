@@ -105,14 +105,18 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 	return READY_PARSE_HEADER;
 }
 
-t_parse	Request::addBodyRequest(char *buff, int n) {
-	RawBits::appendBody(buff, n);
-	RawBits::BuffToRaw(buff, n);
+t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
+	if (add == true) {
+		RawBits::appendBody(buff, n);
+		RawBits::BuffToRaw(buff, n);
+	}
 	if (RawBits::getLenBody() == _contentLenght) {
 		return READY_PARSE_BODY;
 	}
 	else if (RawBits::getLenBody() > _contentLenght) {
    		setResponsCode("400");
+		return READY_PARSE_BODY;
+
 	}
 	return NOT_READY;
 }

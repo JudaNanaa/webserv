@@ -1,0 +1,13 @@
+cgi-bin
+configExample.conf
+docker-compose.yml
+Dockerfile
+easyParsTest.conf
+includes
+ls
+Makefile
+ok
+srcs
+test.py
+URIs
+webserv

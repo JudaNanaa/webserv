@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/19 01:20:27 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/21 15:02:03 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,32 +180,32 @@ void Server::giveClientResponse(int fd) {
 	client = getClient(fd);
 	if (client->isReadyToResponse() == false)
 		return;
-  if (_data->checkLocation(client->getRequest()->path())) {
-    std::cerr << "location find !" << std::endl;
-    giveClientResponseByLocation(fd);
-    return ;
-  }
-  else if (client->getRequest()->getResponsCode() == "200") {
-		if (client->getRequest()->path() == "/") {
-			
-			std::cerr << "root : " + _data->_root << std::endl;
-			file.open((_data->_root + _data->_index).c_str());
-			std::cerr << "if root : " << _data->_root + _data->_index << std::endl;
-
-		}
-		else {
-			std::cerr << "if no root : " << _data->_root + client->getRequest()->path() << std::endl;
-			file.open((_data->_root + client->getRequest()->path()).c_str());
-		}
-		if (file.fail()) {
-			client->getRequest()->setResponsCode("404");
-		}
+	if (_data->checkLocation(client->getRequest()->path())) {
+		std::cerr << "location find !" << std::endl;
+		giveClientResponseByLocation(fd);
+		return ;
 	}
+	else if (client->getRequest()->getResponsCode() == "200") {
+			if (client->getRequest()->path() == "/") {
+				
+				std::cerr << "root : " + _data->_root << std::endl;
+				file.open((_data->_root + _data->_index).c_str());
+				std::cerr << "if root : " << _data->_root + _data->_index << std::endl;
+
+			}
+			else {
+				std::cerr << "if no root : " << _data->_root + client->getRequest()->path() << std::endl;
+				file.open((_data->_root + client->getRequest()->path()).c_str());
+			}
+			if (file.fail()) {
+				client->getRequest()->setResponsCode("404");
+			}
+		}
 	// std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
 	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
 	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
 
-  /*std::cout << "SEND RESPONSE" << std::endl;*/
+  	std::cerr << "SEND RESPONSE" << std::endl;
 
 	sendResponse(file, fd, client); //this methode send response with appropriate code
 	client->cleanRequest();

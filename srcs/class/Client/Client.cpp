@@ -34,6 +34,15 @@ const bool &Client::getReadyToParseBody(void) const {
 	return _readyToParseBody;
 }
 
+void Client::setUseBuffer(bool boolean) {
+	_useBuffer = boolean;
+}
+
+bool Client::getUseBuffer(void) const {
+	return _useBuffer;
+}
+
+
 const t_state &Client::whatToDo(void) const {
 	return _request->getStatus();
 }
@@ -67,11 +76,7 @@ void Client::pushHeaderRequest(char *str, int n) {
 void Client::pushBodyRequest(char *str, int n) {
 	t_parse result;
 
-	if (_request->getContentLenght() == 0) {	//	normally not needed
-		return (setReadyToresponse(true));
-	}
-	
-	result = this->_request->addBodyRequest(str, n);
+	result = this->_request->addBodyRequest(str, n, _useBuffer);
 	if (result == READY_PARSE_BODY)
 		_readyToParseBody = true;
 	else

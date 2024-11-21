@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/20 16:45:34 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/21 14:43:36 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ class Request : public RawBits {
 		void setResponsCode(std::string code);
 		
 		t_parse addHeaderRequest(char *buff, int n);
-		t_parse addBodyRequest(char *buff, int n);
+		t_parse addBodyRequest(char *buff, int n, bool add);
     	void addServer(Server* server);
 		void addRequestToMap(std::string key, std::string value);
 		bool isKeyfindInHeader(std::string const &key) const;

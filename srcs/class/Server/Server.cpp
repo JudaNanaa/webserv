@@ -75,7 +75,7 @@ void Server::init(void) {
 	
 	std::memset(&server_addr, 0, sizeof(struct sockaddr_in));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = INADDR_ANY;
+	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	server_addr.sin_port = htons(this->_data->_port);
 
 	// Link socket
@@ -88,6 +88,7 @@ void Server::init(void) {
 	}
 	std::stringstream ss;
 	ss << this->_data->_port;
+	// this->_host[0] = this->_data->_serverName.c_str() + ":" + ss.str();
 	this->_host[0] = "127.0.0.1:" + ss.str();
 	this->_host[1] = "localhost:" + ss.str();
 	std::cout << "server on : http://" << this->_host[0] << std::endl;
@@ -188,14 +189,15 @@ void Server::_parseClientHeader(Client *client) {
 		//TODO : secure this (si Content-Lenght ou Content-Type ne sont pas present dans la requete on throw une exception et on ne renvoie pas de reponse au client)
     //alors qu'on doit en renvoyer une
 		if (clientRequest->isKeyfindInHeader("Content-Type")) {
-			if (clientRequest->isKeyfindInHeader("boundary=")) {
-				bondary = clientRequest->find("Content-Type").substr(clientRequest->find("Content-Type").find("boundary=") + 9);
+			if (clientRequest->find("Content-Type").find("boundary") != std::string::npos) {
+				bondary = clientRequest->find("Content-Type").substr(clientRequest->find("Content-Type").find("boundary") + 9);
 				clientRequest->setBondary(const_cast<char*>(bondary.c_str()));
 			}
 		}
 	} else {
 		client->setReadyToresponse(true);
 	}
+
 }
 
 std::string generateFilename(std::string baseName) {
@@ -214,14 +216,15 @@ std::string generateFilename(std::string baseName) {
 }
 
 void Server::_parseClientBody(Client *client) {
-	if (client->getRequest()->getContentLenght() == 0) {
-		return (client->setReadyToresponse(true));
-	}
-
+	// if (client->getRequest()->getContentLenght() == 0) {	
+	// 	return (client->setReadyToresponse(true));
+	// }
 	std::string filename;
 	client->getRequest()->printBody();
 	client->getRequest()->checkBondaries();
 	std::vector<File*> files = client->getRequest()->getFile();
+	std::cerr << "test okoo" << std::endl;
+	std::cerr << "file size == " << files.size() << std::endl;
 
 	for (size_t i = 0; i < files.size(); i++) {
 		filename = generateFilename( files[i]->get("filename")); // need file extension
@@ -239,6 +242,7 @@ void Server::addClientRequest(int fd) {
 	Client *client;
 
 	client = getClient(fd);
+	client->setUseBuffer(true);
 	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
 	if (n == -1) {
 		throw std::runtime_error("Can't recv the message !");
@@ -248,11 +252,12 @@ void Server::addClientRequest(int fd) {
 	buff[n] = '\0';
 	if (client->whatToDo() == ON_HEADER) {
 	 	client->pushHeaderRequest(buff, n);
+			client->setUseBuffer(false);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
 
 			Request *clientRequest = client->getRequest();
-      // TODO: ⬇️   on dois seulement se baser sur le state pour savoir si on dois parser ⬇
+    //   // TODO: ⬇️   on dois seulement se baser sur le state pour savoir si on dois parser ⬇
 			if (clientRequest->getLenBody() == clientRequest->getContentLenght()) {
 				_parseClientBody(client); // Parse body
 			} else if (clientRequest->getLenBody() > clientRequest->getContentLenght()) {
@@ -269,13 +274,14 @@ void Server::addClientRequest(int fd) {
 						}
 					}
 				} catch (...) {}
-			}	
+			}
 		}
 	}
-	else if (client->whatToDo() == ON_BODY) {
+	if (client->whatToDo() == ON_BODY) {
 		client->pushBodyRequest(buff, n);
 	 	if (client->getReadyToParseBody()) {
 	 		_parseClientBody(client); // Parse body
+
 	 	}
 	}
 
@@ -291,7 +297,6 @@ void Server::addClientRequest(int fd) {
 			client->setReadyToresponse(true);
 		}
 	} catch (std::exception &e) {}
-
 	
 }
 

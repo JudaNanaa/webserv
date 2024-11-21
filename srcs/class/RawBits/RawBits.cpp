@@ -188,7 +188,6 @@ void	RawBits::checkBondaries( void  ) {
 	if (_boundary.empty()) {		/* no bondary */
 		return ;
 	}
-
 	size_t			boundaryPos = 0;
 	std::cerr << "debug boundary : " << _boundary << std::endl;
 	const int	boundarySize = _boundary.size();

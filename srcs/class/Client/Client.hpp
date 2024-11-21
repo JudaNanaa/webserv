@@ -10,6 +10,7 @@ class Server;
 class Client {
 	private:
 		int _fd;
+		bool _useBuffer;
 		bool _readyToParseHeader;
 		bool _readyToParseBody;
 		bool _readyToResponse;
@@ -22,7 +23,8 @@ class Client {
 		Server *_server;
 
 		void	cleanRequest( void );
-
+		void setUseBuffer(bool boolean);
+		bool getUseBuffer(void) const;
 		int getClientFd(void) const;
 		void setReadyToresponse(bool boolean);
 		bool const &isReadyToResponse(void) const; 
