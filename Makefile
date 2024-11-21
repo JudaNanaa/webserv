@@ -89,6 +89,16 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	@printf "%s" $(notdir $<)
 	@printf "\e[0K\r"
 
+
+docker:
+	@if [ -z $$(docker images -q webserv-app) ]; then \
+		echo "🐳$(BLUE)Image webserv-app not found, work in progress...$(END)🐳"; \
+		docker-compose build; \
+		echo "🐳$(BLUE)Docker container is built $(END)✅"; \
+	fi
+	@echo "🐳$(BLUE)Docker container is built $(END)✅"
+	@docker-compose run --rm -p 8080-8089:8080-8089 app
+
 clean:
 	@rm -rf $(OBJS_DIR)
 	@echo "🧼🧼$(PURPLE)objects cleaned$(END)🧼🧼"
