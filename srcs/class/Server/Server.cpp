@@ -159,7 +159,15 @@ void Server::_parseClientHeader(Client *client) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		throw std::invalid_argument("Error header 2: " + headerSplit[0]);
 	}
-	// clientRequest->path(lineSplit[1]);
+	try {
+		checkAllowMethodes(lineSplit[0]);
+   		clientRequest->setMethode(lineSplit[0]);
+	} catch (...) {
+		clientRequest->setResponsCode("405");
+		return;
+	}
+	clientRequest->path(lineSplit[1]);
+	std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
 	if (lineSplit[2].compare("HTTP/1.1") != 0) {
 		// le htpp nest pas bon !!
 		clientRequest->setResponsCode("505");
