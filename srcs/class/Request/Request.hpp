@@ -49,6 +49,8 @@ class Request : public RawBits {
 		Server *_server;
 		unsigned int _contentLenght;
 		Client *_client;
+    
+    std::string upload_folder;
 
 		void	parseRequest(void);
 		void	parseRequestLine( std::string line );

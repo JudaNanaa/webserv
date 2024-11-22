@@ -129,7 +129,10 @@ t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 }
 
 std::string& Request::getMap(std::string key) {
-  return _others[key];
+  static std::string def = "";
+  if (_others.find("key") != _others.end())
+    return _others[key];
+  return def;
 }
 
 // void	Request::parseRequestLine( std::string line ) {
