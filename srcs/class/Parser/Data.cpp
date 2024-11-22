@@ -19,7 +19,7 @@ Data::Data() {
   _root = "";
   _serverName = "";
   _port = 0;
-  _cgi = "";
+  // _cgi = "";
   _autoIndex = false;
   _errorPage = "";
   _uploadFolder = "";
@@ -51,9 +51,12 @@ Data& Data::operator=(const Data& src) {
 Location *Data::checkLocation(std::string path) {
   if (_locations.find(path) != _locations.end())
     return &(_locations.find(path))->second;
-  for (std::map<std::string, Location>::iterator it; it != _locations.end(); it++) {
-    if (std::strncmp(it->first.c_str(), path.c_str(), it->first.length()) == 0)
-      return &it->second;
+  for (std::map<std::string, Location>::iterator it = _locations.begin(); it != _locations.end(); it++) {
+    std::cerr << "CHECK" << std::endl;
+    if (!it->first.empty()) {
+      if (std::strncmp(it->first.c_str(), path.c_str(), it->first.length()) == 0)
+        return &it->second;
+    }
   }
   return NULL;
 }

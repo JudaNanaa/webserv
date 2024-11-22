@@ -140,7 +140,7 @@ void	Server::handleLocation(Client *client) {
   }
   //check de la body Size
   if (request->getContentLenght()) {
-    if (location->maxBodySize() < request->getContentLenght()) {
+    if ((unsigned)location->maxBodySize() < request->getContentLenght()) {
 
       request->setResponsCode("413");
       client->setReadyToresponse(true);
@@ -166,6 +166,7 @@ bool	Server::isCgi( const std::string& path ) {
 }
 
 void	Server::handleCgi( Client *client ) {
+  (void)client;
 	// TODO
 }
 
@@ -203,6 +204,8 @@ void	Server::chooseParsing( Client *client ) {
 }
 
 void Server::parseHeaderWithLocation(Client *client, Request *request) {
+  (void)client;
+  (void)request;
   
 }
 
@@ -262,7 +265,7 @@ void Server::_parseClientHeader(Client *client) {
 				clientRequest->setBondary(const_cast<char*>(bondary.c_str()));
 			}
 		}
-	} 
+	}
 	//  else {
 	// 	client->setReadyToresponse(true); 
 	// }

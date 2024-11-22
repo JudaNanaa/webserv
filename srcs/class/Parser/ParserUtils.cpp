@@ -88,7 +88,9 @@ void Pars::addAutoIndex(Data* data, std::string w) {
 
 void Pars::addCgi(Data* data, std::string cgi) {
   //TODO: add cgi logic
-  data->_cgi = cgi;
+  if (cgi.find(" ") != std::string::npos) {
+    data->_cgi[cgi.substr(0, cgi.find(' '))] = cgi.substr(cgi.find(' '));
+  }
 }
 
 
