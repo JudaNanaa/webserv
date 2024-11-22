@@ -129,7 +129,24 @@ bool Server::isServerHost(std::string const &str) const {
 }
 
 void	Server::handleLocation(Client *client) {
+  Request* request = client->getRequest();
+  Location* location = _data->checkLocation(request->path());
+  //check des methodes
+  if (location->allowedMethods() )
+  if ((location->allowedMethods() & request->method()) == 0) {
+    request->setResponsCode("405");
+    client->setReadyToresponse(true);
+    return ;
+  }
+  //check de la body Size
+  if (request->getContentLenght()) {
+    if (location->maxBodySize() < request->getContentLenght()) {
 
+      request->setResponsCode("413");
+      client->setReadyToresponse(true);
+      return ;
+    }
+  }
 }
 
 bool	Server::isCgi( const std::string& path ) {
@@ -141,13 +158,11 @@ bool	Server::isCgi( const std::string& path ) {
 	if (extension == std::string::npos) {
 		return (false);
 	}
-
 	if (_data->_cgi.find(path.substr(extension)) != _data->_cgi.end()) {	//	valid CGI
 		return (true);
 	} else {
 		return (false);
 	}
-
 }
 
 void	Server::handleCgi( Client *client ) {
@@ -162,11 +177,17 @@ void	Server::handleRequest( Client *client ) {
 		client->setReadyToresponse(true);
 		return ;
 	}
+  //check de la body Size
+  if (request->getContentLenght()) {
+    if (_data->_clientMaxBodySize < request->getContentLenght()) {
 
-	
-
-	// TODO
-
+      request->setResponsCode("413");
+      client->setReadyToresponse(true);
+      return ;
+    }
+  }
+  // TODO: ajouter la logique par defaut
+  
 }
 
 void	Server::chooseParsing( Client *client ) {
@@ -182,7 +203,7 @@ void	Server::chooseParsing( Client *client ) {
 }
 
 void Server::parseHeaderWithLocation(Client *client, Request *request) {
-	
+  
 }
 
 void	Server::_parseRequestLine( std::string line, Request *clientRequest) {
@@ -241,9 +262,11 @@ void Server::_parseClientHeader(Client *client) {
 				clientRequest->setBondary(const_cast<char*>(bondary.c_str()));
 			}
 		}
-	} else {
-		client->setReadyToresponse(true); 
-	}
+	} 
+	//  else {
+	// 	client->setReadyToresponse(true); 
+	// }
+  chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
 	
 }
 
