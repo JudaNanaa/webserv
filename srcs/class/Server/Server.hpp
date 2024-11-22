@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/19 01:19:11 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/21 19:59:20 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <map>
 #include <ostream>
 #include <fstream>
+#include <string>
 
 # define MAX_CLIENTS 100
 # define MAX_EVENTS 1000
@@ -34,7 +35,7 @@ class Server {
 		std::map<int, Client*> _clientMap;
 
 		void addToEpoll(int fd, uint32_t events);
-			int waitFdsToBeReady(void);
+		int waitFdsToBeReady(void);
 		void _parseClientHeader(Client *client);
 		void _parseClientBody(Client *client);
 		void	_parseRequestLine( std::string line, Request *clientRequest);
@@ -59,8 +60,14 @@ class Server {
 		void giveClientResponse(int fd);
     void giveClientResponseByLocation(int fd);
     void MergeLocationData(std::string path);
-
+	Location *findLocation(const std::string &uri);
+	void chooseParsing( Client *client );
+	void parseHeaderWithLocation(Client *client, Request *request);
     	Data *_data;
+	bool	isCgi( const std::string& path );
+	void	handleCgi( Client *client );
+	void	handleLocation(Client *client);
+	void	handleRequest( Client *client );
 
     //request Parsing
     bool checkAllowMethodes(std::string methodes);

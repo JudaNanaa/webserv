@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/09 17:35:00 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/21 20:19:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ struct Data {
     Data();
     ~Data();
     Data& operator=(const Data& src);
-    bool checkLocation(std::string path);
+    Location *checkLocation(std::string path);
 
     int				_port;
     std::string		_serverName;
@@ -34,7 +34,7 @@ struct Data {
     int				_allowedMethods;
     std::string		_errorPage;
     bool			_autoIndex;
-    std::string		_cgi; // temporary a string maybe a special struc later
+    std::map<std::string, std::string>  _cgi; // temporary a string maybe a special struc later
     unsigned int	_clientMaxBodySize;
 	std::map<std::string, Location>	_locations;
     std::string		_index;

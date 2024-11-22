@@ -318,7 +318,7 @@ server on : http://127.0.0.1:8090
 --------------------ADDING CLIENT--------------------
 
 DEBUG HEADER: 
-GET / HTTP/1.1
+GET /cgi/calculate.html HTTP/1.1
 Host: localhost:8080
 User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
@@ -330,4 +330,23 @@ Sec-Fetch-Dest: document
 Sec-Fetch-Mode: navigate
 Sec-Fetch-Site: none
 Sec-Fetch-User: ?1
--------------------------------------PATH : /
+-------------------------------------PATH : /cgi/calculate.html
+DEBUG HEADER: 
+POST /cgi/calculatrice.php HTTP/1.1
+Host: localhost:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0
+Accept: */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Referer: http://localhost:8080/cgi/calculate.html
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 19
+Origin: http://localhost:8080
+Connection: keep-alive
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-origin
+-------------------------------------PATH : /cgi/calculatrice.php
+number1=2&number2=3
+--------------------REMOVING CLIENT--------------------
+

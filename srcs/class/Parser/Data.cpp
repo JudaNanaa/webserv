@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Data.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:35:03 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/08 20:29:01 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/21 21:58:03 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "Location.hpp"
 #include "Parser.hpp"
 
 Data::Data() {
@@ -47,6 +48,12 @@ Data& Data::operator=(const Data& src) {
   return *this;
 }
 
-bool Data::checkLocation(std::string path) {
-  return _locations.find(path) != _locations.end();
+Location *Data::checkLocation(std::string path) {
+  if (_locations.find(path) != _locations.end())
+    return &(_locations.find(path))->second;
+  for (std::map<std::string, Location>::iterator it; it != _locations.end(); it++) {
+    if (std::strncmp(it->first.c_str(), path.c_str(), it->first.length()) == 0)
+      return &it->second;
+  }
+  return NULL;
 }

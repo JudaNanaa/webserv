@@ -128,6 +128,63 @@ bool Server::isServerHost(std::string const &str) const {
 	return false;
 }
 
+void	Server::handleLocation(Client *client) {
+
+}
+
+bool	Server::isCgi( const std::string& path ) {
+	/*		Ou trouver les cgi ?	*/
+	// TODO
+	std::size_t	extension;
+
+	extension = path.find_last_of('.');
+	if (extension == std::string::npos) {
+		return (false);
+	}
+
+	if (_data->_cgi.find(path.substr(extension)) != _data->_cgi.end()) {	//	valid CGI
+		return (true);
+	} else {
+		return (false);
+	}
+
+}
+
+void	Server::handleCgi( Client *client ) {
+	// TODO
+}
+
+void	Server::handleRequest( Client *client ) {
+	Request *request = client->getRequest();
+
+	if ((_data->_allowedMethods & request->method()) == 0) {
+		request->setResponsCode("405");
+		client->setReadyToresponse(true);
+		return ;
+	}
+
+	
+
+	// TODO
+
+}
+
+void	Server::chooseParsing( Client *client ) {
+	Request	*request = client->getRequest();
+
+	if (_data->checkLocation(request->path()) != NULL) {
+		handleLocation(client);
+	} else if (isCgi(request->path()) == true) {
+		handleCgi(client);
+	} else {
+		handleRequest(client);
+	}
+}
+
+void Server::parseHeaderWithLocation(Client *client, Request *request) {
+	
+}
+
 void	Server::_parseRequestLine( std::string line, Request *clientRequest) {
 
 	if (line.find(": ") == std::string::npos)
@@ -159,26 +216,20 @@ void Server::_parseClientHeader(Client *client) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		throw std::invalid_argument("Error header 2: " + headerSplit[0]);
 	}
-	try {
-		checkAllowMethodes(lineSplit[0]);
-   		clientRequest->setMethode(lineSplit[0]);
-	} catch (...) {
-		clientRequest->setResponsCode("405");
-		return;
-	}
+	clientRequest->setMethode(lineSplit[0]);
 	clientRequest->path(lineSplit[1]);
+	
 	std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
 	if (lineSplit[2].compare("HTTP/1.1") != 0) {
 		// le htpp nest pas bon !!
 		clientRequest->setResponsCode("505");
 		return;
 	}
-
 	for (std::vector<std::string>::const_iterator it = headerSplit.begin() + 1, ite = headerSplit.end();
 			it != ite; it++) {
 		_parseRequestLine(*it, clientRequest);
 	}
-	// std::cout << "REQUEST:\n" << *clientRequest << std::endl; 
+	// std::cout << "REQUEST:\n" << *clientRequest << std::endl;
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
 		clientRequest->setSizeBody(atoi(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;
@@ -193,6 +244,7 @@ void Server::_parseClientHeader(Client *client) {
 	} else {
 		client->setReadyToresponse(true); 
 	}
+	
 }
 
 std::string generateFilename(std::string baseName) {
