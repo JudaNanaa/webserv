@@ -267,7 +267,7 @@ void Server::_parseClientHeader(Client *client) {
 		}
 	}
   	chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
-	
+	clientRequest->eraseInBody(0, clientRequest->findInBody("\r\n\r\n") + 4);		// erase header
 }
 
 std::string generateFilename(std::string baseName) {

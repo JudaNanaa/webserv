@@ -5,7 +5,7 @@
 Client::Client(int const fd, Server *server)
 	: _fd(fd), _server(server) {
 	_request = new Request(this);
-	this->_readyToResponse = false;
+	_readyToResponse = false;
 	_readyToParseHeader = false;
 }
 
@@ -17,11 +17,11 @@ Client::~Client() {
 
 Client &Client::operator=(Client const &other) {
 	if (this != &other) {
-		this->_fd = other._fd;
-		this->_readyToParseHeader = other._readyToParseHeader;
-		this->_readyToResponse = other._readyToResponse;
-		this->_request = other._request;
-		this->_server = other._server;
+		_fd = other._fd;
+		_readyToParseHeader = other._readyToParseHeader;
+		_readyToResponse = other._readyToResponse;
+		_request = other._request;
+		_server = other._server;
 	}
 	return *this;
 }
@@ -48,15 +48,15 @@ const t_state &Client::whatToDo(void) const {
 }
 
 int Client::getClientFd(void) const {
-	return this->_fd;
+	return _fd;
 }
 
 void Client::setReadyToresponse(bool boolean) {
-	this->_readyToResponse = boolean;
+	_readyToResponse = boolean;
 }
 
 bool const &Client::isReadyToResponse(void) const {
-	return	this->_readyToResponse;
+	return	_readyToResponse;
 } 
 
 Request *Client::getRequest(void) {
@@ -66,7 +66,7 @@ Request *Client::getRequest(void) {
 void Client::pushHeaderRequest(char *str, int n) {
 	t_parse result;
 
-	result = this->_request->addHeaderRequest(str, n);
+	result = _request->addHeaderRequest(str, n);
 	if (result == READY_PARSE_HEADER)
 		_readyToParseHeader = true;
 	else
@@ -76,9 +76,11 @@ void Client::pushHeaderRequest(char *str, int n) {
 void Client::pushBodyRequest(char *str, int n) {
 	t_parse result;
 
-	result = this->_request->addBodyRequest(str, n, _useBuffer);
+	result = _request->addBodyRequest(str, n, _useBuffer);
 	if (result == READY_PARSE_BODY)
 		_readyToParseBody = true;
+	else if (result == ERROR)
+		_readyToResponse = true;
 	else
 		_readyToParseBody = false;
 }

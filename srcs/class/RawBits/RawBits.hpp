@@ -6,7 +6,14 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/18 17:58:30 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/23 17:45:59 by madamou          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
+/*   Updated: 2024/11/23 17:43:42 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +26,22 @@
 #include <vector>
 #include <map>
 
+# define FINISHED 1
+# define NOT_FINISHED 0
+
+# define STOP 1
+# define CONTINUE 0
+
 class RawBits {
 	private:
 		std::string _header;
 		// 		 |  filename | content ...
 		std::vector<File *> _files;
-		char *_body;
-		char *_request;
-		std::string _boundary;
-		char *_tmp;
+		int					_state;
+		char *				_body;
+		char *				_request;
+		std::string 		_boundary;
+		char *				_tmp;
 		unsigned int		_lenBody;
 		unsigned int		_lenRequest;
 
@@ -37,7 +51,7 @@ class RawBits {
 		~RawBits();
 
 		// RawBits &operator+=(const char *str);
-		void 				checkBondaries( void  );
+		int 				checkBondaries( void  );
 		void				deleteTmp(void);
 		const std::string&	getHeader(void) const; 
 		const char *		getBody(void) const; 
@@ -56,6 +70,9 @@ class RawBits {
     	int         		compareInBody(char *s, size_t n);
     	void        		eraseInBody(size_t pos, size_t n);
 		void				cleanFiles(void);
+		int					handleFileHeader( void );
+		void				flushBuffer( long pos, long n = 0 );
+		void				flushBuffer( std::string& buff );
 };
 
 #endif

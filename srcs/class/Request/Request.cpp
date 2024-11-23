@@ -14,7 +14,7 @@
 #include "../../../includes/utils.hpp" 
 #include "../Server/Server.hpp"
 #include <map>
-#include <sstream>
+#include <fstream>
 #include <stdexcept>
 #include <string>
 #include <variant>
@@ -114,17 +114,34 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 	return READY_PARSE_HEADER;
 }
 
+void	Request::uploadBody(char *buff, int n) {
+
+	RawBits::appendBody(buff, n);
+	if (find("Content-Type").find("multipart") != std::string::npos) {
+		// find bondaries
+		if (RawBits::checkBondaries() == FINISHED) {	// transform this function
+			_client->setReadyToresponse(true);
+		}
+
+	} else {	// if no bondaries (?)
+		std::fstream	file(DEFAULT_UPLOAD_FILE);
+		if (file.fail())
+			throw std::invalid_argument("failed to open DEFAULT_UPLOAD_FILE");
+
+		file.write(buff, n);
+	}
+}
+
 t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 	if (add == true) {
-		RawBits::appendBody(buff, n);
-		RawBits::BuffToRaw(buff, n);
+		uploadBody(buff, n);
 	}
-	if (RawBits::getLenBody() == _contentLenght) {
-		return READY_PARSE_BODY;
-	}
-	else if (RawBits::getLenBody() > _contentLenght) {
+	// if (RawBits::getLenBody() == _contentLenght) {
+	// 	return READY_PARSE_BODY;
+	// }
+	if (RawBits::getLenBody() > _contentLenght) {
    		setResponsCode("400");
-		return READY_PARSE_BODY;
+		return ERROR;
 	}
 	return NOT_READY;
 }

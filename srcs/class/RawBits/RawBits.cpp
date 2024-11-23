@@ -28,6 +28,7 @@
 
 RawBits::RawBits(void) {
 	_request = NULL;
+	_state = ON_HEADER;
 	_body = NULL;
 	_lenBody = 0;
 	_lenRequest = 0;
@@ -183,55 +184,137 @@ int RawBits::compareInBody(char *s, size_t n) {
   return memcmp(_body, s, n);
 }
 
-void	RawBits::checkBondaries( void  ) {
+void	RawBits::flushBuffer( long pos, long n ) {
+	std::fstream	file(_files.back()->get("filename").c_str());
 
-	if (_boundary.empty()) {		/* no bondary */
-		return ;
-	}
-	size_t			boundaryPos = 0;
-	std::cerr << "debug boundary : " << _boundary << std::endl;
-	const int	boundarySize = _boundary.size();
-
-	// bondaryPos = findInBody(_bondary, bondaryPos);	/* no "--" before bondary */
-  	boundaryPos = findInBody(_boundary.c_str(), boundaryPos);
-	_tmp = substrBody(boundaryPos - 2, 2);
-	if (boundaryPos < 2 || std::memcmp(_tmp, "--", 2) != 0) {
-		throw std::invalid_argument("invalid bondaries 1");
-	}
-	deleteTmp();
-	_tmp = substrBody(boundaryPos + boundarySize, 2);
-	if (std::memcmp(_tmp, "--", 2) == 0) { 	/* end bondary as first  */
-		throw std::invalid_argument("invalid bondaries 2");
-	}
-	deleteTmp();
-	size_t			fileStart;
-	long			fileEnd;
-	std::string header;
-
-	while (true) {
-		fileStart = findInBody("\r\n\r\n", boundaryPos + boundarySize + 2) + 4;
-		if (std::memcmp(&_body[fileStart - 2], "--", 2) == 0) {	/* end bondary */
-			break;
-		}
-		fileEnd = findInBody(_boundary.c_str(), fileStart) - 4;
-		_tmp = substrBody(boundaryPos + boundarySize + 2, (fileStart - 4) - (boundaryPos + boundarySize + 2));
-		header = _tmp;
-		std::cerr << "header = ["<< header << "]"<< std::endl;
-		File 		*file = new File();
-		if (fileEnd == -1) {		/* bondary not found */
-			throw std::invalid_argument("invalid bondaries 3");
-		}
-
-		file->content(substrBody(fileStart, fileEnd - fileStart));	/* creating File */
-		file->lenFile(fileEnd - fileStart);
-		checkFileHeader(*file, header);
-		deleteTmp();
-		_files.push_back(file);
-
-		boundaryPos = findInBody(_boundary.c_str(), fileEnd + 2);	/* next bondary */
-		// fileStart = boundaryPos + boundarySize;
+	if (file.fail()) {
+		throw std::invalid_argument("failed to open " + _files.back()->get("filename"));
+	} else {
+		// file.clear();	(?)
+		file.write(&_body[pos], n);
 	}
 }
+
+void	RawBits::flushBuffer( std::string& buff ) {
+	std::fstream	file(_files.back()->get("filename").c_str());
+
+	if (file.fail()) {
+		// TODO
+	} else {
+		// file.clear();	(?)
+		file << buff;
+	}
+}
+
+int	RawBits::handleFileHeader( void ) {
+	long		headerEnd;
+	std::string	header;
+	const int	boundarySize = _boundary.size();
+
+	headerEnd = findInBody("\r\n\r\n", boundarySize + 2);
+	if (headerEnd == -1) {	/* header incomplete */
+		return STOP;
+	}
+
+	header = substrBody(boundarySize + 2, headerEnd - (boundarySize + 2));
+	// std::cerr << "header = ["<< header << "]"<< std::endl;
+	File 		*file = new File();
+	checkFileHeader(*file, header);
+	_files.push_back(file);
+
+	// delete already handled content
+	eraseInBody(0, headerEnd + 4);	// +4 for "\r\n\r\n"
+	
+	flushBuffer(header);	// can throw
+
+	_state = ON_BODY;
+	return (CONTINUE);
+}
+
+int	RawBits::checkBondaries( void  ) {
+
+	if (_boundary.empty()) {		/* no bondary */
+		// TODO: ?
+		std::cerr << "ERROR: no bondary" << std::endl;
+		return STOP;
+	}
+
+	std::cerr << "debug boundary : " << _boundary << std::endl;
+
+	while (true) {
+		if (_state == ON_HEADER) {
+			if (handleFileHeader() == STOP) 
+				return (NOT_FINISHED);
+		} if (_state == ON_BODY) {
+			long boundaryPos = findInBody(("--" + _boundary).c_str(), 0);
+
+			if (boundaryPos == -1) {
+				flushBuffer(0, _lenBody - (_boundary.size() + 2));		// in case a part of bondary is at the end
+				eraseInBody(0, _lenBody - (_boundary.size() + 2));
+				return (NOT_FINISHED);
+			} else {
+				flushBuffer(0, _lenBody - boundaryPos - 1);
+				eraseInBody(0, _lenBody - boundaryPos - 1);
+				if (&_body[boundaryPos] == ("--" + _boundary + "--")) {		// end bondary
+					return (FINISHED);
+				}
+				_state = ON_HEADER;
+				continue;
+			}
+		}
+	}
+
+}
+
+// void	RawBits::checkBondaries( void  ) {		/*		ORIGINAL	*/
+
+// 	if (_boundary.empty()) {		/* no bondary */
+// 		return ;
+// 	}
+// 	size_t			boundaryPos = 0;
+// 	std::cerr << "debug boundary : " << _boundary << std::endl;
+// 	const int	boundarySize = _boundary.size();
+
+// 	// bondaryPos = findInBody(_bondary, bondaryPos);	/* no "--" before bondary */
+//   	boundaryPos = findInBody(_boundary.c_str(), boundaryPos);
+// 	_tmp = substrBody(boundaryPos - 2, 2);
+// 	if (boundaryPos < 2 || std::memcmp(_tmp, "--", 2) != 0) {
+// 		throw std::invalid_argument("invalid bondaries 1");
+// 	}
+// 	deleteTmp();
+// 	_tmp = substrBody(boundaryPos + boundarySize, 2);
+// 	if (std::memcmp(_tmp, "--", 2) == 0) { 	/* end bondary as first  */
+// 		throw std::invalid_argument("invalid bondaries 2");
+// 	}
+// 	deleteTmp();
+// 	size_t			fileStart;
+// 	long			fileEnd;
+// 	std::string header;
+
+// 	while (true) {
+// 		fileStart = findInBody("\r\n\r\n", boundaryPos + boundarySize + 2) + 4;
+// 		if (std::memcmp(&_body[fileStart - 2], "--", 2) == 0) {	/* end bondary */
+// 			break;
+// 		}
+// 		fileEnd = findInBody(_boundary.c_str(), fileStart) - 4;
+// 		_tmp = substrBody(boundaryPos + boundarySize + 2, (fileStart - 4) - (boundaryPos + boundarySize + 2));
+// 		header = _tmp;
+// 		std::cerr << "header = ["<< header << "]"<< std::endl;
+// 		File 		*file = new File();
+// 		if (fileEnd == -1) {		/* bondary not found */
+// 			throw std::invalid_argument("invalid bondaries 3");
+// 		}
+
+// 		file->content(substrBody(fileStart, fileEnd - fileStart));	/* creating File */
+// 		file->lenFile(fileEnd - fileStart);
+// 		checkFileHeader(*file, header);
+// 		deleteTmp();
+// 		_files.push_back(file);
+
+// 		boundaryPos = findInBody(_boundary.c_str(), fileEnd + 2);	/* next bondary */
+// 		// fileStart = boundaryPos + boundarySize;
+// 	}
+// }
 
 const std::vector<File*>& RawBits::getRawFile(void) const {
   return _files;

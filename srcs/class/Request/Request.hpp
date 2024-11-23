@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/23 14:44:11 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/23 18:01:16 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,14 @@
 
 # define BUFFER_SIZE 1000000
 
+# define DEFAULT_UPLOAD_FILE "URIs/uploads/default"
+
 typedef enum s_parse
 {
 	NOT_READY,
 	READY_PARSE_HEADER,
 	READY_PARSE_BODY,
+	ERROR,
 }t_parse;
 
 typedef enum s_state
@@ -50,8 +53,6 @@ class Request : public RawBits {
 		unsigned int _contentLenght;
 		Client *_client;
 		bool _isRedirect;
-    
-    std::string upload_folder;
 
 		void	parseRequest(void);
 		void	parseRequestLine( std::string line );
@@ -93,7 +94,10 @@ class Request : public RawBits {
 		bool isKeyfindInHeader(std::string const &key) const;
 		void	setRedirect(bool b);
 		bool& 	getRedirect(void);
-		
+
+		/*	OTHERS	*/
+		void	uploadBody(char *buff, int n);
+
 		friend std::ostream& operator<<(std::ostream& os, const Request& request );
 };
 
