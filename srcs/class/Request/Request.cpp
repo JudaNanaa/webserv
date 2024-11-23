@@ -25,6 +25,7 @@ Request::Request(Client *client) : RawBits() {
 	_state = ON_HEADER;
 	_contentLenght = 0;
 	_ResponsCode = "200";
+	_isRedirect = false;
 	_client = client;
 }
 
@@ -135,85 +136,6 @@ std::string& Request::getMap(std::string key) {
   return def;
 }
 
-// void	Request::parseRequestLine( std::string line ) {
-
-// 	if (line.find(": ") == std::string::npos)
-// 		throw std::invalid_argument("invalid line: " + line);
-
-// 	std::string	value = line.substr(line.find(": ") + 2);
-
-// 	std::string key = line.erase(line.find(": "));	// erase the value (keep the key)
-
-// 	if (line == "HOST") {
-// 		throw std::invalid_argument("duplicate argument: HOST");
-// 	}
-// 	if (_others.find(key) != _others.end()) {	// key already seen
-// 		throw std::invalid_argument("duplicate argument: " + key);
-// 	}
-// 	_others[key] = value;
-
-// }
-
-// void	Request::parseRequest(void) {
-// 	std::string header;
-// 	std::vector<std::string> headerSplit;
-// 	std::vector<std::string> lineSplit;
-
-// 	std::cout << "Request incoming..." << std::endl;
-// 	header = _request.substr(0, _request.find("\r\n\r\n"));
-// 	headerSplit = split(header, "\r\n");
-
-// 	std::cout << "DEBUG HEADER: \n" << header << std::endl;
-
-// 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
-// 		// La premiere ligne est pas bonne donc faire une reponse en fonction
-// 		std::cout << "Error parseRequest 1" << std::endl;
-// 		return;
-// 	}
-
-// 	lineSplit = split(headerSplit[0], " ");
-// 	if (lineSplit.size() != 3) { // not always 3 part
-// 		// La premiere ligne est pas bonne donc faire une reponse en fonction
-// 		std::cout << "Error parseRequest 2" << std::endl;
-// 		return;
-// 	}
-
-// 	if (!_server->checkAllowMethodes(lineSplit[0]))
-//     	std::cout << "Error Invalid Method : [" + lineSplit[0] + "]" << std::endl; // need correct gesture
-
-// 	this->_path = lineSplit[1];
-// 	if (lineSplit[2].compare("HTTP/1.1") != 0) {
-// 		// le htpp nest pas bon !!
-// 		std::cout << "Error parseRequest 3" << std::endl;
-// 		return ;
-// 	}
-
-// 	lineSplit = split(headerSplit[1], ": "); // check line host
-// 	if (lineSplit.size() != 2) {
-// 		std::cout << "Error parseRequest 4" << std::endl;
-// 		return;
-// 	}
-// 	if (lineSplit[0].compare("Host") != 0) {
-// 		std::cout << "Error parseRequest2" << std::endl;
-// 		return;	
-// 	}
-// 	this->_Host = lineSplit[1];
-// 	if (_server->isServerHost(this->_Host) == false) { // check si le host est bien celui du server
-// 		std::cout << "Error parseRequest1" << std::endl;
-// 		return;
-// 	}
-
-// 	for (std::vector<std::string>::const_iterator it = headerSplit.begin() + 2, ite = headerSplit.end();
-// 			it != ite; it++) {
-// 		parseRequestLine(*it);
-// 	}
-
-// 	std::cout << "REQUEST:\n" << *this << std::endl;
-// 	if (_others.find("Content-Length") == _others.end()) {
-		
-// 	}
-// }
-
 std::ostream& operator<<(std::ostream& os, const Request& request ) {
 	os
 	<< "Request {\n"
@@ -273,4 +195,12 @@ const std::string& Request::getResponsCode(void) const {
 
 const std::vector<File*>& Request::getFile(void) const{
   return RawBits::getRawFile();
+}
+
+void Request::setRedirect(bool b) {
+	_isRedirect = b;
+}
+
+bool& Request::getRedirect(void) {
+	return _isRedirect;
 }

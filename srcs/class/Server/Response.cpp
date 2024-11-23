@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/21 15:02:03 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/23 14:51:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,14 +163,14 @@ void Server::giveClientResponseByLocation(int fd) {
 	if (client->isReadyToResponse() == false)
 		return;
 
-  if (!location.redirect().empty()) {
-	  client->getRequest()->setResponsCode("302");
-    std::cerr << "redirected on : " + location.redirect() << std::endl;
-    sendRedirect(location.redirect(), fd, client);
-  }
-  else {
-    std::cerr << "no redirect field" << _data->_root + client->getRequest()->path() << std::endl;
-  }
+	if (!location.redirect().empty()) {
+		client->getRequest()->setResponsCode("302");
+		std::cerr << "redirected on : " + location.redirect() << std::endl;
+		sendRedirect(location.redirect(), fd, client);
+	}
+	else {
+		std::cerr << "no redirect field" << _data->_root + client->getRequest()->path() << std::endl;
+	}
 }
 
 void Server::giveClientResponse(int fd) {
@@ -180,9 +180,11 @@ void Server::giveClientResponse(int fd) {
 	client = getClient(fd);
 	if (client->isReadyToResponse() == false)
 		return;
-	if (_data->checkLocation(client->getRequest()->path())) {
-		std::cerr << "location find !" << std::endl;
+	if (client->getRequest()->getRedirect()) { 
+		std::cerr << "location find ! with path == " + client->getRequest()->path() << std::endl;
 		giveClientResponseByLocation(fd);
+		client->cleanRequest();
+		client->setReadyToresponse(false);
 		return ;
 	}
 	else if (client->getRequest()->getResponsCode() == "200") {
@@ -207,6 +209,7 @@ void Server::giveClientResponse(int fd) {
 
   	std::cerr << "SEND RESPONSE" << std::endl;
 
+	std::cerr << "RESPONSE CODE : " << client->getRequest()->getResponsCode() << std::endl;
 	sendResponse(file, fd, client); //this methode send response with appropriate code
 	client->cleanRequest();
 	client->setReadyToresponse(false);

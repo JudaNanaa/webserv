@@ -1,26 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreur 400 - Requête invalide</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b, #f06595);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
 
-		<title>400</title>
+        .container {
+            max-width: 600px;
+        }
 
-		<link href="https://fonts.googleapis.com/css?family=Montserrat:700,900" rel="stylesheet">
-		<link type="text/css" rel="stylesheet" href="/styles/error.css" />
+        h1 {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+        }
 
-	</head>
-	<body>
-		<div id="error">
-			<div class="error">
-				<div class="error-code">
-					<h1>400</h1>
-					<h2>Bad Request</h2>
-				</div>
-				<p>[MESSAGE]</p>
-				<a href="/">Homepage</a>
-			</div>
-		</div>
-	</body>
+        p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        a {
+            display: inline-block;
+            text-decoration: none;
+            color: #f06595;
+            background-color: #ffffff;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 25px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #f06595;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>400</h1>
+        <p>Oups ! La requête que vous avez envoyée est invalide.</p>
+        <a href="/">Retour à l'accueil</a>
+    </div>
+</body>
 </html>

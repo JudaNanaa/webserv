@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:35:03 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/21 21:58:03 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/23 14:35:54 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ Data::Data() {
   _autoIndex = false;
   _errorPage = "";
   _uploadFolder = "";
-  _clientMaxBodySize = 0;
+  _clientMaxBodySize = -1;
 }
 
 Data::~Data() {}
@@ -40,10 +40,10 @@ Data& Data::operator=(const Data& src) {
     _uploadFolder = src._uploadFolder;
     _allowedMethods = src._allowedMethods;
     _clientMaxBodySize = src._clientMaxBodySize;
-	for (std::map<std::string, Location>::const_iterator it = src._locations.begin(), ite = src._locations.end();
-			it != ite; it++) {
-		_locations[it->first] = it->second;
-	}
+    for (std::map<std::string, Location>::const_iterator it = src._locations.begin(), ite = src._locations.end();
+        it != ite; it++) {
+      _locations[it->first] = it->second;
+    }
   }
   return *this;
 }
@@ -52,7 +52,7 @@ Location *Data::checkLocation(std::string path) {
   if (_locations.find(path) != _locations.end())
     return &(_locations.find(path))->second;
   for (std::map<std::string, Location>::iterator it = _locations.begin(); it != _locations.end(); it++) {
-    std::cerr << "CHECK" << std::endl;
+    // std::cerr << "CHECK" << std::endl;
     if (!it->first.empty()) {
       if (std::strncmp(it->first.c_str(), path.c_str(), it->first.length()) == 0)
         return &it->second;

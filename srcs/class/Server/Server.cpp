@@ -88,7 +88,6 @@ void Server::init(void) {
 	}
 	std::stringstream ss;
 	ss << this->_data->_port;
-	// this->_host[0] = this->_data->_serverName.c_str() + ":" + ss.str();
 	this->_host[0] = "127.0.0.1:" + ss.str();
 	this->_host[1] = "localhost:" + ss.str();
 	std::cout << "server on : http://" << this->_host[0] << std::endl;
@@ -132,14 +131,18 @@ void	Server::handleLocation(Client *client) {
   Request* request = client->getRequest();
   Location* location = _data->checkLocation(request->path());
   //check des methodes
-  if (location->allowedMethods() )
+
+  if (!location->redirect().empty()) {
+	request->setRedirect(true);
+  }
+
   if ((location->allowedMethods() & request->method()) == 0) {
     request->setResponsCode("405");
     client->setReadyToresponse(true);
     return ;
   }
   //check de la body Size
-  if (request->getContentLenght()) {
+  if (location->maxBodySize() > 0) {
     if ((unsigned)location->maxBodySize() < request->getContentLenght()) {
 
       request->setResponsCode("413");
@@ -179,16 +182,13 @@ void	Server::handleRequest( Client *client ) {
 		return ;
 	}
   //check de la body Size
-  if (request->getContentLenght()) {
-    if (_data->_clientMaxBodySize < request->getContentLenght()) {
-
-      request->setResponsCode("413");
-      client->setReadyToresponse(true);
-      return ;
-    }
-  }
-  // TODO: ajouter la logique par defaut
-  
+	if (_data->_clientMaxBodySize > 0) {
+		if (_data->_clientMaxBodySize < request->getContentLenght()) {
+		request->setResponsCode("413");
+		client->setReadyToresponse(true);
+		return ;
+		}
+	}
 }
 
 void	Server::chooseParsing( Client *client ) {
@@ -266,10 +266,7 @@ void Server::_parseClientHeader(Client *client) {
 			}
 		}
 	}
-	//  else {
-	// 	client->setReadyToresponse(true); 
-	// }
-  chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
+  	chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
 	
 }
 
@@ -289,17 +286,12 @@ std::string generateFilename(std::string baseName) {
 }
 
 void Server::_parseClientBody(Client *client) {
-	// if (client->getRequest()->getContentLenght() == 0) {	
-	// 	return (client->setReadyToresponse(true));
-	// }
 	std::string filename;
 	client->getRequest()->printBody();
 	// TODO: Si path != cgi et pas de multipart form data  alors return instant et repondre 200
 	// if path request == cgi alors envoye le contenu du body dans l'entree standart du cgi
 	client->getRequest()->checkBondaries();
 	std::vector<File*> files = client->getRequest()->getFile();
-	std::cerr << "test okoo" << std::endl;
-	std::cerr << "file size == " << files.size() << std::endl;
 
 	for (size_t i = 0; i < files.size(); i++) {
 		filename = generateFilename( files[i]->get("filename")); // need file extension
@@ -330,24 +322,11 @@ void Server::addClientRequest(int fd) {
 	 		_parseClientHeader(client);
 		}
 	}
-	if (client->whatToDo() == ON_BODY) {
-		std::cerr << "on lit le buffer : " << client->getUseBuffer() << std::endl;
+	if (client->whatToDo() == ON_BODY && client->isReadyToResponse() == false) {
 		client->pushBodyRequest(buff, n);
 	 	if (client->getReadyToParseBody()) {
 	 		_parseClientBody(client); // Parse body
-
 	 	}
-	}
-
-	unsigned int	contentLength = client->getRequest()->getContentLenght();
-	unsigned int	lenBody = client->getRequest()->getLenBody();
-	try {
-		client->getRequest()->find("Content-Length");		// throw if not found
-		if (lenBody > contentLength) {
-			client->getRequest()->setResponsCode("400");	// body too large
-		}
-	} catch (std::exception &e) {
-		client->setReadyToresponse(true);
 	}
 }
 

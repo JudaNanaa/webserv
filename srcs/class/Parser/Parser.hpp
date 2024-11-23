@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/21 20:19:08 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/23 14:36:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ struct Data {
     std::string		_errorPage;
     bool			_autoIndex;
     std::map<std::string, std::string>  _cgi; // temporary a string maybe a special struc later
-    unsigned int	_clientMaxBodySize;
+    long	_clientMaxBodySize;
 	std::map<std::string, Location>	_locations;
     std::string		_index;
 };

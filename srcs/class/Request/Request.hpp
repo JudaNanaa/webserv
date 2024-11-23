@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/21 18:14:32 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/23 14:44:11 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class Request : public RawBits {
 		Server *_server;
 		unsigned int _contentLenght;
 		Client *_client;
+		bool _isRedirect;
     
     std::string upload_folder;
 
@@ -90,6 +91,8 @@ class Request : public RawBits {
     	void addServer(Server* server);
 		void addRequestToMap(std::string key, std::string value);
 		bool isKeyfindInHeader(std::string const &key) const;
+		void	setRedirect(bool b);
+		bool& 	getRedirect(void);
 		
 		friend std::ostream& operator<<(std::ostream& os, const Request& request );
 };
