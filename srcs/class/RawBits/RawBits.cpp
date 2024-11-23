@@ -231,7 +231,7 @@ int	RawBits::handleFileHeader( std::ofstream& uploadFile ) {
 	_files.push_back(file);
 
 	// delete already handled content
-	eraseInBody(0, headerEnd + 4);	// +4 for "\r\n\r\n"
+	eraseInBody(0, headerEnd + 3);	// +4 for "\r\n\r\n"
 
 	// flushBuffer(header);	// can throw
 
@@ -246,43 +246,55 @@ int	RawBits::handleFileHeader( std::ofstream& uploadFile ) {
 	return (CONTINUE);
 }
 
-int	RawBits::checkBondaries( void  ) {
-	std::ofstream	uploadFile;
+int    RawBits::handleFileBody( std::ofstream& uploadFile ) {
+    long boundaryPos = findInBody(("--" + _boundary).c_str());
 
-	if (_boundary.empty()) {		/* no bondary */
-		// TODO: ?
-		std::cerr << "ERROR: no bondary" << std::endl;
-		return STOP;
-	}
+    if (boundaryPos == -1) {
+        flushBuffer(0, uploadFile, _lenBody - (_boundary.size() + 2));        // in case a part of bondary is at the end
+        eraseInBody(0, _lenBody - (_boundary.size() + 2));
+        return (NOT_FINISHED);
+    } else if (std::memcmp(&_body[boundaryPos], ("--" + _boundary + "--").c_str(), _boundary.size() + 4) == 0) {    // end bondary
+        flushBuffer(0, uploadFile, boundaryPos - 2);
+        eraseInBody(0, std::string::npos); // maybe change this
+        _state = ON_HEADER;
+        return (FINISHED);
+    } else {
+        flushBuffer(0, uploadFile, _lenBody - boundaryPos - 3);
+        eraseInBody(0, _lenBody - boundaryPos - 1);
+        uploadFile.close();
+        _state = ON_HEADER;
+        return (CONTINUE);
+    }
+}
 
-	std::cerr << "------CHECK_BONDARY------\n" << _body << std::endl;
+int    RawBits::checkBondaries( void  ) {
+    static std::ofstream    uploadFile;
 
-	while (true) {
-		if (_state == ON_HEADER) {
-			if (handleFileHeader(uploadFile) == STOP)
-				return (NOT_FINISHED);
-		} if (_state == ON_BODY) {
-			long boundaryPos = findInBody(("--" + _boundary).c_str());
+    if (_boundary.empty()) {        /* no bondary */
+        // TODO: ?
+        std::cerr << "ERROR: no bondary" << std::endl;
+        return STOP;
+    }
 
-			if (boundaryPos == -1) {
-				flushBuffer(0, uploadFile, _lenBody - (_boundary.size() + 2));		// in case a part of bondary is at the end
-				eraseInBody(0, _lenBody - (_boundary.size() + 2));
-				return (NOT_FINISHED);
-			} else if (std::memcmp(&_body[boundaryPos], ("--" + _boundary + "--").c_str(), _boundary.size() + 4) == 0) {	// end bondary
-				flushBuffer(0, uploadFile, boundaryPos);
-				eraseInBody(0, std::string::npos); // maybe change this
-				_state = ON_HEADER;
-				return (FINISHED);
-			} else {
-				flushBuffer(0, uploadFile, _lenBody - boundaryPos - 1);
-				eraseInBody(0, _lenBody - boundaryPos - 1);
-				uploadFile.close();
-				_state = ON_HEADER;
-				continue;
-			}
-		}
-	}
+    std::cerr << "------CHECK_BONDARY------\n" << _body << std::endl;
 
+    while (true) {
+        if (_state == ON_HEADER) {
+            if (handleFileHeader(uploadFile) == STOP)
+                return (NOT_FINISHED);
+        } if (_state == ON_BODY) {
+            int state = handleFileBody(uploadFile);
+
+            if (state == NOT_FINISHED) {
+                return (NOT_FINISHED);
+            } else if (state == FINISHED) {
+                return (uploadFile.close(), FINISHED);
+            } else if (state == CONTINUE) {
+                continue ;
+            }
+        }
+    }
+    return (-1);
 }
 
 // void	RawBits::checkBondaries( void  ) {		/*		ORIGINAL	*/

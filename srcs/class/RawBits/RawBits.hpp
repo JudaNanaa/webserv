@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RawBits.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/23 19:44:36 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/23 22:34:47 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ class RawBits {
 		int					handleFileHeader( std::ofstream& uploadFile );
 		void				flushBuffer( long pos, std::ofstream& uploadFile, long n = 0 );
 		void				flushBuffer( std::string& buff, std::ofstream& uploadFile );
+		int					handleFileBody( std::ofstream& uploadFile );
 };
 
 #endif
