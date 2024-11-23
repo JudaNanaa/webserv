@@ -23,7 +23,7 @@
 Request::Request(Client *client) : RawBits() {
 	_method = 0;
 	_state = ON_HEADER;
-	_contentLenght = 0;
+	_contentLenght = -1;
 	_ResponsCode = "200";
 	_isRedirect = false;
 	_client = client;
@@ -84,7 +84,7 @@ void	Request::setSizeBody(unsigned int nb) {
 	_contentLenght = nb;
 }
 
-const unsigned int	&Request::getContentLenght(void) const {
+const long	&Request::getContentLenght(void) const {
 	return _contentLenght;
 }
 
@@ -115,6 +115,12 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 }
 
 void	Request::uploadBody(char *buff, int n) {
+
+	buff = std::strstr(buff, "\r\n\r\n");
+	if (buff == NULL)	//	no body
+		throw std::invalid_argument("invalid request");
+	else
+		buff += 4;	// to skip "\r\n\r\n"
 
 	RawBits::appendBody(buff, n);
 	if (find("Content-Type").find("multipart") != std::string::npos) {

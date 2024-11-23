@@ -184,10 +184,13 @@ void	Server::handleRequest( Client *client ) {
   //check de la body Size
 	if (_data->_clientMaxBodySize > 0) {
 		if (_data->_clientMaxBodySize < request->getContentLenght()) {
-		request->setResponsCode("413");
-		client->setReadyToresponse(true);
-		return ;
+			request->setResponsCode("413");
+			client->setReadyToresponse(true);
+			return ;
 		}
+	}
+	if (request->getContentLenght() == -1) {
+		client->setReadyToresponse(true);
 	}
 }
 
@@ -267,7 +270,6 @@ void Server::_parseClientHeader(Client *client) {
 		}
 	}
   	chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
-	clientRequest->eraseInBody(0, clientRequest->findInBody("\r\n\r\n") + 4);		// erase header
 }
 
 std::string generateFilename(std::string baseName) {
@@ -323,10 +325,10 @@ void Server::addClientRequest(int fd) {
 		}
 	}
 	if (client->whatToDo() == ON_BODY && client->isReadyToResponse() == false) {
-		client->pushBodyRequest(buff, n);
-	 	if (client->getReadyToParseBody()) {
-	 		_parseClientBody(client); // Parse body
-	 	}
+		client->getRequest()->addBodyRequest(buff, n, client->getUseBuffer());
+	 	// if (client->getReadyToParseBody()) {
+	 	// 	_parseClientBody(client); // Parse body
+	 	// }
 	}
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/23 18:01:16 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/23 18:35:02 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ class Request : public RawBits {
 		std::string _ResponsCode;
 		std::map<std::string, std::string>	_others;
 		Server *_server;
-		unsigned int _contentLenght;
+		long _contentLenght;
 		Client *_client;
 		bool _isRedirect;
 
@@ -69,7 +69,7 @@ class Request : public RawBits {
 		RawBits *getRawRequest(void);
     	std::string getPath(void);
 		const t_state &getStatus(void) const;
-		const unsigned int	&getContentLenght(void) const;
+		const long	&getContentLenght(void) const;
 		const int &getMethode(void) const;
 		const std::string &getResponsCode(void) const;
 		const std::vector<File*>& getFile(void) const;

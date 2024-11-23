@@ -105,12 +105,14 @@ long RawBits::find(const char *str) const {
 }
 
 long RawBits::findInBody(const char *str, unsigned long pos) const {
-  size_t lenStr = strlen(str);
-  for (; pos <= _lenRequest - lenStr; pos++) {
-      if (std::memcmp(&_body[pos], str, lenStr) == 0)
-          return pos;
-  }
-  return -1;
+	size_t lenStr = strlen(str);
+
+	for (; pos <= _lenBody - lenStr; pos++) {
+		if (std::memcmp(&_body[pos], str, lenStr) == 0)
+			return pos;
+	}
+
+	return -1;
 }
 
 void RawBits::setHeader(std::string header) {
@@ -224,8 +226,8 @@ int	RawBits::handleFileHeader( void ) {
 
 	// delete already handled content
 	eraseInBody(0, headerEnd + 4);	// +4 for "\r\n\r\n"
-	
-	flushBuffer(header);	// can throw
+
+	// flushBuffer(header);	// can throw
 
 	_state = ON_BODY;
 	return (CONTINUE);
