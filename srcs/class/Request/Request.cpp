@@ -145,6 +145,8 @@ void	Request::uploadBody(char *buff, int n, bool unusedBuffer) {
 }
 
 t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
+	if (add)
+		appendBody(buff, n);
 	uploadBody(buff, n, add);
 	// if (RawBits::getLenBody() == _contentLenght) {
 	// 	return READY_PARSE_BODY;
