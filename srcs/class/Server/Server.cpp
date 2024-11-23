@@ -233,7 +233,7 @@ void Server::_parseClientHeader(Client *client) {
 	header = clientRequest->getHeader();
 	headerSplit = split(header, "\r\n");
 
-	std::cout << "DEBUG HEADER: \n" << header << std::endl;
+	// std::cout << "DEBUG HEADER: \n" << header << std::endl;
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		throw std::invalid_argument("Error header 1: " + headerSplit[0]);
@@ -313,6 +313,8 @@ void Server::addClientRequest(int fd) {
 	client = getClient(fd);
 	client->setUseBuffer(true);
 	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
+	std::cout << "--------------------REQUEST--------------------" << std::endl;
+	std::cout << buff << std::endl;
 	if (n == -1) {
 		throw std::runtime_error("Can't recv the message !");
 	}

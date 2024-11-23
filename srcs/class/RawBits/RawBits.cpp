@@ -149,9 +149,8 @@ char* RawBits::substrBody(size_t pos, size_t n) {
 
 void RawBits::eraseInBody(size_t pos, size_t n) {
   char *newBody = new char[_lenBody - (n - pos)];
-  for (size_t i = 0; i < _lenBody; i++) {
-    if (i < pos || i > n)
-      newBody[i] = _body[i];
+  for (size_t i = pos; i < pos + n; i++) {
+	newBody[i] = _body[i];
   }
   if (_body)
   	delete []_body;
@@ -159,6 +158,8 @@ void RawBits::eraseInBody(size_t pos, size_t n) {
 }
 
 void	RawBits::checkFileHeader(File& file, std::string &header) {
+	// for the "\r\n"
+	std::cerr << "----HEADER----" << std::endl << header << std::endl;
 	std::vector<std::string> fileHeaderSplit = split(header, "\r\n");
 
 	for (std::vector<std::string>::iterator it = fileHeaderSplit.begin(); it != fileHeaderSplit.end(); it++) {
@@ -169,6 +170,7 @@ void	RawBits::checkFileHeader(File& file, std::string &header) {
 				info = split(*it2, ":");
 			else
 				info = split(*it2, "=");
+			std::cerr << "info: " << *it2 << std::endl;
 			if (info.size() != 2) {
 				throw std::invalid_argument("bad info 1");
 			}
@@ -187,10 +189,12 @@ int RawBits::compareInBody(char *s, size_t n) {
 }
 
 void	RawBits::flushBuffer( long pos, long n ) {
-	std::fstream	file(_files.back()->get("filename").c_str());
+	std::string		fileName = _files.back()->get("filename");
+	std::fstream	file(fileName.c_str());
 
+	std::cerr << "----------------fileName: " << fileName << std::endl;
 	if (file.fail()) {
-		throw std::invalid_argument("failed to open " + _files.back()->get("filename"));
+		throw std::invalid_argument("failed to open " + fileName);
 	} else {
 		// file.clear();	(?)
 		file.write(&_body[pos], n);
@@ -198,10 +202,12 @@ void	RawBits::flushBuffer( long pos, long n ) {
 }
 
 void	RawBits::flushBuffer( std::string& buff ) {
-	std::fstream	file(_files.back()->get("filename").c_str());
+	std::string		fileName = _files.back()->get("filename");
+	std::fstream	file(fileName.c_str());
 
+	std::cerr << "----------------fileName: " << fileName << std::endl;
 	if (file.fail()) {
-		// TODO
+		throw std::invalid_argument("failed to open " + fileName);
 	} else {
 		// file.clear();	(?)
 		file << buff;
@@ -210,15 +216,16 @@ void	RawBits::flushBuffer( std::string& buff ) {
 
 int	RawBits::handleFileHeader( void ) {
 	long		headerEnd;
+	long		fileStart;
 	std::string	header;
-	const int	boundarySize = _boundary.size();
 
-	headerEnd = findInBody("\r\n\r\n", boundarySize + 2);
+	fileStart = findInBody(("--" + _boundary).c_str()) + _boundary.size() + 4;
+	headerEnd = findInBody("\r\n\r\n", fileStart);
 	if (headerEnd == -1) {	/* header incomplete */
 		return STOP;
 	}
 
-	header = substrBody(boundarySize + 2, headerEnd - (boundarySize + 2));
+	header = substrBody(fileStart, headerEnd - fileStart);
 	// std::cerr << "header = ["<< header << "]"<< std::endl;
 	File 		*file = new File();
 	checkFileHeader(*file, header);
@@ -248,7 +255,7 @@ int	RawBits::checkBondaries( void  ) {
 			if (handleFileHeader() == STOP) 
 				return (NOT_FINISHED);
 		} if (_state == ON_BODY) {
-			long boundaryPos = findInBody(("--" + _boundary).c_str(), 0);
+			long boundaryPos = findInBody(("--" + _boundary).c_str(), ("--" + _boundary).size());
 
 			if (boundaryPos == -1) {
 				flushBuffer(0, _lenBody - (_boundary.size() + 2));		// in case a part of bondary is at the end

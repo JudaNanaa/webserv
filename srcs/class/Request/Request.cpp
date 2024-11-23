@@ -110,19 +110,23 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 		return NOT_READY;
 	}
 	RawBits::splitRequest();
+
 	_state = ON_BODY;
 	return READY_PARSE_HEADER;
 }
 
-void	Request::uploadBody(char *buff, int n) {
+void	Request::uploadBody(char *buff, int n, bool unusedBuffer) {
 
-	buff = std::strstr(buff, "\r\n\r\n");
-	if (buff == NULL)	//	no body
-		throw std::invalid_argument("invalid request");
-	else
-		buff += 4;	// to skip "\r\n\r\n"
+	if (unusedBuffer == true) {
+		// buff = std::strstr(buff, "\r\n\r\n");
+		// if (buff == NULL)	//	no body
+		// 	throw std::invalid_argument("invalid request");
+		// else
+		// 	buff += 4;	// to skip "\r\n\r\n"
 
-	RawBits::appendBody(buff, n);
+		RawBits::appendBody(buff, n);
+	}
+	(void)buff;
 	if (find("Content-Type").find("multipart") != std::string::npos) {
 		// find bondaries
 		if (RawBits::checkBondaries() == FINISHED) {	// transform this function
@@ -134,14 +138,12 @@ void	Request::uploadBody(char *buff, int n) {
 		if (file.fail())
 			throw std::invalid_argument("failed to open DEFAULT_UPLOAD_FILE");
 
-		file.write(buff, n);
+		file.write(RawBits::getBody(), n);
 	}
 }
 
 t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
-	if (add == true) {
-		uploadBody(buff, n);
-	}
+	uploadBody(buff, n, add);
 	// if (RawBits::getLenBody() == _contentLenght) {
 	// 	return READY_PARSE_BODY;
 	// }

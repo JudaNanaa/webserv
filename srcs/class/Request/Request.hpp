@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/23 18:35:02 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/23 18:56:50 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ class Request : public RawBits {
 		bool& 	getRedirect(void);
 
 		/*	OTHERS	*/
-		void	uploadBody(char *buff, int n);
+		void	uploadBody(char *buff, int n, bool unusedBuffer);
 
 		friend std::ostream& operator<<(std::ostream& os, const Request& request );
 };
