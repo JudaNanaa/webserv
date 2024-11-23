@@ -330,6 +330,9 @@ server on : http://127.0.0.1:8090
 
 --------------------ADDING CLIENT--------------------
 
+
+--------------------ADDING CLIENT--------------------
+
 --------------------REQUEST--------------------
 GET / HTTP/1.1
 Host: localhost:8080
@@ -350,9 +353,6 @@ Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
 
 
 -------------------------------------PATH : /
-
---------------------ADDING CLIENT--------------------
-
 --------------------REQUEST--------------------
 GET /favicon.ico HTTP/1.1
 Host: localhost:8080
@@ -384,7 +384,7 @@ Host: localhost:8080
 Connection: keep-alive
 Content-Length: 1195
 sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Opera";v="114"
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWOgGzTAPPUD9phVJ
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryPsiff6O3y8Frm7H9
 sec-ch-ua-mobile: ?0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 OPR/114.0.0.0
 sec-ch-ua-platform: "Windows"
@@ -401,3 +401,134 @@ S;q=0.8,en;q=0.7
 
 
 -------------------------------------PATH : /uploads/post.html
+Content-Disposition : [+] connection closed
+--------------------REQUEST--------------------
+POST /uploads/post.html HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Content-Length: 1195
+sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Opera";v="114"
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryPsiff6O3y8Frm7H9
+sec-ch-ua-mobile: ?0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 OPR/114.0.0.0
+sec-ch-ua-platform: "Windows"
+Accept: */*
+Origin: http://localhost:8080
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://localhost:8080/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
+
+
+-------------------------------------PATH : /uploads/post.html
+Content-Disposition : [+] connection closed
+--------------------REQUEST--------------------
+POST /uploads/post.html HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Content-Length: 1195
+sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Opera";v="114"
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryPsiff6O3y8Frm7H9
+sec-ch-ua-mobile: ?0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 OPR/114.0.0.0
+sec-ch-ua-platform: "Windows"
+Accept: */*
+Origin: http://localhost:8080
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://localhost:8080/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
+
+
+-------------------------------------PATH : /uploads/post.html
+Content-Disposition : [+] connection closed
+
+--------------------ADDING CLIENT--------------------
+
+--------------------REQUEST--------------------
+POST /uploads/post.html HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Content-Length: 1195
+sec-ch-ua: "Chromium";v="128", "Not;A=Brand";v="24", "Opera";v="114"
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryPsiff6O3y8Frm7H9
+sec-ch-ua-mobile: ?0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 OPR/114.0.0.0
+sec-ch-ua-platform: "Windows"
+Accept: */*
+Origin: http://localhost:8080
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://localhost:8080/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
+
+------WebKitFormBoundaryPsiff6O3y8Frm7H9
+Content-Disposition: form-data; name="fileUpload[]"; filename="main.cpp"
+Content-Type: application/octet-stream
+
+#include <iostream>
+#include <Array.hpp>
+
+#define MAX_VAL 750
+int main(int, char**)
+{
+    Array<int> numbers(MAX_VAL);
+    int* mirror = new int[MAX_VAL];
+    srand(time(NULL));
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        const int value = rand();
+        numbers[i] = value;
+        mirror[i] = value;
+    }
+    //SCOPE
+    {
+        Array<int> tmp = numbers;
+        Array<int> test(tmp);
+    }
+
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        if (mirror[i] != numbers[i])
+        {
+            std::cerr << "didn't save the same value!!" << std::endl;
+            return 1;
+        }
+    }
+    try
+    {
+        numbers[-2] = 0;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    try
+    {
+        numbers[MAX_VAL] = 0;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    for (int i = 0; i < MAX_VAL; i++)
+    {
+        numbers[i] = rand();
+    }
+    delete [] mirror;//
+    return 0;
+}
+------WebKitFormBoundaryPsiff6O3y8Frm7H9--
+
+-------------------------------------PATH : /uploads/post.html
+Content-Disposition : form-data
+name : "fileUpload[]"
+filename : "main.cpp"
+Content-Type : application/octet-stream

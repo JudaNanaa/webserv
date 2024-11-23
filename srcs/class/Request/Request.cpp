@@ -125,6 +125,8 @@ void	Request::uploadBody(char *buff, int n, bool unusedBuffer) {
 		// 	buff += 4;	// to skip "\r\n\r\n"
 
 		RawBits::appendBody(buff, n);
+	} else {
+		RawBits::appendBody(buff, n);
 	}
 	(void)buff;
 	if (find("Content-Type").find("multipart") != std::string::npos) {

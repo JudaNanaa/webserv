@@ -75,6 +75,7 @@ const unsigned int &RawBits::getLenBody(void) const {
 
 void RawBits::appendBody(const char *str, const int n) {
 	char *dest = new char[_lenBody + n];
+	std::memset(dest, 0, sizeof(char) * _lenBody + n);
 	if (_body) {
 		std::memmove(dest, _body, _lenBody);
 		delete [] _body;
@@ -107,6 +108,7 @@ long RawBits::find(const char *str) const {
 long RawBits::findInBody(const char *str, unsigned long pos) const {
 	size_t lenStr = strlen(str);
 
+	std::cerr << "DBG[" << _body << "]" << std::endl;
 	for (; pos <= _lenBody - lenStr; pos++) {
 		if (std::memcmp(&_body[pos], str, lenStr) == 0)
 			return pos;
@@ -172,7 +174,8 @@ void	RawBits::checkFileHeader(File& file, std::string &header) {
 				info = split(*it2, "=");
 			std::cerr << "info: " << *it2 << std::endl;
 			if (info.size() != 2) {
-				throw std::invalid_argument("bad info 1");
+				std::cerr << "bad info 1" << std::endl;
+				continue ;
 			}
 			// std::cerr << "info[0] '" << trim(info[0].) << "' | " << "info[1] '"<< trim(info[1]) + "'" << std::endl; 
 			file.set(trim(info[0]), trim(info[1]));
@@ -188,33 +191,25 @@ int RawBits::compareInBody(char *s, size_t n) {
   return memcmp(_body, s, n);
 }
 
-void	RawBits::flushBuffer( long pos, long n ) {
-	std::string		fileName = _files.back()->get("filename");
-	std::fstream	file(fileName.c_str());
-
-	std::cerr << "----------------fileName: " << fileName << std::endl;
-	if (file.fail()) {
-		throw std::invalid_argument("failed to open " + fileName);
+void	RawBits::flushBuffer( long pos, std::ofstream& uploadFile, long n ) {
+	if (uploadFile.fail()) {
+		throw std::invalid_argument("failed to open " + _files.back()->get("filename"));
 	} else {
 		// file.clear();	(?)
-		file.write(&_body[pos], n);
+		uploadFile.write(&_body[pos], n);
 	}
 }
 
-void	RawBits::flushBuffer( std::string& buff ) {
-	std::string		fileName = _files.back()->get("filename");
-	std::fstream	file(fileName.c_str());
-
-	std::cerr << "----------------fileName: " << fileName << std::endl;
-	if (file.fail()) {
-		throw std::invalid_argument("failed to open " + fileName);
+void	RawBits::flushBuffer( std::string& buff, std::ofstream& uploadFile ) {
+	if (uploadFile.fail()) {
+		throw std::invalid_argument("failed to open " + _files.back()->get("filename"));
 	} else {
-		// file.clear();	(?)
-		file << buff;
+		// uploadFile.clear();	(?)
+		uploadFile << buff;
 	}
 }
 
-int	RawBits::handleFileHeader( void ) {
+int	RawBits::handleFileHeader( std::ofstream& uploadFile ) {
 	long		headerEnd;
 	long		fileStart;
 	std::string	header;
@@ -236,11 +231,16 @@ int	RawBits::handleFileHeader( void ) {
 
 	// flushBuffer(header);	// can throw
 
+	uploadFile.open(("URIs/uploads/" + file->get("filename")).c_str());
+	if (uploadFile.fail())
+		throw std::invalid_argument("failed to open " + file->get("filename"));
+
 	_state = ON_BODY;
 	return (CONTINUE);
 }
 
 int	RawBits::checkBondaries( void  ) {
+	std::ofstream	uploadFile;
 
 	if (_boundary.empty()) {		/* no bondary */
 		// TODO: ?
@@ -252,19 +252,21 @@ int	RawBits::checkBondaries( void  ) {
 
 	while (true) {
 		if (_state == ON_HEADER) {
-			if (handleFileHeader() == STOP) 
+			if (handleFileHeader(uploadFile) == STOP)
 				return (NOT_FINISHED);
 		} if (_state == ON_BODY) {
-			long boundaryPos = findInBody(("--" + _boundary).c_str(), ("--" + _boundary).size());
+			long boundaryPos = findInBody(("--" + _boundary).c_str(), _boundary.size() + 2);
 
 			if (boundaryPos == -1) {
-				flushBuffer(0, _lenBody - (_boundary.size() + 2));		// in case a part of bondary is at the end
+				flushBuffer(0, uploadFile, _lenBody - (_boundary.size() + 2));		// in case a part of bondary is at the end
 				eraseInBody(0, _lenBody - (_boundary.size() + 2));
 				return (NOT_FINISHED);
 			} else {
-				flushBuffer(0, _lenBody - boundaryPos - 1);
+				flushBuffer(0, uploadFile, _lenBody - boundaryPos - 1);
 				eraseInBody(0, _lenBody - boundaryPos - 1);
+				uploadFile.close();
 				if (&_body[boundaryPos] == ("--" + _boundary + "--")) {		// end bondary
+					_state = ON_HEADER;
 					return (FINISHED);
 				}
 				_state = ON_HEADER;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RawBits.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/23 17:45:59 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/23 19:44:36 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include "../File/File.hpp"
 #include <vector>
 #include <map>
+#include <fstream>
 
 # define FINISHED 1
 # define NOT_FINISHED 0
@@ -70,9 +71,9 @@ class RawBits {
     	int         		compareInBody(char *s, size_t n);
     	void        		eraseInBody(size_t pos, size_t n);
 		void				cleanFiles(void);
-		int					handleFileHeader( void );
-		void				flushBuffer( long pos, long n = 0 );
-		void				flushBuffer( std::string& buff );
+		int					handleFileHeader( std::ofstream& uploadFile );
+		void				flushBuffer( long pos, std::ofstream& uploadFile, long n = 0 );
+		void				flushBuffer( std::string& buff, std::ofstream& uploadFile );
 };
 
 #endif
