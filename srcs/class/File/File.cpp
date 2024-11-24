@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 18:46:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/23 21:34:16 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/24 19:51:30 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ File::~File() {
 }
 
 void	File::freeContent(void) {
+	
 }
 
 const char*	File::content( void ) {

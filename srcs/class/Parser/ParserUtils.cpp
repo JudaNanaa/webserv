@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParserUtils.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/10 18:10:55 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/24 19:36:53 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void Pars::addAutoIndex(Data* data, std::string w) {
 void Pars::addCgi(Data* data, std::string cgi) {
   //TODO: add cgi logic
   if (cgi.find(" ") != std::string::npos) {
-    data->_cgi[cgi.substr(0, cgi.find(' '))] = cgi.substr(cgi.find(' '));
+    data->_cgi[cgi.substr(0, cgi.find(' '))] = trim(cgi.substr(cgi.find(' ')));
   }
 }
 
@@ -105,9 +105,9 @@ void Pars::addIndex(Data* data, std::string index) {
 }
 
 std::string trim(const std::string& str) {
-    size_t start = str.find_first_not_of(" \t\n\r\f\v");
+    size_t start = str.find_first_not_of(" \t\n\r\f\v\"");
     if (start == std::string::npos) return ""; // Chaîne vide si uniquement des espaces
-    size_t end = str.find_last_not_of(" \t\n\r\f\v");
+    size_t end = str.find_last_not_of(" \t\n\r\f\v\"");
     return str.substr(start, end - start + 1);
 }
 

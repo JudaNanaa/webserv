@@ -26,19 +26,12 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <sys/epoll.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <cstddef>
+#include <sys/wait.h>
+#include <vector>
 #include "Server.hpp"
-#include "../../../includes/utils.hpp"
-#include "../RawBits/RawBits.hpp"
-#include "../Request/Request.hpp"
-#include "../GlobalData/GlobalData.hpp"
-#include "../Parser/Parser.hpp"
 
-Server::Server(void)  
-	: _socket_fd(-1) {
-	
+Server::Server(void) {
+	_socket_fd = -1;
 }
 
 Server::~Server(void) {
@@ -127,6 +120,7 @@ bool	Server::isCgi( const std::string& path ) {
 }
 
 void	Server::handleCgi( Client *client ) {
+	client->getRequest()->setIsACgi(true);
 	CgiDefaultGesture(client);
 }
 
@@ -159,12 +153,14 @@ void	Server::chooseParsing( Client *client ) {
 	if (_data->checkLocation(request->path()) != NULL) {
 		std::cerr << "LOCATION" << std::endl;
 		handleLocation(client);
+		request->setStatus(ON_BODY);
 	} else if (isCgi(request->path()) == true) {
 		std::cerr << "CGI" << std::endl;
 		handleCgi(client);
 	} else {
 		std::cerr << "DEFAULT" << std::endl;
 		handleRequest(client);
+		request->setStatus(ON_BODY);
 	}
 }
 
@@ -233,23 +229,30 @@ void Server::_parseClientHeader(Client *client) {
   	chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
 }
 
-// void Server::_parseClientBody(Client *client) {
-// 	std::string filename;
-// 	client->getRequest()->printBody();
-// 	// TODO: Si path != cgi et pas de multipart form data  alors return instant et repondre 200
-// 	// if path request == cgi alors envoye le contenu du body dans l'entree standart du cgi
-// 	client->getRequest()->checkBondaries();
-// 	std::vector<File*> files = client->getRequest()->getFile();
+void Server::checkCgi( void ) {
+	std::map<int, Client*>::iterator it, ite;
 
-// 	for (size_t i = 0; i < files.size(); i++) {
-// 		filename = generateFilename( files[i]->get("filename")); // need file extension
-// 		int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-// 		write(fd, files[i]->content(), files[i]->lenFile());
-// 		close(fd);
-// 	}
+	it = _clientMap.begin();
+	ite = _clientMap.end();
 
-// 	client->setReadyToresponse(true);
-// }
+	for (;it != ite; it++) {
+		Client	*client = it->second;
+		int		pid = client->getPid();
+
+		if (pid == -1) {	// no 
+			continue ;
+		} else {
+			int	status;
+			switch (waitpid(pid, &status, WNOHANG)) {
+				case -1: { std::cerr << "waitpid failed" << std::endl ; continue; } // error 
+				case 0: { continue; } // not finished
+				default:
+					client->setCGIStatus(status);
+					client->setReadyToresponse(true);
+			}
+		}
+	}
+}
 
 void Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE + 1];
@@ -273,4 +276,5 @@ void Server::addClientRequest(int fd) {
 	if (client->whatToDo() == ON_BODY && client->isReadyToResponse() == false) {
 		client->getRequest()->addBodyRequest(buff, n, client->getUseBuffer());
 	}
+	std::cerr << "test2" << std::endl;
 }

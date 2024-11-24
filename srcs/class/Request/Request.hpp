@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/24 01:36:34 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/24 19:55:29 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ class Request : public RawBits {
 		const long long	&getContentLenght(void) const;
 		const int &getMethode(void) const;
 		const std::string &getResponsCode(void) const;
-		const std::vector<File*>& getFile(void) const;
 		bool isACgi(void) const;
 		std::string& getMap(std::string key);
 		
@@ -96,7 +95,7 @@ class Request : public RawBits {
 		bool& 	getRedirect(void);
 
 		/*	OTHERS	*/
-		void	uploadBody(int n);
+		void	uploadBody();
 
 		friend std::ostream& operator<<(std::ostream& os, const Request& request );
 };

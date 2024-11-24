@@ -5,33 +5,41 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/23 23:06:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/24 19:46:10 by madamou          ###   ########.fr       */
+/*   Created: 2024/11/24 19:41:17 by madamou           #+#    #+#             */
+/*   Updated: 2024/11/24 19:42:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "RawBits.hpp"
 
-Client *Server::getClient(int fd) {
-	return this->_clientMap[fd];
+void RawBits::setBondary(std::string str) {
+	_boundary = str;
 }
 
-int Server::getSocketFd(void) const {
-	return this->_socket_fd;
+const std::string &RawBits::getHeader(void) const {
+	return _header;
+} 
+
+const char *RawBits::getBody(void) const {
+	return _body;
+} 
+
+const char *RawBits::getRequest(void) const {
+	return _request;
 }
 
-void Server::addData(Data* data) {
-  _data = data;
+const unsigned int &RawBits::getLenBody(void) const {
+	return _lenBody;
 }
 
-void Server::addClientToMap(Client *client) {
-	this->_clientMap[client->getClientFd()] = client;
+const long long &RawBits::getLenTotalBody(void) const {
+	return _lenTotalBody;
 }
 
-void	Server::setEnv( char **env ) {
-	_env = env;
+void RawBits::setHeader(std::string header) {
+	_header = header;
 }
 
-char	**Server::getEnv( void ) const {
-	return _env;
+File* RawBits::getCurrentFile(void) const {
+	return _currentFile;
 }

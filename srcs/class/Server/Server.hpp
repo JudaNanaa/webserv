@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/24 14:31:09 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/24 19:46:38 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <ostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 # define MAX_CLIENTS 100
 # define MAX_EVENTS 1000
@@ -33,17 +34,21 @@ class Server {
 		int _socket_fd;
 		std::string _host[2];
 		std::map<int, Client*> _clientMap;
+		char	**_env;
 
-		void addToEpoll(int fd, uint32_t events);
-		int waitFdsToBeReady(void);
 		void _parseClientHeader(Client *client);
-		void _parseClientBody(Client *client);
 		void	_parseRequestLine( std::string line, Request *clientRequest);
+		void _responseCgiIfNoProblem(Client *client);
+		void _responseCgiError(Client *client);
 	public:
 		Server();
 		
 		~Server();
 
+		void checkCgi( void );
+
+		void	setEnv( char **env );
+		char	**	getEnv( void ) const;
 		void	init();
 		void checkBoundaries( void );
 		void addClientToMap(Client *client);
@@ -55,25 +60,26 @@ class Server {
 		bool isServerHost(std::string const &str) const;
 		int nbOfClient(void) const;
 		void addClientRequest(int fd);
-		void sendResponse(std::ifstream &file, int fd, Client *client);
-    void sendRedirect(std::string redirect, int fd, Client *client);
+		void responseCGI(Client *client);
+		void sendResponse(int fd, Client *client);
+		void sendRedirect(std::string redirect, int fd, Client *client);
 		void giveClientResponse(int fd);
-    void giveClientResponseByLocation(int fd);
-    void MergeLocationData(std::string path);
-	Location *findLocation(const std::string &uri);
-	void chooseParsing( Client *client );
-	void parseHeaderWithLocation(Client *client, Request *request);
+    	void giveClientResponseByLocation(int fd);
+    	void MergeLocationData(std::string path);
+		Location *findLocation(const std::string &uri);
+		void chooseParsing( Client *client );
+		void parseHeaderWithLocation(Client *client, Request *request);
     	Data *_data;
-	bool	isCgi( const std::string& path );
-	void	handleCgi( Client *client );
-	void	handleLocation(Client *client);
-	void	handleRequest( Client *client );
+		bool	isCgi( const std::string& path );
+		void	handleCgi( Client *client );
+		void	handleLocation(Client *client);
+		void	handleRequest( Client *client );
 
-  //CGI
-  void CgiDefaultGesture(Client *client);
+		//CGI
+		void CgiDefaultGesture(Client *client);
 
-    //request Parsing
-    bool checkAllowMethodes(std::string methodes);
+		//request Parsing
+		bool checkAllowMethodes(std::string methodes);
 };
 
 #endif

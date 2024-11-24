@@ -33,61 +33,6 @@ Request::~Request() {
 	
 }
 
-void Request::setIsACgi(bool boolean) {
-	_isCgi = boolean;
-}
-
-bool Request::isACgi(void) const {
-	return _isCgi;
-}
-
-int	Request::method( void	) const {
-	return (_method);
-}
-
-const std::string&	Request::path( void	) const {
-	return (_path);
-}
-
-const std::string&	Request::host( void	) const {
-	return (_Host);
-}
-
-const std::string&	Request::find( std::string key ) const {
-	if (_others.find(key) == _others.end())
-		throw std::invalid_argument(key + "key not found");
-
-	return (_others.at(key));
-}
-
-const t_state &Request::getStatus(void) const {
-	return _state;
-}
-
-void	Request::method( int newMethod ) {
-	_method = newMethod;
-}
-
-void	Request::host( std::string newHost ) {
-	_Host = newHost;
-}
-
-void	Request::setStatus( t_state newStatus ) {
-	_state = newStatus;
-}
-
-void	Request::path( std::string newPath ) {
-	_path = newPath;
-}
-
-void	Request::setSizeBody(long long nb) {
-	_contentLenght = nb;
-}
-
-const long	long &Request::getContentLenght(void) const {
-	return _contentLenght;
-}
-
 void Request::addRequestToMap(std::string key, std::string value) {
 	if (key == "HOST") {
 		if (_server->isServerHost(value) == false) { // check si le host est bien celui du server
@@ -111,32 +56,30 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 	}
 	RawBits::splitRequest();
 
-	_state = ON_BODY;
 	return READY_PARSE_HEADER;
 }
 
-void	Request::uploadBody(int n) {
+void	Request::uploadBody() {
+	std::cerr << "es ce que je passe par la ?" << std::endl;
 	if (find("Content-Type").find("multipart") != std::string::npos) {
 		// find bondaries
 		if (RawBits::checkBondaries() == FINISHED) {	// transform this function
 			_client->setReadyToresponse(true);
 		}
-		std::cerr << "\e" << getFile().back()->get("filename") << ": " << (RawBits::getLenTotalBody() / _contentLenght) * 100 << "%\r";
-
+		std::cerr << "\e" << getCurrentFile()->get("filename") << ": " << (RawBits::getLenTotalBody() / _contentLenght) * 100 << "%\r";
 	} else {	// if no bondaries (?)
 		std::fstream	file(DEFAULT_UPLOAD_FILE);
 		if (file.fail())
 			throw std::invalid_argument("failed to open DEFAULT_UPLOAD_FILE");
 
-		file.write(RawBits::getBody(), n);
+		file.write(RawBits::getBody(), RawBits::getLenBody());
 	}
-
 }
 
 t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 	if (add)
 		appendBody(buff, n);
-	uploadBody(n);
+	uploadBody();
 	if (RawBits::getLenTotalBody() > _contentLenght) {
 		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
 		std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
@@ -144,13 +87,6 @@ t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 		return ERROR;
 	}
 	return NOT_READY;
-}
-
-std::string& Request::getMap(std::string key) {
-  static std::string def = "";
-  if (_others.find("key") != _others.end())
-    return _others[key];
-  return def;
 }
 
 std::ostream& operator<<(std::ostream& os, const Request& request ) {
@@ -182,42 +118,4 @@ std::ostream& operator<<(std::ostream& os, const Request& request ) {
 	os << "}" << std::endl;
 
 	return os;
-}
-
-void	Request::addServer(Server* server) {
-  _server = server;
-} 
-
-void Request::setMethode(std::string methode) {
-	if (methode == "GET")
-		_method = GET_;
-	else if (methode == "POST")
-		_method = POST_; 
-	else if (methode == "DELETE")
-		_method = DELETE_;
-}
-
-const int& Request::getMethode(void) const {
-	return _method;
-}
-
-void Request::setResponsCode(std::string code) {
-	_client->setReadyToresponse(true);
-	_ResponsCode = code;
-}
-
-const std::string& Request::getResponsCode(void) const {
-	return _ResponsCode;
-}
-
-const std::vector<File*>& Request::getFile(void) const{
-  return RawBits::getRawFile();
-}
-
-void Request::setRedirect(bool b) {
-	_isRedirect = b;
-}
-
-bool& Request::getRedirect(void) {
-	return _isRedirect;
 }

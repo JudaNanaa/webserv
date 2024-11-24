@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/23 14:51:08 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/24 21:27:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,18 +105,35 @@ const std::string getMessageCode(int code) {
 	return codes_responses[code];
 }
 
-void Server::sendResponse(std::ifstream &file, int fd, Client *client) {
+void Server::sendResponse(int fd, Client *client) {
 	std::ostringstream buffer;
-	Request *clientRequest;
+	std::ifstream file;
+	Request *clientRequest = client->getRequest();
 
-	clientRequest = client->getRequest();
+	std::cerr << "SEND RESPONSE" << std::endl;
+	std::cerr << "RESPONSE CODE : " << clientRequest->getResponsCode() << std::endl;
+	if (clientRequest->getResponsCode() == "200") {
+		if (clientRequest->path() == "/") {
+			
+			std::cerr << "root : " + _data->_root << std::endl;
+			file.open((_data->_root + _data->_index).c_str());
+			std::cerr << "if root : " << _data->_root + _data->_index << std::endl;
+
+		}
+		else {
+			std::cerr << "if no root : " << _data->_root + clientRequest->path() << std::endl;
+			file.open((_data->_root + clientRequest->path()).c_str());
+		}
+		if (file.fail()) {
+			clientRequest->setResponsCode("404");
+		}
+	}
 	if (clientRequest->getResponsCode() != "200")
 		file.open(("URIs/errors/" + clientRequest->getResponsCode() + ".html").c_str());
 	buffer << file.rdbuf();
 	std::string html_content = buffer.str();
-	int code;
+	int code = atoi(clientRequest->getResponsCode().c_str());
 
-	code = atoi(clientRequest->getResponsCode().c_str());
 	std::cerr << "debug code : " << code << std::endl;
 	std::ostringstream oss;
     std::string response = "HTTP/1.1 " + clientRequest->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
@@ -136,25 +153,23 @@ void Server::sendResponse(std::ifstream &file, int fd, Client *client) {
 }
 
 void Server::sendRedirect(std::string redirect, int fd, Client *client) {
-	Request *clientRequest;
+	Request *clientRequest = client->getRequest();
+	int code = atoi(clientRequest->getResponsCode().c_str());
 
-	clientRequest = client->getRequest();
-	int code;
+	std::ostringstream oss;
+	oss << "HTTP/1.1 " << code << " " << getMessageCode(code) << "\r\n"; 
+	oss << "Location: " << redirect << "\r\n";
+	oss << "Content-Length: 0\r\n";
+	oss << "\r\n";
 
-	code = atoi(clientRequest->getResponsCode().c_str());
-  std::ostringstream oss;
-  oss << "HTTP/1.1 " << code << " " << getMessageCode(code) << "\r\n"; 
-  oss << "Location: " << redirect << "\r\n";
-  oss << "Content-Length: 0\r\n";
-  oss << "\r\n";
-
-  std::string response = oss.str();	// std::cerr << "RESPONSE : " << std::endl;
+	std::string response = oss.str();
+  
+  	// std::cerr << "RESPONSE : " << std::endl;
 	// std::cerr << response << std::endl;
 
 	if (send(fd, response.c_str(), response.size(), MSG_EOR) == -1)
 		throw std::runtime_error("Can't send the message !");
 }
-
 
 void Server::giveClientResponseByLocation(int fd) {
   Client* client = getClient(fd);
@@ -183,34 +198,15 @@ void Server::giveClientResponse(int fd) {
 	if (client->getRequest()->getRedirect()) { 
 		std::cerr << "location find ! with path == " + client->getRequest()->path() << std::endl;
 		giveClientResponseByLocation(fd);
-		client->cleanRequest();
-		client->setReadyToresponse(false);
-		return ;
 	}
-	else if (client->getRequest()->getResponsCode() == "200") {
-			if (client->getRequest()->path() == "/") {
-				
-				std::cerr << "root : " + _data->_root << std::endl;
-				file.open((_data->_root + _data->_index).c_str());
-				std::cerr << "if root : " << _data->_root + _data->_index << std::endl;
-
-			}
-			else {
-				std::cerr << "if no root : " << _data->_root + client->getRequest()->path() << std::endl;
-				file.open((_data->_root + client->getRequest()->path()).c_str());
-			}
-			if (file.fail()) {
-				client->getRequest()->setResponsCode("404");
-			}
-		}
-	// std::cout << "PATH + '" << client->getRequest()->path() << "'" << std::endl;
-	// std::cout << "debug : " << client._server->_data->_root + client._server->_data->_index << std::endl;
-	// file.open(server.data.root + server.data.index) <---- TODO: C'est ca qu'on dois faire si index est pas trouvé et que auto index = on on doit renvoyer la liste des fichier
-
-  	std::cerr << "SEND RESPONSE" << std::endl;
-
-	std::cerr << "RESPONSE CODE : " << client->getRequest()->getResponsCode() << std::endl;
-	sendResponse(file, fd, client); //this methode send response with appropriate code
+	else if (client->getRequest()->isACgi() == true) {
+	std::cerr << "test3" << std::endl;
+		responseCGI(client);
+	}
+	else 
+		sendResponse(fd, client); //this methode send response with appropriate code
 	client->cleanRequest();
+	client->setPid(-1);
+	client->setCGIFD(-1);
 	client->setReadyToresponse(false);
 }

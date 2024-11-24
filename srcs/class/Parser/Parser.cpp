@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/10 19:50:06 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/24 15:19:35 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,7 +233,7 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	serv.addData(data);
 }
 
-std::vector<Server> Pars::parseConfigFile(std::string configFilePath) {
+std::vector<Server> Pars::parseConfigFile(std::string configFilePath, char **env) {
 	std::vector<Server> servVec;
 	std::string	line;
 
@@ -249,8 +249,9 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath) {
 	    std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
 	    Server	newServ;
 	    try {
-	      parseServer(newServ, configFile, lineNumber);
-	    } catch (std::exception& e) {
+	    	parseServer(newServ, configFile, lineNumber);
+			newServ.setEnv(env);
+		} catch (std::exception& e) {
 	      throw std::invalid_argument(e.what());
 	    }
 	    servVec.push_back(newServ);
@@ -259,8 +260,8 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath) {
 	return servVec;
 }
 
-std::vector<Server> Pars::parse(std::string path) {
-	return parseConfigFile(path);
+std::vector<Server> Pars::parse(std::string path, char **env) {
+	return parseConfigFile(path, env);
 }
 
 

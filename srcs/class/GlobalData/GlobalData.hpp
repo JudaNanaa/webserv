@@ -5,6 +5,7 @@
 #include "../../../includes/includes.hpp"
 #include "../../../includes/utils.hpp"
 #include <exception>
+#include <sys/epoll.h>
 #include <vector>
 #include <map>
 
@@ -21,8 +22,9 @@ class GlobalData {
 		void handleClientIn(int fd);
 		void handleClientOut(int fd);
 		void removeClient(int fd);
-		bool isServerFd(const int &fd) const;
+		bool isServerFd(const int &fd);
 		Server *getServerWithClientFd(const int fd);
+		void	handleEvent( struct epoll_event& fdsReady );
 	public:
 		GlobalData();
 

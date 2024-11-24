@@ -7,6 +7,7 @@ Client::Client(int const fd, Server *server)
 	_request = new Request(this);
 	_readyToResponse = false;
 	_readyToParseHeader = false;
+	_pid = -1;
 }
 
 Client::~Client() {
@@ -25,6 +26,39 @@ Client &Client::operator=(Client const &other) {
 	}
 	return *this;
 }
+
+void Client::setCGIStatus(int status) {
+	if (WIFEXITED(status)) {
+		_CGIStatus = WEXITSTATUS(status);
+	} else if (WIFSIGNALED(status)) {
+		_CGIStatus = WTERMSIG(status);
+	} else if (WIFSTOPPED(status)) {
+		_CGIStatus = WSTOPSIG(status);
+	}
+}
+
+const int &Client::getCGIStatus(void) const {
+	return _CGIStatus;
+}
+
+
+void Client::setPid(int pid) {
+	_pid = pid;
+}
+
+const int &Client::getPid(void) const {
+	return _pid;
+}
+
+void	Client::setCGIFD(int fd) {
+	_pipeFD = fd;
+
+}
+
+int Client::getCGIFD(void) {
+	return _pipeFD;
+}
+
 
 const bool &Client::getReadyToParseHeader(void) const {
 	return _readyToParseHeader;
@@ -73,25 +107,12 @@ void Client::pushHeaderRequest(char *str, int n) {
 		_readyToParseBody = false;
 }
 
-void Client::pushBodyRequest(char *str, int n) {
-	_request->addBodyRequest(str, n, _useBuffer);
-	// if (result == READY_PARSE_BODY)
-	// 	_readyToParseBody = true;
-	// else if (result == ERROR)
-	// 	_readyToResponse = true;
-	// else
-	// 	_readyToParseBody = false;
-}
-
 void Client::setServerReq(Server *server) {
   _request->addServer(server);
 }
 
 void	Client::cleanRequest( void ) {
 	if (_request != NULL)
-	{
-		_request->cleanFiles();
 		delete _request;
-	}
 	_request = new Request(this);
 }

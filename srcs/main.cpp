@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/23 22:51:28 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/24 15:14:42 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void signalHandle(void) {
 	signal(SIGTSTP, ifSignal);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv, char **env) {
 	GlobalData data;
 	
 	signalHandle();
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 	}
 	std::vector<Server> servVec;
 	try {
-    servVec = Pars::parse(argv[1]);
+    servVec = Pars::parse(argv[1], env);
 	} catch (std::exception &e) {
 		std::cout << "Error : " << e.what() << std::endl;
 		return 1;

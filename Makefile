@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+         #
+#    By: madamou <madamou@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/29 12:42:35 by madamou           #+#    #+#              #
-#    Updated: 2024/11/24 14:58:32 by ibaby            ###   ########.fr        #
+#    Updated: 2024/11/24 21:05:21 by madamou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,13 +22,13 @@ END= 	$(shell tput -Txterm sgr0)
 
 CC = c++
 
-C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3 -O3
+C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3
 
-REQUEST = $(addprefix Request/, Request.cpp)
+REQUEST = $(addprefix Request/, Request.cpp GetterSetter.cpp)
 
 FILE = $(addprefix File/, File.cpp)
 
-CGI = $(addprefix CGI/, CGI.cpp)
+CGI = $(addprefix CGI/, CGI.cpp ResponseCGI.cpp)
 
 GLOBALDATA = $(addprefix GlobalData/, GlobalData.cpp)
 
@@ -40,7 +40,7 @@ PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp Location.cpp)
 
 UTILS = $(addprefix Utils/, utils.cpp)
 
-RAW_BITS = $(addprefix RawBits/, RawBits.cpp)
+RAW_BITS = $(addprefix RawBits/, RawBits.cpp GetterSetter.cpp FileUpload.cpp)
 
 CLASS = $(addprefix class/, $(PARSER) $(GLOBALDATA) $(CLIENT) $(SERVER) $(REQUEST) $(RAW_BITS) $(FILE))
 
