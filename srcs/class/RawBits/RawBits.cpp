@@ -112,14 +112,11 @@ long RawBits::find(const char *str) const {
 }
 
 long RawBits::findInBody(const char *str, unsigned long pos) const {
-	size_t lenStr = strlen(str);
-
-	for (; pos <= _lenBody - lenStr; pos++) {
+	for (size_t lenStr = strlen(str); pos <= _lenBody - lenStr; pos++) {
 		if (std::memcmp(&_body[pos], str, lenStr) == 0) {
 			return pos;
 		}
 	}
-
 	return -1;
 }
 
@@ -146,26 +143,16 @@ void RawBits::printBody(void) const {
 
 char* RawBits::substrBody(size_t pos, size_t n) {
   char *result = new char[n + 1];
-  size_t i = 0;
-  while (i < n) {
-    result[i] = _body[pos + i];
-    i++;
-  }
-  result[i] = '\0';
-  return result; 
+  std::memcpy(result, &_body[pos], n);
+  result[n] = '\0';
+  return result;
 }
 
 void RawBits::eraseInBody(size_t pos, size_t n) {
-    if (pos + n > _lenBody) {
-        n = _lenBody - pos;
-    }
-    char *newBody = new char[_lenBody - n];
-    size_t i = 0;
-    for (size_t j = 0; j < _lenBody; j++) {
-        if (j < pos || j >= pos + n) {
-            newBody[i++] = _body[j];
-        }
-    }
+	char *newBody;
+	newBody = new char[_lenBody - n];
+	std::memcpy(newBody, _body, pos);
+	std::memcpy(&newBody[pos], &_body[pos + n], _lenBody - (pos + n));
     delete[] _body;
     _body = newBody;
     _lenBody = _lenBody - n;
@@ -231,7 +218,7 @@ int	RawBits::handleFileHeader(void) {
 	eraseInBody(0, headerEnd + 4);	// +4 for "\r\n\r\n"
 
 	// flushBuffer(header);	// can throw
-
+	
 	std::string filename = file->get("filename");
 	filename.erase(0, 1);
 	filename.erase(filename.size() - 1, 1);
@@ -259,7 +246,7 @@ int    RawBits::handleFileBody(void) {
         return (FINISHED);
     } else { // on a trouve la nbondary de fin de fichier mais il ya d'autres fichiers
         flushBuffer(0,boundaryPos - 2); // on veut tout mettre dans le fichier jusqu'a boundaryPos - 2 (\r\n)
-        eraseInBody(0, _lenBody - boundaryPos - 2);
+        eraseInBody(0, boundaryPos);  // on veut tout enlever jusqu'a boundarypos
         _uploadFile.close();
         _fileState = ON_HEADER;
         return (CONTINUE);

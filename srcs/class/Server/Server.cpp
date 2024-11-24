@@ -231,23 +231,23 @@ void Server::_parseClientHeader(Client *client) {
   	chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
 }
 
-void Server::_parseClientBody(Client *client) {
-	std::string filename;
-	client->getRequest()->printBody();
-	// TODO: Si path != cgi et pas de multipart form data  alors return instant et repondre 200
-	// if path request == cgi alors envoye le contenu du body dans l'entree standart du cgi
-	client->getRequest()->checkBondaries();
-	std::vector<File*> files = client->getRequest()->getFile();
+// void Server::_parseClientBody(Client *client) {
+// 	std::string filename;
+// 	client->getRequest()->printBody();
+// 	// TODO: Si path != cgi et pas de multipart form data  alors return instant et repondre 200
+// 	// if path request == cgi alors envoye le contenu du body dans l'entree standart du cgi
+// 	client->getRequest()->checkBondaries();
+// 	std::vector<File*> files = client->getRequest()->getFile();
 
-	for (size_t i = 0; i < files.size(); i++) {
-		filename = generateFilename( files[i]->get("filename")); // need file extension
-		int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		write(fd, files[i]->content(), files[i]->lenFile());
-		close(fd);
-	}
+// 	for (size_t i = 0; i < files.size(); i++) {
+// 		filename = generateFilename( files[i]->get("filename")); // need file extension
+// 		int fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+// 		write(fd, files[i]->content(), files[i]->lenFile());
+// 		close(fd);
+// 	}
 
-	client->setReadyToresponse(true);
-}
+// 	client->setReadyToresponse(true);
+// }
 
 void Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE + 1];
@@ -269,7 +269,6 @@ void Server::addClientRequest(int fd) {
 		}
 	}
 	if (client->whatToDo() == ON_BODY && client->isReadyToResponse() == false) {
-		std::cout << "PAS NORMALLLLLLLLLLLLLL " << std::endl;
 		client->getRequest()->addBodyRequest(buff, n, client->getUseBuffer());
 	}
 }

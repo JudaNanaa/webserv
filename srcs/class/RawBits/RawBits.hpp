@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/24 01:00:38 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/24 09:49:06 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@
 #include <map>
 #include <fstream>
 
-# define FINISHED 1
-# define NOT_FINISHED 0
+# define FINISHED 2
+# define NOT_FINISHED 3
 
 # define STOP 1
 # define CONTINUE 0
