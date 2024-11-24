@@ -100,14 +100,14 @@ void	Server::handleLocation(Client *client) {
     return ;
   }
   //check de la body Size
-  if (location->maxBodySize() > 0) {
-    if ((unsigned)location->maxBodySize() < request->getContentLenght()) {
+	if (location->maxBodySize() > 0) {
+		if ((unsigned)location->maxBodySize() < request->getContentLenght()) {
 
-      request->setResponsCode("413");
-      client->setReadyToresponse(true);
-      return ;
-    }
-  }
+	    	request->setResponsCode("413");
+    		client->setReadyToresponse(true);
+    		return ;
+		}
+	}
 }
 
 bool	Server::isCgi( const std::string& path ) {
@@ -127,8 +127,7 @@ bool	Server::isCgi( const std::string& path ) {
 }
 
 void	Server::handleCgi( Client *client ) {
-  (void)client;
-	// TODO
+	CgiDefaultGesture(client);
 }
 
 void	Server::handleRequest( Client *client ) {
@@ -158,10 +157,13 @@ void	Server::chooseParsing( Client *client ) {
 	Request	*request = client->getRequest();
 
 	if (_data->checkLocation(request->path()) != NULL) {
+		std::cerr << "LOCATION" << std::endl;
 		handleLocation(client);
 	} else if (isCgi(request->path()) == true) {
+		std::cerr << "CGI" << std::endl;
 		handleCgi(client);
 	} else {
+		std::cerr << "DEFAULT" << std::endl;
 		handleRequest(client);
 	}
 }
@@ -215,7 +217,7 @@ void Server::_parseClientHeader(Client *client) {
 			it != ite; it++) {
 		_parseRequestLine(*it, clientRequest);
 	}
-	// std::cout << "REQUEST:\n" << *clientRequest << std::endl;
+	std::cerr << "REQUEST:\n" << *clientRequest << std::endl;
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
 		clientRequest->setSizeBody(std::atoll(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;

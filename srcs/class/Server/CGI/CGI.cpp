@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mtahri <mtahri@contact.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 14:23:02 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/24 14:30:33 by itahri           ###   ########.fr       */
+/*   Updated: 2024/11/24 14:54:56 by madtahri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,18 @@
 #include "../../Parser/Parser.hpp"
 
 void Server::CgiDefaultGesture(Client *client) {
-  Request* request = client->getRequest();
-  size_t extension = request->path().find_last_of('.');
-  std::string cgi[2];
+    Request* request = client->getRequest();
+    std::size_t extension = request->path().find_last_of('.');
+    char* cgi[3];
+
+    cgi = n
+    cgi[0] = _data->_cgi[request->path().substr(extension)].c_str();
+    cgi[1] = (_data->_root + request->path()).c_str();
+    cgi[2] = NULL;
   
-  cgi[0] = _data->_cgi[request->path().substr(extension)];
-  cgi[1] = request->path().substr(extension);
+    std::cerr << "cgi[0] : " << cgi[0] << std::endl;
+    std::cerr << "cgi[1] : " << cgi[1] << std::endl;
+
+    int pid = fork();
+    execve(cgi[0], const_cast<char**>cgi);
 }
