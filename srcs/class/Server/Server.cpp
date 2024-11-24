@@ -46,14 +46,6 @@ Server::~Server(void) {
 		close(this->_socket_fd);
 }
 
-void Server::addData(Data* data) {
-  _data = data;
-}
-
-int Server::getSocketFd(void) const {
-	return this->_socket_fd;
-}
-
 void Server::init(void) {
 	struct sockaddr_in server_addr;
 	int opt = 1;
@@ -91,40 +83,6 @@ void Server::init(void) {
 	this->_host[0] = "127.0.0.1:" + ss.str();
 	this->_host[1] = "localhost:" + ss.str();
 	std::cout << "server on : http://" << this->_host[0] << std::endl;
-}
-
-void Server::addClientToMap(Client *client) {
-	this->_clientMap[client->getClientFd()] = client;
-}
-
-bool Server::ifClientInServer(int fd) const {
-	if (this->_clientMap.find(fd) == this->_clientMap.end()) {
-		return false;
-	}
-	return true;
-}
-
-Client *Server::getClient(int fd) {
-	return this->_clientMap[fd];
-}
-
-void Server::removeClientInMap(int fd) {
-	Client *client;
-
-	client = getClient(fd);
-	delete client;
-	this->_clientMap.erase(fd);
-}
-
-int Server::nbOfClient(void) const {
-	return this->_clientMap.size();
-}
-
-bool Server::isServerHost(std::string const &str) const {
-	if (_host[0] == str || _host[1] == str) {
-		return true;
-	}
-	return false;
 }
 
 void	Server::handleLocation(Client *client) {
@@ -233,7 +191,7 @@ void Server::_parseClientHeader(Client *client) {
 	header = clientRequest->getHeader();
 	headerSplit = split(header, "\r\n");
 
-	// std::cout << "DEBUG HEADER: \n" << header << std::endl;
+	std::cerr << "DEBUG HEADER: \n" << header << std::endl;
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		throw std::invalid_argument("Error header 1: " + headerSplit[0]);
@@ -258,7 +216,9 @@ void Server::_parseClientHeader(Client *client) {
 	}
 	// std::cout << "REQUEST:\n" << *clientRequest << std::endl;
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
-		clientRequest->setSizeBody(atoi(clientRequest->find("Content-Length").c_str()));
+		std::cerr << "yesy :" << clientRequest->find("Content-Length").c_str() << std::endl;
+		std::cerr << "yesy :" << clientRequest->find("Content-Length").c_str() << std::endl;
+		clientRequest->setSizeBody(std::atoll(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;
 		//TODO : secure this (si Content-Lenght ou Content-Type ne sont pas present dans la requete on throw une exception et on ne renvoie pas de reponse au client)
     //alors qu'on doit en renvoyer une
@@ -270,21 +230,8 @@ void Server::_parseClientHeader(Client *client) {
 		}
 	}
   	chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
-}
-
-std::string generateFilename(std::string baseName) {
-		std::time_t now = std::time(NULL);
-		std::tm* now_tm = std::localtime(&now);
-
-		baseName.erase(0, 1);
-		baseName.erase(baseName.size() - 1, 1);
-		char timeBuffer[20];
-		std::strftime(timeBuffer, sizeof(timeBuffer), "%Y%m%d_%H%M%S", now_tm);
-		std::ostringstream oss;
-		oss << "URIs/uploads/" 
-			<< timeBuffer << "_"
-			<< baseName;
-		return oss.str();
+	std::cerr << *clientRequest << std::endl;
+	std::cerr << "conetnt lenght :: " <<  clientRequest->getContentLenght() << std::endl;
 }
 
 void Server::_parseClientBody(Client *client) {
@@ -314,7 +261,7 @@ void Server::addClientRequest(int fd) {
 	client->setUseBuffer(true);
 	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
 	std::cout << "--------------------REQUEST--------------------" << std::endl;
-	std::cout << buff << std::endl;
+	// std::cout << buff << std::endl;
 	if (n == -1) {
 		throw std::runtime_error("Can't recv the message !");
 	}
@@ -332,22 +279,4 @@ void Server::addClientRequest(int fd) {
 	 	// 	_parseClientBody(client); // Parse body
 	 	// }
 	}
-}
-
-bool Server::checkAllowMethodes(std::string methode) {
-  if (methode.compare("GET") == 0) {
-	return (_data->_allowedMethods & GET_);
-  }
-  if (methode.compare("POST")  == 0) {
-	return (_data->_allowedMethods & POST_);
-  }
-  if (methode.compare("DELETE")  == 0) {
-	return (_data->_allowedMethods & DELETE_);
-  }
-  if (methode.compare("OPTIONS")  == 0) {
-	return (_data->_allowedMethods & OPTIONS_);
-  }
-  if (!methode.empty())
-    throw std::invalid_argument("Invalid methode : " + methode);
-  return false;
 }

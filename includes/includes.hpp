@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/15 18:50:34 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/23 23:06:07 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,25 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
-
+#include <asm-generic/socket.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <exception>
+#include <fcntl.h>
+#include <iomanip>
+#include <cstring>
+#include <iterator>
+#include <stdexcept>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <netinet/in.h>
+#include <sys/epoll.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <cstddef>
 
 extern bool g_running;
 

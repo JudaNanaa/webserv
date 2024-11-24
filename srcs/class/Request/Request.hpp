@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/23 18:56:50 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/24 01:36:34 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ class Request : public RawBits {
 		std::string _ResponsCode;
 		std::map<std::string, std::string>	_others;
 		Server *_server;
-		long _contentLenght;
+		long long _contentLenght;
 		Client *_client;
 		bool _isRedirect;
 
@@ -69,7 +69,7 @@ class Request : public RawBits {
 		RawBits *getRawRequest(void);
     	std::string getPath(void);
 		const t_state &getStatus(void) const;
-		const long	&getContentLenght(void) const;
+		const long long	&getContentLenght(void) const;
 		const int &getMethode(void) const;
 		const std::string &getResponsCode(void) const;
 		const std::vector<File*>& getFile(void) const;
@@ -83,7 +83,7 @@ class Request : public RawBits {
 		void	setStatus( t_state newStatus );
 		void	path( std::string newPath );
 		void	add( std::string key, std::string value );
-		void	setSizeBody(unsigned int nb);
+		void	setSizeBody(long long nb);
 		void setMethode(std::string methode);
 		void setResponsCode(std::string code);
 		void setIsACgi(bool boolean);
@@ -96,7 +96,7 @@ class Request : public RawBits {
 		bool& 	getRedirect(void);
 
 		/*	OTHERS	*/
-		void	uploadBody(char *buff, int n, bool unusedBuffer);
+		void	uploadBody(int n);
 
 		friend std::ostream& operator<<(std::ostream& os, const Request& request );
 };

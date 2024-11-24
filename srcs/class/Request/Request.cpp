@@ -80,11 +80,11 @@ void	Request::path( std::string newPath ) {
 	_path = newPath;
 }
 
-void	Request::setSizeBody(unsigned int nb) {
+void	Request::setSizeBody(long long nb) {
 	_contentLenght = nb;
 }
 
-const long	&Request::getContentLenght(void) const {
+const long	long &Request::getContentLenght(void) const {
 	return _contentLenght;
 }
 
@@ -115,25 +115,13 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 	return READY_PARSE_HEADER;
 }
 
-void	Request::uploadBody(char *buff, int n, bool unusedBuffer) {
-
-	if (unusedBuffer == true) {
-		// buff = std::strstr(buff, "\r\n\r\n");
-		// if (buff == NULL)	//	no body
-		// 	throw std::invalid_argument("invalid request");
-		// else
-		// 	buff += 4;	// to skip "\r\n\r\n"
-
-		RawBits::appendBody(buff, n);
-	} else {
-		RawBits::appendBody(buff, n);
-	}
-	(void)buff;
+void	Request::uploadBody(int n) {
 	if (find("Content-Type").find("multipart") != std::string::npos) {
 		// find bondaries
 		if (RawBits::checkBondaries() == FINISHED) {	// transform this function
 			_client->setReadyToresponse(true);
 		}
+		std::cerr << "\e" << getFile().back()->get("filename") << ": " << (RawBits::getLenTotalBody() / _contentLenght) * 100 << "%\r";
 
 	} else {	// if no bondaries (?)
 		std::fstream	file(DEFAULT_UPLOAD_FILE);
@@ -142,16 +130,16 @@ void	Request::uploadBody(char *buff, int n, bool unusedBuffer) {
 
 		file.write(RawBits::getBody(), n);
 	}
+
 }
 
 t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 	if (add)
 		appendBody(buff, n);
-	uploadBody(buff, n, add);
-	// if (RawBits::getLenBody() == _contentLenght) {
-	// 	return READY_PARSE_BODY;
-	// }
-	if (RawBits::getLenBody() > _contentLenght) {
+	uploadBody(n);
+	if (RawBits::getLenTotalBody() > _contentLenght) {
+		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
+		std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
    		setResponsCode("400");
 		return ERROR;
 	}
@@ -169,13 +157,13 @@ std::ostream& operator<<(std::ostream& os, const Request& request ) {
 	os
 	<< "Request {\n"
 	<< "\t" << "method: ";
-	if (request.method() | GET_) {
+	if (request.method() & GET_) {
 		os << "GET";
-	} else if (request.method() | POST_) {
+	} else if (request.method() & POST_) {
 		os << "POST";
-	} else if (request.method() | DELETE_) {
+	} else if (request.method() & DELETE_) {
 		os << "DELETE";
-	} else if (request.method() | OPTIONS_) {
+	} else if (request.method() & OPTIONS_) {
 		os << "OPTIONS";
 	}  else {
 		os << "none";

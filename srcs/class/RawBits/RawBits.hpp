@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/23 22:34:47 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/24 01:00:38 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,16 @@ class RawBits {
 		std::string _header;
 		// 		 |  filename | content ...
 		std::vector<File *> _files;
-		int					_state;
+		int					_fileState;
 		char *				_body;
 		char *				_request;
 		std::string 		_boundary;
 		char *				_tmp;
 		unsigned int		_lenBody;
+		long long		_lenTotalBody;
 		unsigned int		_lenRequest;
+	    std::ofstream    	_uploadFile;
+
 
 		void				checkFileHeader( File& file, std::string &header );
 	public:
@@ -68,13 +71,13 @@ class RawBits {
 		void 				setHeader(std::string header);
     	char*       		substrBody(size_t pos, size_t n);
 		const unsigned int&	getLenBody(void) const;
+		const long long&	getLenTotalBody(void) const;
     	int         		compareInBody(char *s, size_t n);
     	void        		eraseInBody(size_t pos, size_t n);
 		void				cleanFiles(void);
-		int					handleFileHeader( std::ofstream& uploadFile );
-		void				flushBuffer( long pos, std::ofstream& uploadFile, long n = 0 );
-		void				flushBuffer( std::string& buff, std::ofstream& uploadFile );
-		int					handleFileBody( std::ofstream& uploadFile );
+		int					handleFileHeader();
+		void				flushBuffer( long pos, long n = 0 );
+		int					handleFileBody();
 };
 
 #endif

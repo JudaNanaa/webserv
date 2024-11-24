@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/20 15:26:14 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/23 22:51:28 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ int main(int argc, char **argv) {
 		std::cerr << "Need only one argument" << std::endl;
 		return 1;
 	}
-  std::vector<Server> servVec;
-  try {
+	std::vector<Server> servVec;
+	try {
     servVec = Pars::parse(argv[1]);
 	} catch (std::exception &e) {
 		std::cout << "Error : " << e.what() << std::endl;
