@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/21 19:59:20 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/24 14:31:09 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,9 @@ class Server {
 	void	handleCgi( Client *client );
 	void	handleLocation(Client *client);
 	void	handleRequest( Client *client );
+
+  //CGI
+  void CgiDefaultGesture(Client *client);
 
     //request Parsing
     bool checkAllowMethodes(std::string methodes);
