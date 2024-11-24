@@ -150,6 +150,8 @@ void	Server::handleRequest( Client *client ) {
 	if (request->getContentLenght() == -1) {
 		client->setReadyToresponse(true);
 	}
+	if (request->getMethode() & GET_)
+		client->setReadyToresponse(true);
 }
 
 void	Server::chooseParsing( Client *client ) {
@@ -191,7 +193,6 @@ void Server::_parseClientHeader(Client *client) {
 	header = clientRequest->getHeader();
 	headerSplit = split(header, "\r\n");
 
-	std::cerr << "DEBUG HEADER: \n" << header << std::endl;
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		throw std::invalid_argument("Error header 1: " + headerSplit[0]);
@@ -216,8 +217,6 @@ void Server::_parseClientHeader(Client *client) {
 	}
 	// std::cout << "REQUEST:\n" << *clientRequest << std::endl;
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
-		std::cerr << "yesy :" << clientRequest->find("Content-Length").c_str() << std::endl;
-		std::cerr << "yesy :" << clientRequest->find("Content-Length").c_str() << std::endl;
 		clientRequest->setSizeBody(std::atoll(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;
 		//TODO : secure this (si Content-Lenght ou Content-Type ne sont pas present dans la requete on throw une exception et on ne renvoie pas de reponse au client)
@@ -230,8 +229,6 @@ void Server::_parseClientHeader(Client *client) {
 		}
 	}
   	chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
-	std::cerr << *clientRequest << std::endl;
-	std::cerr << "conetnt lenght :: " <<  clientRequest->getContentLenght() << std::endl;
 }
 
 void Server::_parseClientBody(Client *client) {
@@ -260,8 +257,6 @@ void Server::addClientRequest(int fd) {
 	client = getClient(fd);
 	client->setUseBuffer(true);
 	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
-	std::cout << "--------------------REQUEST--------------------" << std::endl;
-	// std::cout << buff << std::endl;
 	if (n == -1) {
 		throw std::runtime_error("Can't recv the message !");
 	}
@@ -274,9 +269,7 @@ void Server::addClientRequest(int fd) {
 		}
 	}
 	if (client->whatToDo() == ON_BODY && client->isReadyToResponse() == false) {
+		std::cout << "PAS NORMALLLLLLLLLLLLLL " << std::endl;
 		client->getRequest()->addBodyRequest(buff, n, client->getUseBuffer());
-	 	// if (client->getReadyToParseBody()) {
-	 	// 	_parseClientBody(client); // Parse body
-	 	// }
 	}
 }

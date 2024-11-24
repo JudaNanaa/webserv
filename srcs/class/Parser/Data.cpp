@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:35:03 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/23 14:35:54 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/24 02:29:59 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ Location *Data::checkLocation(std::string path) {
   if (_locations.find(path) != _locations.end())
     return &(_locations.find(path))->second;
   for (std::map<std::string, Location>::iterator it = _locations.begin(); it != _locations.end(); it++) {
-    // std::cerr << "CHECK" << std::endl;
     if (!it->first.empty()) {
       if (std::strncmp(it->first.c_str(), path.c_str(), it->first.length()) == 0)
         return &it->second;
