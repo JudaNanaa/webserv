@@ -153,15 +153,14 @@ void	Server::chooseParsing( Client *client ) {
 	if (_data->checkLocation(request->path()) != NULL) {
 		std::cerr << "LOCATION" << std::endl;
 		handleLocation(client);
-		request->setStatus(ON_BODY);
 	} else if (isCgi(request->path()) == true) {
 		std::cerr << "CGI" << std::endl;
 		handleCgi(client);
 	} else {
 		std::cerr << "DEFAULT" << std::endl;
 		handleRequest(client);
-		request->setStatus(ON_BODY);
 	}
+	request->setStatus(ON_BODY);
 }
 
 void Server::parseHeaderWithLocation(Client *client, Request *request) {
@@ -258,6 +257,7 @@ void Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE + 1];
 	int n;
 	Client *client;
+	static long long sizeBody; // TODO: enleve ca
 
 	client = getClient(fd);
 	client->setUseBuffer(true);
@@ -271,10 +271,25 @@ void Server::addClientRequest(int fd) {
 		client->setUseBuffer(false);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
+			sizeBody += client->getRequest()->getLenBody();
 		}
 	}
 	if (client->whatToDo() == ON_BODY && client->isReadyToResponse() == false) {
-		client->getRequest()->addBodyRequest(buff, n, client->getUseBuffer());
+		if (client->getRequest()->isACgi() == true)  // TODO: bouger ca
+		{
+			if (client->getUseBuffer() == true)
+			{
+				write(client->getParentToCGI(), buff, n);
+				sizeBody += n;
+			}
+			if (sizeBody == client->getRequest()->getContentLenght())
+			{
+				close(client->getParentToCGI());
+				sizeBody = 0;
+			}
+		}
+		else 
+			client->getRequest()->addBodyRequest(buff, n, client->getUseBuffer());
 	}
 	std::cerr << "test2" << std::endl;
 }

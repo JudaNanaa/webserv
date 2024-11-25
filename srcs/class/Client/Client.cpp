@@ -59,6 +59,13 @@ int Client::getCGIFD(void) {
 	return _pipeFD;
 }
 
+void	Client::setParentToCGI(int fd) {
+	_ParentToCGI = fd;
+}
+
+int Client::getParentToCGI(void) {
+	return _ParentToCGI;
+}
 
 const bool &Client::getReadyToParseHeader(void) const {
 	return _readyToParseHeader;

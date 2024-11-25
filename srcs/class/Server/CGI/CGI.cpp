@@ -81,8 +81,8 @@ void Server::CgiDefaultGesture(Client *client) {
         exit(1);
     }
     close(ParentToCGI[0]);
-    // TODO: Mettre les infos (le body des requests post) qu'a besoin le cgi en entree dans le ParentToCGI[1] et close(ParentToCGI[1])
-    close(ParentToCGI[1]);
+	write(ParentToCGI[1], client->getRequest()->getBody(), client->getRequest()->getLenBody()); // TODO: enlever ca c'est pas propre
+	client->setParentToCGI(ParentToCGI[1]);
     client->setCGIFD(CGIToParent[0]);
     client->setPid(pid);
 

@@ -11,6 +11,7 @@ class Client {
 	private:
 		int _fd;
 		int _pipeFD;
+		int _ParentToCGI;
 		int _pid;
 		int _CGIStatus;
 		bool _useBuffer;
@@ -32,6 +33,8 @@ class Client {
 		void	cleanRequest( void );
 		void	setCGIFD(int fd);
 		int getCGIFD(void);
+		void	setParentToCGI(int fd);
+		int getParentToCGI(void);
 		void setUseBuffer(bool boolean);
 		bool getUseBuffer(void) const;
 		int getClientFd(void) const;

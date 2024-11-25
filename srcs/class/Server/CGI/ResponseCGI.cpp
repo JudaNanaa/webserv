@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseCGI.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/25 10:16:09 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/25 17:52:13 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void Server::_responseCgiIfNoProblem(Client *client)
 		total += nbRead;
 	}
 	close(client->getCGIFD());
+	write(2, toSend, total);
 	if (send(client->getClientFd(), toSend, total, MSG_EOR) == -1)
 		throw std::runtime_error("Can't send the message !");
 }
