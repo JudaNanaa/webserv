@@ -1,3 +1,4 @@
-webserv
+ok
 *.o
-.vscode/
+./webserv
+webserv

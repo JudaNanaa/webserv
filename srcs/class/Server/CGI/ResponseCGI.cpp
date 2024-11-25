@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/24 21:26:33 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/25 10:16:09 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@ void Server::_responseCgiIfNoProblem(Client *client)
 	unsigned long long total = 0;
 	char buff[BUFFER_SIZE];
 	int nbRead = BUFFER_SIZE;
-	
+
+	toSend = strdup("HTTP/1.1 200 Ok\r\n");
+	total = strlen(toSend);
 	while (nbRead == BUFFER_SIZE)
 	{
 		nbRead = read(client->getCGIFD(), buff, BUFFER_SIZE);
@@ -33,19 +35,11 @@ void Server::_responseCgiIfNoProblem(Client *client)
 		}
 		if (nbRead == 0)
 			break;
-		if (toSend == NULL)
-		{
-			toSend = new char[nbRead];
-			std::memcpy(toSend, buff, nbRead);
-		}
-		else
-		{
-			char *dest = new char[total + nbRead];
-			std::memcpy(dest, toSend, total);
-			std::memcpy(&dest[total], buff, nbRead);
-			delete [] toSend;
-			toSend = dest;
-		}
+		char *dest = new char[total + nbRead];
+		std::memcpy(dest, toSend, total);
+		std::memcpy(&dest[total], buff, nbRead);
+		delete [] toSend;
+		toSend = dest;
 		total += nbRead;
 	}
 	close(client->getCGIFD());
