@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/24 19:35:36 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/25 21:13:37 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ const std::string&	Request::host( void	) const {
 
 const std::string&	Request::find( std::string key ) const {
 	if (_others.find(key) == _others.end())
-		throw std::invalid_argument(key + "key not found");
+		throw std::invalid_argument(key + ": key not found");
 
 	return (_others.at(key));
 }

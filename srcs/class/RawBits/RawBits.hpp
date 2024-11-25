@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/24 19:36:09 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/25 21:29:31 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # define CONTINUE 0
 
 class RawBits {
-	private:
+	protected:
 		std::string _header;
 		// 		 |  filename | content ...
 		File *_currentFile;

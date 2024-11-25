@@ -21,12 +21,14 @@
 #include <vector>
 
 Request::Request(Client *client) : RawBits() {
+
 	_method = 0;
 	_state = ON_HEADER;
 	_contentLenght = -1;
 	_ResponsCode = "200";
 	_isRedirect = false;
 	_client = client;
+	_isCgi = false;
 }
 
 Request::~Request() {
@@ -61,25 +63,41 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 
 void	Request::uploadBody() {
 	std::cerr << "es ce que je passe par la ?" << std::endl;
-	if (find("Content-Type").find("multipart") != std::string::npos) {
+	bool	multipart;
+
+	try {
+		multipart = find("Content-Type").find("multipart") != std::string::npos;
+	} catch (...) {
+		multipart = false;
+	}
+	if (multipart == true) {
 		// find bondaries
 		if (RawBits::checkBondaries() == FINISHED) {	// transform this function
-			_client->setReadyToresponse(true);
+			// _client->setReadyToresponse(true);
 		}
 		std::cerr << "\e" << getCurrentFile()->get("filename") << ": " << (RawBits::getLenTotalBody() / _contentLenght) * 100 << "%\r";
-	} else {	// if no bondaries (?)
-		std::fstream	file(DEFAULT_UPLOAD_FILE);
-		if (file.fail())
+	} else {	// if no bondaries
+		if (defaultFile.is_open() == false) {
+			defaultFile.open(DEFAULT_UPLOAD_FILE, std::ios::trunc | std::ios::out);
+		}
+		if (defaultFile.fail())
 			throw std::invalid_argument("failed to open DEFAULT_UPLOAD_FILE");
-
-		file.write(RawBits::getBody(), RawBits::getLenBody());
+		defaultFile.write(RawBits::getBody(), RawBits::getLenBody());
+		std::cerr <<  "lenbody" << RawBits::getLenBody() << std::endl;
+		eraseInBody(0, RawBits::getLenBody());
 	}
 }
 
 t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 	if (add)
 		appendBody(buff, n);
-	uploadBody();
+	if (RawBits::getLenBody() != 0)
+		uploadBody();
+	if (RawBits::getLenTotalBody() == _contentLenght) {
+		if (defaultFile.is_open())
+			defaultFile.close();
+		_client->setReadyToresponse(true);
+	}
 	if (RawBits::getLenTotalBody() > _contentLenght) {
 		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
 		std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;

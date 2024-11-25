@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/24 19:55:29 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/25 21:45:03 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ class Request : public RawBits {
 	private:
 		t_state _state;
 		int	_method;
+		std::ofstream	defaultFile;
 		bool _isCgi;
 		std::string	_path;
 		std::string	_Host;
