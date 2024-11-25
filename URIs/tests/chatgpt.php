@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
-// Définir l'en-tête pour indiquer qu'il s'agit d'une réponse HTTP
-header("Content-Type: text/html; charset=UTF-8");
+// Démarrer la capture de la sortie
+ob_start();
 
 // Afficher un message de bienvenue ou un contenu dynamique
 echo "<html><body>";
@@ -12,4 +12,18 @@ echo "<p>Voici les variables de l'environnement :</p><pre>";
 print_r($_SERVER);
 echo "</pre>";
 echo "</body></html>";
+
+// Récupérer la sortie capturée
+$output = ob_get_clean();
+
+// Calculer la longueur du contenu
+$contentLength = strlen($output);
+
+// Afficher l'en-tête Content-Length
+echo "Content-Type: text/html; charset=UTF-8\r\n";
+echo "Content-Length: $contentLength\r\n";
+echo "\r\n";
+
+// Afficher le contenu généré
+echo $output;
 ?>
