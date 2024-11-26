@@ -3,17 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: itahri <itahri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/25 16:55:01 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/26 20:38:15 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <cstdlib>
+#include <cstring>
 #include <ostream>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+
+#define SECRET "https://www.morganphilips.com/fr-fra/conseils-et-actus/les-9-choses-a-faire-a-20-ans-pour-devenir-millionnaire-a-30-ans"
+#define SINGE "https://media.tenor.com/_uIJwdpxI8UAAAAM/mono-serio.gif"
+#define MYCEOO "https://pbs.twimg.com/media/EaoNasxXYAUE8pA.jpg"
+#define MYCEOC "https://pbs.twimg.com/media/EaoNYXkXkAMHJJK.jpg"
+
 
 const std::string getMessageCode(int code) {
 	std::map<int, std::string> codes_responses;
@@ -188,6 +197,46 @@ void Server::giveClientResponseByLocation(int fd) {
 	}
 }
 
+void setCookie(std::stringstream &response, std::string key, std::string value) {
+	response << "Set-Cookie: " << key << "=" << value << "\r\n";
+}
+
+void Server::handleAuth(Client* client) {
+	Request* request = client->getRequest();
+	std::stringstream response;
+
+	
+	
+	if (request->path() == "/auth/login"){
+		client->getRequest()->setResponsCode("301");
+		response << "HTTP/1.1 " << request->getResponsCode() << " " << getMessageCode(std::atoi(request->getResponsCode().c_str())) << "\r\n"; 
+		response << "Content-Length: 0\r\n";
+		if (request->isKeyfindInHeader("Cookie") == false || request->find("Cookie").find("auth=true") == std::string::npos) {
+			setCookie(response, "auth", "true");
+		}
+		std::cerr << "redirected on : " << MYCEOO << std::endl;
+		response << "Location: " << MYCEOO << "\r\n"; 
+		response << "\r\n";
+		if (send(client->getClientFd(), response.str().c_str(), response.str().size(), MSG_EOR) == -1)
+			throw std::runtime_error("Can't send the message !");
+
+	} else if (request->path() == "/auth/secret") {
+		std::string header = request->getHeader();
+		if (request->isKeyfindInHeader("Cookie") == true) {
+			if (request->find("Cookie").find("auth=true") != std::string::npos) {
+				client->getRequest()->setResponsCode("301");
+				std::cerr << "redirected on : " << SECRET << std::endl;
+				sendRedirect(SECRET, client->getClientFd(), client);
+			} else {
+				client->getRequest()->setResponsCode("301");
+				std::cerr << "redirected on : " << SECRET << std::endl;
+				sendRedirect(MYCEOC, client->getClientFd(), client);
+			}
+		}
+	}
+
+}
+
 void Server::giveClientResponse(int fd) {
 	Client *client;
 	std::ifstream file;
@@ -198,8 +247,9 @@ void Server::giveClientResponse(int fd) {
 	if (client->getRequest()->getRedirect()) { 
 		std::cerr << "location find ! with path == " + client->getRequest()->path() << std::endl;
 		giveClientResponseByLocation(fd);
-	}
-	else if (client->getRequest()->isACgi() == true) {
+	} else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) == 0) {
+		handleAuth(client);	
+	} else if (client->getRequest()->isACgi() == true) {
 	std::cerr << "test3" << std::endl;
 		responseCGI(client);
 	}
