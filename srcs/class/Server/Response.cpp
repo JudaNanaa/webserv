@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/26 20:53:51 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/26 20:56:40 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,10 +206,9 @@ void Server::handleAuth(Client* client) {
 	Request* request = client->getRequest();
 	std::stringstream response;
 
-	
+	client->getRequest()->setResponsCode("302");
 	std::cerr << "je paasee == " << request->path() << std::endl;
 	if (request->path() == "/auth/login"){
-		client->getRequest()->setResponsCode("302");
 		response << "HTTP/1.1 " << request->getResponsCode() << " " << getMessageCode(std::atoi(request->getResponsCode().c_str())) << "\r\n"; 
 		response << "Content-Length: 0\r\n";
 		if (request->isKeyfindInHeader("Cookie") == false || request->find("Cookie").find("auth=true") == std::string::npos) {
@@ -224,20 +223,18 @@ void Server::handleAuth(Client* client) {
 		std::string header = request->getHeader();
 		if (request->isKeyfindInHeader("Cookie") == true) {
 			if (request->find("Cookie").find("auth=true") != std::string::npos) {
-				client->getRequest()->setResponsCode("302");
 				std::cerr << "redirected on : " << SECRET << std::endl;
 				sendRedirect(SECRET, client->getClientFd(), client);
 			} else {
-				client->getRequest()->setResponsCode("302");
 				std::cerr << "redirected on : " << SECRET << std::endl;
 				sendRedirect(MYCEOC, client->getClientFd(), client);
 			}
 		}
-		else {
-				client->getRequest()->setResponsCode("302");
-				std::cerr << "redirected on : " << SECRET << std::endl;
-				sendRedirect(MYCEOC, client->getClientFd(), client);
-			}
+		else
+		{
+			std::cerr << "redirected on : " << SECRET << std::endl;
+			sendRedirect(MYCEOC, client->getClientFd(), client);
+		}
 	}
 
 }
@@ -252,7 +249,7 @@ void Server::giveClientResponse(int fd) {
 	if (client->getRequest()->getRedirect()) { 
 		std::cerr << "location find ! with path == " + client->getRequest()->path() << std::endl;
 		giveClientResponseByLocation(fd);
-	} else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) == 0) {
+	} else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) == 0 && client->getRequest()->getResponsCode() == "200") {
 		handleAuth(client);	
 	} else if (client->getRequest()->isACgi() == true) {
 	std::cerr << "test3" << std::endl;
