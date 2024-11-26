@@ -125,12 +125,11 @@ std::ostream& operator<<(std::ostream& os, const Request& request ) {
 
 	os
 	<< "\t" << "path: " << request.path() << std::endl
-	<< "\t" << "host: " << request.host()
 	<< std::endl;
 
 	std::map<std::string, std::string>::const_iterator ite = request._others.end();
 	for (std::map<std::string, std::string>::const_iterator it = request._others.begin(); it != ite; it++) {
-		std::cout << "\t" << it->first << ": " << it->second << std::endl;
+		os << "\t" << it->first << ": " << it->second << std::endl;
 	}
 
 	os << "}" << std::endl;

@@ -254,7 +254,7 @@ void Server::checkCgi( void ) {
 }
 
 void Server::addClientRequest(int fd) {
-	char buff[BUFFER_SIZE + 1];
+	char buff[BUFFER_SIZE];
 	int n;
 	Client *client;
 	static long long sizeBody; // TODO: enleve ca
@@ -265,8 +265,12 @@ void Server::addClientRequest(int fd) {
 	if (n == -1) {
 		throw std::runtime_error("Can't recv the message !");
 	}
-	buff[n] = '\0';
-	if (client->whatToDo() == ON_HEADER) {
+	if (n == 0)
+	{
+		client->setReadyToresponse(true);
+		client->getRequest()->setResponsCode("400");
+	}
+	if (client->whatToDo() == ON_HEADER && client->isReadyToResponse() == false) {
 	 	client->pushHeaderRequest(buff, n);
 		client->setUseBuffer(false);
 	 	if (client->getReadyToParseHeader()) {
@@ -291,5 +295,4 @@ void Server::addClientRequest(int fd) {
 		else 
 			client->getRequest()->addBodyRequest(buff, n, client->getUseBuffer());
 	}
-	std::cerr << "test2" << std::endl;
 }
