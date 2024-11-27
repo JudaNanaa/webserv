@@ -132,8 +132,8 @@ void	Server::handleRequest( Client *client ) {
 		client->setReadyToresponse(true);
 		return ;
 	}
-  //check de la body Size
-	if (_data->_clientMaxBodySize > 0) {
+	//check de la body Size
+	if (_data->_clientMaxBodySize >= 0) {
 		if (_data->_clientMaxBodySize < request->getContentLenght()) {
 			request->setResponsCode("413");
 			client->setReadyToresponse(true);
@@ -143,8 +143,8 @@ void	Server::handleRequest( Client *client ) {
 	if (request->getContentLenght() == -1) {
 		client->setReadyToresponse(true);
 	}
-	if (request->getMethode() & GET_)
-		client->setReadyToresponse(true);
+	// if (request->getMethode() & GET_ && request->getLenTotalBody() == request->getContentLenght())
+	// 	client->setReadyToresponse(true);
 }
 
 void	Server::chooseParsing( Client *client ) {
@@ -266,6 +266,8 @@ void Server::handleDELETE(Client* client) {
 	} else if (std::strncmp(request->path().c_str(), "/uploads/", 9) != 0) {
 		return (Forbidden(client));
 	} else if (request->path() == "/uploads/post.html") {
+		return (Forbidden(client));
+	} else if (request->path() == "/uploads/" || request->path() == "/uploads") {
 		return (Forbidden(client));
 	}
 

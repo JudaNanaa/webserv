@@ -91,10 +91,11 @@ void	Request::uploadBody() {
 t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 	if (add)
 		appendBody(buff, n);
-	if (RawBits::getLenBody() != 0 && _method == POST_)
+	if (_method == POST_)
 		uploadBody();
 	// else if (RawBits::getLenBody() != 0 && add)
 		// RawBits::_lenTotalBody += n;
+	std::cerr << "Content-length: " << _contentLenght << " | Len Body: " << getLenTotalBody() << std::endl;
 	if (RawBits::getLenTotalBody() == _contentLenght) {
 		if (defaultFile.is_open())
 			defaultFile.close();
@@ -104,6 +105,7 @@ t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
 		std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
    		setResponsCode("400");
+		_client->setReadyToresponse(true);
 		return ERROR;
 	}
 	return NOT_READY;

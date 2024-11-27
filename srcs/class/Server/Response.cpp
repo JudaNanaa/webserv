@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/27 01:15:30 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/27 22:41:27 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,7 +250,7 @@ void Server::giveClientResponse(int fd) {
 		std::cerr << "location find ! with path == " + client->getRequest()->path() << std::endl;
 		giveClientResponseByLocation(fd);
 	} else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) == 0 && client->getRequest()->getResponsCode() == "200") {
-		handleAuth(client);	
+		handleAuth(client);
 	} else if (client->getRequest()->isACgi() == true) {
 	std::cerr << "test3" << std::endl;
 		responseCGI(client);
