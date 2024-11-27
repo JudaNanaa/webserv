@@ -253,6 +253,36 @@ void Server::checkCgi( void ) {
 	}
 }
 
+void	Server::Forbidden(Client *client) {
+	client->getRequest()->setResponsCode("403");
+	client->setReadyToresponse(true);
+}
+
+void Server::handleDELETE(Client* client) {
+	Request	*request = client->getRequest();
+
+	if (request->path().find("..") != std::string::npos) {
+		return (Forbidden(client));
+	} else if (std::strncmp(request->path().c_str(), "/uploads/", 9) != 0) {
+		return (Forbidden(client));
+	} else if (request->path() == "/uploads/post.html") {
+		return (Forbidden(client));
+	}
+
+	if (access((_data->_root + request->path()).c_str(), F_OK) != 0) {
+		client->getRequest()->setResponsCode("404");
+		client->setReadyToresponse(true);
+		return ;
+	}
+
+	if (unlink((_data->_root + request->path()).c_str()) == -1) {
+		std::cerr << "DELETE: unlink() failed" << std::endl;
+	}
+
+	request->setResponsCode("200");
+	client->setReadyToresponse(true);
+}
+
 void Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE];
 	int n;
@@ -270,6 +300,7 @@ void Server::addClientRequest(int fd) {
 		client->setReadyToresponse(true);
 		client->getRequest()->setResponsCode("400");
 	}
+
 	if (client->whatToDo() == ON_HEADER && client->isReadyToResponse() == false) {
 	 	client->pushHeaderRequest(buff, n);
 		client->setUseBuffer(false);
@@ -292,7 +323,10 @@ void Server::addClientRequest(int fd) {
 				sizeBody = 0;
 			}
 		}
-		else 
+		else
 			client->getRequest()->addBodyRequest(buff, n, client->getUseBuffer());
+	}
+	if (client->getRequest()->getMethode() == DELETE_ &&  client->getRequest()->getResponsCode() == "200") {
+		handleDELETE(client);
 	}
 }

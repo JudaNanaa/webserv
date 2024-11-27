@@ -91,8 +91,10 @@ void	Request::uploadBody() {
 t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 	if (add)
 		appendBody(buff, n);
-	if (RawBits::getLenBody() != 0)
+	if (RawBits::getLenBody() != 0 && _method == POST_)
 		uploadBody();
+	// else if (RawBits::getLenBody() != 0 && add)
+		// RawBits::_lenTotalBody += n;
 	if (RawBits::getLenTotalBody() == _contentLenght) {
 		if (defaultFile.is_open())
 			defaultFile.close();

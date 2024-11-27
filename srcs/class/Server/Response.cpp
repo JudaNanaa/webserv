@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/26 20:56:40 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/27 01:15:30 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ void Server::sendResponse(int fd, Client *client) {
 	std::cerr << "SEND RESPONSE" << std::endl;
 	std::cerr << "RESPONSE CODE : " << clientRequest->getResponsCode() << std::endl;
 	if (clientRequest->getResponsCode() == "200") {
-		if (clientRequest->path() == "/") {
+		if (clientRequest->path() == "/" || clientRequest->method() == DELETE_) {
 			
 			std::cerr << "root : " + _data->_root << std::endl;
 			file.open((_data->_root + _data->_index).c_str());
