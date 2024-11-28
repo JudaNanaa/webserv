@@ -102,10 +102,6 @@ void Server::CgiDefaultGesture(Client *client) {
     close(ParentToCGI[0]);
     close(CGIToParent[1]);
 	client->setParentToCGI(ParentToCGI[1]);
-	write(ParentToCGI[1], client->getRequest()->getBody(), client->getRequest()->getLenBody()); // TODO: enlever ca c'est pas propre
-    std::cerr << "CONTENT LENGHT == " << request->getContentLenght() << std::endl;
-    if (request->getLenBody() == request->getContentLenght() || request->getContentLenght() == -1)
-        close(ParentToCGI[1]);
     client->setCGIFD(CGIToParent[0]);
     client->setPid(pid);
 

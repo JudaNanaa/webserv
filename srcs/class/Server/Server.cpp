@@ -294,7 +294,10 @@ void Server::writeBodyToCgi(Client *client, char *buff, int n)
 		write(client->getParentToCGI(), buff, n);
 		clientRequest->incrementSizeBody(n);
 	}
-	if (clientRequest->getLenTotalBody() == clientRequest->getContentLenght())
+	else {
+		write(client->getParentToCGI(), clientRequest->getBody(), clientRequest->getLenBody());
+	}
+	if (clientRequest->getLenTotalBody() == clientRequest->getContentLenght() || clientRequest->getContentLenght() == -1)
 		close(client->getParentToCGI());
 }
 
