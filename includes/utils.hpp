@@ -8,5 +8,6 @@
 
 std::vector<std::string> split(std::string s, std::string delimiter);
 std::string generateFilename(std::string baseName);
+const std::string getMessageCode(int code);
 
 #endif

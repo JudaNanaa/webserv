@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseCGI.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/25 17:52:13 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/28 23:06:48 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Server.hpp"
 #include <cstring>
+#include <fstream>
 #include <stdexcept>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -50,8 +51,31 @@ void Server::_responseCgiIfNoProblem(Client *client)
 
 void Server::_responseCgiError(Client *client)
 {
-	(void)client;
-	// TODO: Mettre de la logique pour renvoyer une reponse appropriee
+	std::ostringstream buffer;
+	Request *clientRequest = client->getRequest();
+	std::ifstream file;
+
+	file.open(("URIs/errors/" + clientRequest->getResponsCode() + ".html").c_str());
+	buffer << file.rdbuf();
+	std::string html_content = buffer.str();
+	int code = atoi(clientRequest->getResponsCode().c_str());
+
+	std::cerr << "debug code : " << code << std::endl;
+	std::ostringstream oss;
+    std::string response = "HTTP/1.1 " + clientRequest->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
+    response += "Content-Type: text/html\r\n";
+	oss << html_content.size();
+    response += "Content-Length: " + oss.str() + "\r\n";
+    response += "\r\n";
+
+    response += html_content;
+
+	// std::cerr << "RESPONSE : " << std::endl;
+	// std::cerr << response << std::endl;
+
+	file.close();
+	if (send(client->getClientFd(), response.c_str(), response.size(), MSG_EOR) == -1)
+		throw std::runtime_error("Can't send the message !");
 }
 
 void Server::responseCGI(Client *client)

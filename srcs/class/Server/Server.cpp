@@ -323,7 +323,7 @@ void Server::addClientRequest(int fd) {
 	 		_parseClientHeader(client);
 		}
 	}
-	Request *clientRequest = clientRequest;
+	Request *clientRequest = client->getRequest();
 	if (client->whatToDo() == ON_BODY) {
 		if (clientRequest->isACgi() == true)
 			writeBodyToCgi(client, buff, n);
