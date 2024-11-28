@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/27 00:36:11 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/28 22:34:42 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ class Server {
 		void 	handleAuth(Client* client);
 		void	handleDELETE(Client* client);
 		void	Forbidden(Client *client);
-
+		void 	writeBodyToCgi(Client *client, char *buff, int n);
 		//CGI
 		void CgiDefaultGesture(Client *client);
 

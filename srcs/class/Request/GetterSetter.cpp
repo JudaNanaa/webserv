@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/25 21:13:37 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/28 22:32:52 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,4 +107,10 @@ void Request::setRedirect(bool b) {
 
 bool& Request::getRedirect(void) {
 	return _isRedirect;
+}
+
+void	Request::incrementSizeBody(unsigned long long n)
+{
+	RawBits::_lenBody += n;
+	RawBits::_lenTotalBody += n;
 }

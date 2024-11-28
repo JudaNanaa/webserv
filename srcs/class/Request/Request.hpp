@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/25 21:45:03 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/28 22:31:43 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ class Request : public RawBits {
 		bool isKeyfindInHeader(std::string const &key) const;
 		void	setRedirect(bool b);
 		bool& 	getRedirect(void);
+		void	incrementSizeBody(unsigned long long n);
 
 		/*	OTHERS	*/
 		void	uploadBody();

@@ -285,11 +285,23 @@ void Server::handleDELETE(Client* client) {
 	client->setReadyToresponse(true);
 }
 
+void Server::writeBodyToCgi(Client *client, char *buff, int n)
+{
+	Request *clientRequest = client->getRequest();
+
+	if (client->getUseBuffer() == true)
+	{
+		write(client->getParentToCGI(), buff, n);
+		clientRequest->incrementSizeBody(n);
+	}
+	if (clientRequest->getLenTotalBody() == clientRequest->getContentLenght())
+		close(client->getParentToCGI());
+}
+
 void Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE];
 	int n;
 	Client *client;
-	static long long sizeBody; // TODO: enleve ca
 
 	client = getClient(fd);
 	client->setUseBuffer(true);
@@ -302,33 +314,23 @@ void Server::addClientRequest(int fd) {
 		client->setReadyToresponse(true);
 		client->getRequest()->setResponsCode("400");
 	}
-
-	if (client->whatToDo() == ON_HEADER && client->isReadyToResponse() == false) {
+	if (client->isReadyToResponse() == true)
+		return;
+	if (client->whatToDo() == ON_HEADER) {
 	 	client->pushHeaderRequest(buff, n);
 		client->setUseBuffer(false);
 	 	if (client->getReadyToParseHeader()) {
 	 		_parseClientHeader(client);
-			sizeBody += client->getRequest()->getLenBody();
 		}
 	}
-	if (client->whatToDo() == ON_BODY && client->isReadyToResponse() == false) {
-		if (client->getRequest()->isACgi() == true)  // TODO: bouger ca
-		{
-			if (client->getUseBuffer() == true)
-			{
-				write(client->getParentToCGI(), buff, n);
-				sizeBody += n;
-			}
-			if (sizeBody == client->getRequest()->getContentLenght())
-			{
-				close(client->getParentToCGI());
-				sizeBody = 0;
-			}
-		}
+	Request *clientRequest = clientRequest;
+	if (client->whatToDo() == ON_BODY) {
+		if (clientRequest->isACgi() == true)
+			writeBodyToCgi(client, buff, n);
 		else
-			client->getRequest()->addBodyRequest(buff, n, client->getUseBuffer());
+			clientRequest->addBodyRequest(buff, n, client->getUseBuffer());
 	}
-	if (client->getRequest()->getMethode() == DELETE_ &&  client->getRequest()->getResponsCode() == "200") {
+	if (clientRequest->getMethode() == DELETE_ && clientRequest->getResponsCode() == "200") {
 		handleDELETE(client);
 	}
 }
