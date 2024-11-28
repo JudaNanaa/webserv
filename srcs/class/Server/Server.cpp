@@ -203,7 +203,7 @@ void Server::_parseClientHeader(Client *client) {
 	clientRequest->path(lineSplit[1]);
 	
 	std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
-	if (lineSplit[2].compare("HTTP/1.1") != 0) {
+	if (lineSplit[2].compare(0, 6, "HTTP/1") != 0) {
 		// le htpp nest pas bon !!
 		clientRequest->setResponsCode("505");
 		return;

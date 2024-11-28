@@ -8,6 +8,7 @@ Client::Client(int const fd, Server *server)
 	_readyToResponse = false;
 	_readyToParseHeader = false;
 	_pid = -1;
+	_CGIStatus = -1;
 }
 
 Client::~Client() {

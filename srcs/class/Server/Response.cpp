@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/27 22:41:27 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/28 18:43:58 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,7 +251,7 @@ void Server::giveClientResponse(int fd) {
 		giveClientResponseByLocation(fd);
 	} else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) == 0 && client->getRequest()->getResponsCode() == "200") {
 		handleAuth(client);
-	} else if (client->getRequest()->isACgi() == true) {
+	} else if (client->getRequest()->isACgi() == true && client->getRequest()->getResponsCode() == "200") {
 	std::cerr << "test3" << std::endl;
 		responseCGI(client);
 	}
