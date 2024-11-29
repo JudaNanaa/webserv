@@ -75,7 +75,7 @@ void	Request::uploadBody() {
 		if (RawBits::checkBondaries() == FINISHED) {	// transform this function
 			// _client->setReadyToresponse(true);
 		}
-		std::cerr << "\e" << getCurrentFile()->get("filename") << ": " << (RawBits::getLenTotalBody() / _contentLenght) * 100 << "%\r";
+		// std::cerr << "\e" << getCurrentFile()->get("filename") << ": " << (RawBits::getLenTotalBody() / _contentLenght) * 100 << "%\r";
 	} else {	// if no bondaries
 		if (defaultFile.is_open() == false) {
 			defaultFile.open(DEFAULT_UPLOAD_FILE, std::ios::trunc | std::ios::out);
