@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/28 22:32:52 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/29 20:04:21 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,6 @@ const int& Request::getMethode(void) const {
 }
 
 void Request::setResponsCode(std::string code) {
-	_client->setReadyToresponse(true);
 	_ResponsCode = code;
 }
 

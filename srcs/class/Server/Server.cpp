@@ -176,22 +176,22 @@ void	Server::_parseRequestLine( std::string line, Request *clientRequest) {
 }
 
 void Server::_parseClientHeader(Client *client) {
-	Request *clientRequest;
-	std::string header;
+	Request *clientRequest = client->getRequest();
+	std::string header = clientRequest->getHeader();
 	std::vector<std::string> headerSplit;
 	std::vector<std::string> lineSplit;
 
-	clientRequest = client->getRequest();
-	header = clientRequest->getHeader();
-	headerSplit = split(header, "\r\n");
 
+	headerSplit = split(header, "\r\n");
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') != 2) {
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
+		client->setResponse("400");
 		throw std::invalid_argument("Error header 1: " + headerSplit[0]);
 	}
 	lineSplit = split(headerSplit[0], " ");
 	if (lineSplit.size() != 3) { // not always 3 part
 		// La premiere ligne est pas bonne donc faire une reponse en fonction
+		client->setResponse("400");
 		throw std::invalid_argument("Error header 2: " + headerSplit[0]);
 	}
 	clientRequest->setMethode(lineSplit[0]);
@@ -200,12 +200,16 @@ void Server::_parseClientHeader(Client *client) {
 	std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
 	if (lineSplit[2].compare(0, 6, "HTTP/1") != 0) {
 		// le htpp nest pas bon !!
-		clientRequest->setResponsCode("505");
+		client->setResponse("505");
 		return;
 	}
 	for (std::vector<std::string>::const_iterator it = headerSplit.begin() + 1, ite = headerSplit.end();
 			it != ite; it++) {
-		_parseRequestLine(*it, clientRequest);
+		try {
+			_parseRequestLine(*it, clientRequest);
+		} catch (std::exception &e) {
+			client->setResponse("400");
+		}
 	}
 	std::cerr << "REQUEST:\n" << *clientRequest << std::endl;
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
@@ -262,17 +266,14 @@ void Server::handleDELETE(Client* client) {
 	}
 
 	if (access((_data->_root + request->path()).c_str(), F_OK) != 0) {
-		client->getRequest()->setResponsCode("404");
-		client->setReadyToresponse(true);
+		client->setResponse("404");
 		return ;
 	}
 
 	if (unlink((_data->_root + request->path()).c_str()) == -1) {
 		std::cerr << "DELETE: unlink() failed" << std::endl;
 	}
-
-	request->setResponsCode("200");
-	client->setReadyToresponse(true);
+	client->setResponse("200");
 }
 
 void Server::writeBodyToCgi(Client *client, char *buff, int n)
@@ -300,22 +301,24 @@ void Server::addClientRequest(int fd) {
 	client->setUseBuffer(true);
 	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
 	if (n == -1) {
-		std::cerr << "Can't recv the message !" << std::endl;
 		client->setResponse("505");
+		throw std::runtime_error("Can't recv the message !");
 	}
 	else if (n == 0)
 	{
 		client->setResponse("400");
+		throw std::runtime_error("Empty recv !");
 	}
-
 	std::cerr << "buff == \n[";
 	write(STDERR_FILENO, buff, n);
 	std::cerr << "]" << std::endl;
-
-	if (client->isReadyToResponse() == true)
-		return;
 	if (client->whatToDo() == ON_HEADER) {
-	 	client->pushHeaderRequest(buff, n);
+		try {
+	 		client->pushHeaderRequest(buff, n);
+		} catch (std::exception &e) {
+			client->setResponse("505");
+			throw std::runtime_error(e.what());
+		}
 		client->setUseBuffer(false);
 	 	if (client->getReadyToParseHeader())
 	 		_parseClientHeader(client);

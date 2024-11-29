@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/28 22:59:18 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/29 20:39:59 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,5 +260,4 @@ void Server::giveClientResponse(int fd) {
 	client->cleanRequest();
 	client->setPid(-1);
 	client->setCGIFD(-1);
-	client->setReadyToresponse(false);
 }

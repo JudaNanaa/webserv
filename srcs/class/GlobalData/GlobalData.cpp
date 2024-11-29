@@ -47,7 +47,9 @@ void GlobalData::initServers(std::vector<Server> &servVec) {
 	std::vector<Server>::iterator servIt = servVec.begin();
 	std::vector<Server>::iterator end = servVec.end();
 
-	_epoll_fd = epoll_create1(0); // TODO: Secure this
+	_epoll_fd = epoll_create1(0);
+	if (_epoll_fd == -1)
+		throw std::runtime_error("epoll_create1 failed !");
 	while (servIt != end) {
 		servIt->init();
 		addToEpoll(servIt->getSocketFd(), EPOLLIN); // TODO: try catch this
@@ -115,7 +117,7 @@ void GlobalData::handleClientIn(int fd) {
 		server->addClientRequest(fd);
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
-		removeClient(fd);
+		// removeClient(fd);
 	}
 }
 
@@ -134,9 +136,8 @@ void GlobalData::handleClientOut(int fd) {
 
 
 void GlobalData::removeClient(int fd) {
-	Server *server;
+	Server *server = getServerWithClientFd(fd);
 
-	server = getServerWithClientFd(fd);
 	server->removeClientInMap(fd);
 	epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 	close(fd);
@@ -151,7 +152,11 @@ void	GlobalData::handleEvent( struct epoll_event& event ) {
 	int	fd = event.data.fd;
 
 	if (isServerFd(fd) == true) {
-		addNewClient(_servMap[fd]);
+		try {
+			addNewClient(_servMap[fd]);
+		} catch (std::exception &e) {
+			std::cerr << "Error: " << e.what() << std::endl;
+		}
 	} else if (event.events & (EPOLLRDHUP | EPOLLHUP)) {
 		removeClient(fd);
 	} else {

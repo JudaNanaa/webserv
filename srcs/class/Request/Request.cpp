@@ -96,13 +96,13 @@ t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 	if (RawBits::getLenTotalBody() == _contentLenght) {
 		if (defaultFile.is_open())
 			defaultFile.close();
-		_client->setReadyToresponse(true);
+		_client->setResponse();
 	}
 	if (RawBits::getLenTotalBody() > _contentLenght && _contentLenght != -1) {
 		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
 		std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
    		setResponsCode("400");
-		_client->setReadyToresponse(true);
+		_client->setResponse();
 		return ERROR;
 	}
 	return NOT_READY;
