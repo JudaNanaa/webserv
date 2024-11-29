@@ -28,6 +28,12 @@ Client &Client::operator=(Client const &other) {
 	return *this;
 }
 
+void Client::setResponse(const std::string &code)
+{
+	setReadyToresponse(true);
+	_request->setResponsCode(code);
+}
+
 void Client::setCGIStatus(int status) {
 	if (WIFEXITED(status)) {
 		_CGIStatus = WEXITSTATUS(status);

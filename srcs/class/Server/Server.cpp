@@ -88,16 +88,13 @@ void	Server::handleLocation(Client *client) {
   }
 
   if ((location->allowedMethods() & request->method()) == 0) {
-    request->setResponsCode("405");
-    client->setReadyToresponse(true);
+    client->setResponse("405");
     return ;
   }
   //check de la body Size
 	if (location->maxBodySize() > 0) {
 		if ((unsigned)location->maxBodySize() < request->getContentLenght()) {
-
-	    	request->setResponsCode("413");
-    		client->setReadyToresponse(true);
+    		client->setResponse("413");
     		return ;
 		}
 	}
@@ -128,20 +125,18 @@ void	Server::handleRequest( Client *client ) {
 	Request *request = client->getRequest();
 
 	if ((_data->_allowedMethods & request->method()) == 0) {
-		request->setResponsCode("405");
-		client->setReadyToresponse(true);
+		client->setResponse("405");
 		return ;
 	}
 	//check de la body Size
 	if (_data->_clientMaxBodySize >= 0) {
 		if (_data->_clientMaxBodySize < request->getContentLenght()) {
-			request->setResponsCode("413");
-			client->setReadyToresponse(true);
+			client->setResponse("413");
 			return ;
 		}
 	}
 	if (request->getContentLenght() == -1) {
-		client->setReadyToresponse(true);
+		client->setResponse();
 	}
 	// if (request->getMethode() & GET_ && request->getLenTotalBody() == request->getContentLenght())
 	// 	client->setReadyToresponse(true);
@@ -247,28 +242,23 @@ void Server::checkCgi( void ) {
 				case 0: { continue; } // not finished
 				default:
 					client->setCGIStatus(status);
-					client->setReadyToresponse(true);
+					client->setResponse();
 			}
 		}
 	}
-}
-
-void	Server::Forbidden(Client *client) {
-	client->getRequest()->setResponsCode("403");
-	client->setReadyToresponse(true);
 }
 
 void Server::handleDELETE(Client* client) {
 	Request	*request = client->getRequest();
 
 	if (request->path().find("..") != std::string::npos) {
-		return (Forbidden(client));
+		return (client->setResponse("403"));
 	} else if (std::strncmp(request->path().c_str(), "/uploads/", 9) != 0) {
-		return (Forbidden(client));
+		return (client->setResponse("403"));
 	} else if (request->path() == "/uploads/post.html") {
-		return (Forbidden(client));
+		return (client->setResponse("403"));
 	} else if (request->path() == "/uploads/" || request->path() == "/uploads") {
-		return (Forbidden(client));
+		return (client->setResponse("403"));
 	}
 
 	if (access((_data->_root + request->path()).c_str(), F_OK) != 0) {
@@ -304,29 +294,27 @@ void Server::writeBodyToCgi(Client *client, char *buff, int n)
 void Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE];
 	int n;
-	Client *client;
+	Client *client = getClient(fd);
+	Request *clientRequest = client->getRequest();
 
-	client = getClient(fd);
 	client->setUseBuffer(true);
 	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
 	if (n == -1) {
-		throw std::runtime_error("Can't recv the message !");
+		std::cerr << "Can't recv the message !" << std::endl;
+		client->setResponse("505");
 	}
-	if (n == 0)
+	else if (n == 0)
 	{
-		client->setReadyToresponse(true);
-		client->getRequest()->setResponsCode("400");
+		client->setResponse("400");
 	}
 	if (client->isReadyToResponse() == true)
 		return;
 	if (client->whatToDo() == ON_HEADER) {
 	 	client->pushHeaderRequest(buff, n);
 		client->setUseBuffer(false);
-	 	if (client->getReadyToParseHeader()) {
+	 	if (client->getReadyToParseHeader())
 	 		_parseClientHeader(client);
-		}
 	}
-	Request *clientRequest = client->getRequest();
 	if (client->whatToDo() == ON_BODY) {
 		if (clientRequest->isACgi() == true)
 			writeBodyToCgi(client, buff, n);

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/24 15:14:42 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/29 19:34:34 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,15 @@ void signalHandle(void) {
 
 int main(int argc, char **argv, char **env) {
 	GlobalData data;
+	std::vector<Server> servVec;
 	
 	signalHandle();
 	if (argc != 2) {
 		std::cerr << "Need only one argument" << std::endl;
 		return 1;
 	}
-	std::vector<Server> servVec;
 	try {
-    servVec = Pars::parse(argv[1], env);
+    	servVec = Pars::parse(argv[1], env);
 	} catch (std::exception &e) {
 		std::cout << "Error : " << e.what() << std::endl;
 		return 1;

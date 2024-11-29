@@ -61,10 +61,7 @@ int GlobalData::waitFdsToBeReady(void) {
 	std::map<int, Server>::iterator end = _servMap.end();
 	
 	while (it != end)
-	{
-		it->second.checkCgi();
-		++it;
-	}
+		(it++)->second.checkCgi();
 	return epoll_wait(_epoll_fd, _events, MAX_EVENTS, 100);
 }
 
@@ -154,10 +151,8 @@ void	GlobalData::handleEvent( struct epoll_event& event ) {
 	int	fd = event.data.fd;
 
 	if (isServerFd(fd) == true) {
-		std::cout << "\n--------------------ADDING CLIENT--------------------\n" << std::endl;
 		addNewClient(_servMap[fd]);
 	} else if (event.events & (EPOLLRDHUP | EPOLLHUP)) {
-		std::cout << "\n--------------------REMOVING CLIENT--------------------\n" << std::endl;
 		removeClient(fd);
 	} else {
 		if (event.events & EPOLLIN) {
@@ -181,5 +176,5 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 }
 
 void GlobalData::closeServers(void) {
-
+	
 }

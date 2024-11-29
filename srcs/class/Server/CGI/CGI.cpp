@@ -64,8 +64,7 @@ void Server::CgiDefaultGesture(Client *client) {
         closePipePanic(ParentToCGI);
         closePipePanic(CGIToParent);
         std::cerr << "Pipe fail !" << std::endl;
-        request->setResponsCode("500");
-        client->setReadyToresponse(true);
+        client->setResponse("500");
         return;
     }
     int pid = fork();
@@ -74,8 +73,7 @@ void Server::CgiDefaultGesture(Client *client) {
         closePipePanic(ParentToCGI);
         closePipePanic(CGIToParent);
         std::cerr << "Fork fail !" << std::endl;
-        request->setResponsCode("500");
-        client->setReadyToresponse(true);
+        client->setResponse("500");
         return;
     }
     if (pid == 0) {
