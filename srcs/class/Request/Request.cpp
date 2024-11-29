@@ -79,11 +79,10 @@ void	Request::uploadBody() {
 	} else {	// if no bondaries
 		if (defaultFile.is_open() == false) {
 			defaultFile.open(DEFAULT_UPLOAD_FILE, std::ios::trunc | std::ios::out);
+			if (defaultFile.fail())
+				throw std::invalid_argument("failed to open DEFAULT_UPLOAD_FILE");
 		}
-		if (defaultFile.fail())
-			throw std::invalid_argument("failed to open DEFAULT_UPLOAD_FILE");
 		defaultFile.write(RawBits::getBody(), RawBits::getLenBody());
-		std::cerr <<  "lenbody" << RawBits::getLenBody() << std::endl;
 		eraseInBody(0, RawBits::getLenBody());
 	}
 }
