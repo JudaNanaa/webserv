@@ -317,6 +317,11 @@ void Server::addClientRequest(int fd) {
 		client->setReadyToresponse(true);
 		client->getRequest()->setResponsCode("400");
 	}
+
+	std::cerr << "buff == \n[";
+	write(STDERR_FILENO, buff, n);
+	std::cerr << "]" << std::endl;
+
 	if (client->isReadyToResponse() == true)
 		return;
 	if (client->whatToDo() == ON_HEADER) {

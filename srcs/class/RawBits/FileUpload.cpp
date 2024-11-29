@@ -6,7 +6,7 @@
 /*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:42:11 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/29 19:39:55 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/11/29 19:53:53 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,16 @@ void	RawBits::checkFileHeader(File& file, std::string &header) {
 
 void	RawBits::flushBuffer( long pos, long n ) {
 	if (_uploadFile.fail()) {
-		throw std::invalid_argument("failed to open " + _currentFile->get("filename"));
+		try {
+			try {
+				throw std::invalid_argument("failed to open " + _currentFile->get("filename"));
+			} catch (...) {
+				throw std::invalid_argument("failed to open " + _currentFile->get("name"));
+			}
+		} catch (...) {
+			throw std::invalid_argument("failed to open a file");
+		}
+	
 	} else {
 		_uploadFile.write(&_body[pos], n);
 	}
@@ -71,14 +80,18 @@ int	RawBits::handleFileHeader(void) {
 	std::string file;
 
 	try {
-		file = "URIs/uploads/" + _currentFile->get("filename");
+		try {
+			file = "URIs/uploads/" + _currentFile->get("filename");
+		} catch (...) {
+			file = "URIs/uploads/" + _currentFile->get("name");
+		}
 	} catch (...) {
 		file = DEFAULT_UPLOAD_FILE;
 	}
 
 	_uploadFile.open(file.c_str());
 	if (_uploadFile.fail())
-		throw std::invalid_argument("failed to open " + _currentFile->get("filename"));
+		throw std::invalid_argument("failed to open " + file);
 	_fileState = ON_BODY;
 	return (CONTINUE);
 }
