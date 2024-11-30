@@ -8,65 +8,77 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f4f4f4;
+            background: linear-gradient(to bottom right, #8ec5fc, #e0c3fc);
             color: #333;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
         }
 
         h1 {
             font-size: 2.5em;
-            color: #007bff;
+            color: #4a90e2;
             margin-bottom: 20px;
         }
 
         form {
-            display: inline-block;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         label {
             font-size: 1.2em;
-            color: #333;
+            color: #555;
+            margin-bottom: 5px;
         }
 
         input[type="number"] {
             padding: 10px;
             font-size: 1em;
-            margin-top: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             width: 100%;
             border: 1px solid #ccc;
             border-radius: 5px;
+            background-color: #f9f9f9;
         }
 
         button {
             padding: 10px 20px;
             font-size: 1.2em;
-            color: #fff;
-            background-color: #007bff;
+            color: white;
+            background-color: #4a90e2;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            max-width: 200px;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #357abd;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
         }
 
         #goBackButton {
             margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 1em;
-            color: #fff;
             background-color: #6c757d;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
         }
 
         #goBackButton:hover {
@@ -75,35 +87,39 @@
 
         #result {
             font-size: 1.5em;
-            color: #007bff;
+            color: #4a90e2;
             margin-top: 20px;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 5px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: fit-content;
+            width: 100%;
+            max-width: 300px;
             margin-left: auto;
             margin-right: auto;
+            word-wrap: break-word;
         }
     </style>
 </head>
 <body>
-    <h1>Calculatrice</h1>
-    
-    <form id="calcForm" action="calculate.php" method="post">
-        <label for="number1">Nombre 1:</label><br>
-        <input type="number" id="number1" name="number1" required>
-        <br><br>
-        <label for="number2">Nombre 2:</label><br>
-        <input type="number" id="number2" name="number2" required>
-        <br><br>
-        <button type="submit">Calculer</button>
-    </form>
+    <div class="container">
+        <h1>Calculatrice</h1>
 
-    <h2>Résultat:</h2>
-    <pre id="result"></pre>
+        <form id="calcForm" action="calculate.php" method="post">
+            <label for="number1">Nombre 1:</label>
+            <input type="number" id="number1" name="number1" required>
 
-    <button id="goBackButton" onclick="history.back()">Go Back</button>
+            <label for="number2">Nombre 2:</label>
+            <input type="number" id="number2" name="number2" required>
+
+            <button type="submit">Calculer</button>
+        </form>
+
+        <h2>Résultat:</h2>
+        <pre id="result">Pas de calcul effectué</pre>
+
+        <button id="goBackButton" onclick="history.back()">Retour</button>
+    </div>
 
     <script>
         const form = document.getElementById('calcForm');
@@ -130,20 +146,16 @@
                     body: params.toString() // Format URL-encoded
                 });
 
-                // Vérifie si la réponse est correcte (statut HTTP 200-299)
                 if (!response.ok) {
                     throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
                 }
 
-                // Affiche le texte retourné par le serveur
                 const text = await response.text();
                 result.textContent = text;
             } catch (error) {
-                // Affiche un message d'erreur clair
                 result.textContent = 'Une erreur est survenue lors de la requête : ' + error.message;
             }
         });
     </script>
-
 </body>
 </html>

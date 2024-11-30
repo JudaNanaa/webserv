@@ -8,30 +8,53 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f4f4f4;
+            background: linear-gradient(to right, #b2d8e6, #e6f0b2);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .container {
-            margin-top: 100px;
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
         }
         h1 {
-            font-size: 2.5em;
-            color: #333;
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 20px;
         }
         .button {
             display: inline-block;
             padding: 15px 30px;
             margin: 10px;
-            font-size: 1.2em;
+            font-size: 1.1em;
             color: white;
-            background-color: #007bff;
+            background-color: #6c757d;
             border: none;
             border-radius: 5px;
             text-decoration: none;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
         .button:hover {
-            background-color: #0056b3;
+            background-color: #5a6268;
+            transform: scale(1.05);
+        }
+        .button:active {
+            transform: scale(0.95);
+        }
+        .back-button {
+            background-color: #8aa3b8;
+        }
+        .back-button:hover {
+            background-color: #6b8291;
         }
     </style>
 </head>
@@ -43,10 +66,18 @@
         <a href="/tests/calculate.html" class="button">Calculatrice en Ligne</a>
         <a href="/tests/test.py" class="button">Basic</a>
         <a href="/tests/infinite.py" class="button">CGI Infini</a>
-        <a href="/tests/analysis.py" class="button">Analysis</a>
-        <p>On a deja un upload sans CGI mais tu peux tester celui avec CGI </p>
-        <a href="/tests/upload.py" class="button">CGI Upload</a>
+        <p>Si tu veux faire des analyses sur ton état de santé :</p>
+        <a href="/tests/analysis.html" class="button">Analysis</a>
+        <br><br>
+        <!-- Bouton Go Back -->
+        <button onclick="goBack()" class="button back-button">Retour</button>
     </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 
 </body>
 </html>

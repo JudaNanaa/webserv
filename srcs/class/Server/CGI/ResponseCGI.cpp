@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/30 21:21:13 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/30 22:02:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ void Server::_responseCgiError(Client *client)
 	Request *clientRequest = client->getRequest();
 	std::ifstream file;
 
+	close(client->getCGIFD());
 	file.open(("URIs/errors/" + clientRequest->getResponsCode() + ".html").c_str());
 	buffer << file.rdbuf();
 	std::string html_content = buffer.str();

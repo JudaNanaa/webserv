@@ -27,6 +27,7 @@
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/wait.h>
+#include <unistd.h>
 #include <vector>
 #include "Server.hpp"
 
@@ -285,7 +286,10 @@ void Server::writeBodyToCgi(Client *client, char *buff, int n)
 		write(client->getParentToCGI(), clientRequest->getBody(), clientRequest->getLenBody());
 	}
 	if (clientRequest->getLenTotalBody() == clientRequest->getContentLenght() || clientRequest->getContentLenght() == -1)
+	{
 		close(client->getParentToCGI());
+		client->setParentToCGI(-1);
+	}
 }
 
 void Server::addClientRequest(int fd) {
