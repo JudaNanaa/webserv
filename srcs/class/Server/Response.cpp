@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/30 19:55:57 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/30 23:53:47 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,8 +188,8 @@ void Server::sendRedirect(std::string redirect, int fd, Client *client) {
 }
 
 void Server::giveClientResponseByLocation(int fd) {
-  Client* client = getClient(fd);
-  Location location = _data->_locations[client->getRequest()->path()];
+	Client* client = getClient(fd);
+	Location location = _data->_locations[client->getRequest()->path()];
   
 	if (client->isReadyToResponse() == false)
 		return;

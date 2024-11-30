@@ -3,51 +3,62 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Post | Webserv</title>
+	<title>Upload & Delete | Webserv</title>
 	<style>
 		body {
 			font-family: Arial, sans-serif;
 			margin: 0;
 			padding: 0;
 			display: flex;
-			justify-content: center;
+			flex-direction: column;
 			align-items: center;
+			justify-content: center;
 			height: 100vh;
 			background-color: #000;
+			color: white;
+			text-align: center;
 		}
 		h1 {
 			color: #f4f4f4;
+			margin-bottom: 20px;
 		}
 		form {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+			width: 100%;
+			max-width: 400px;
+			margin-bottom: 30px;
 		}
 		input[type="text"], input[type="file"] {
 			padding: 10px;
 			border-radius: 5px;
 			border: none;
-			margin-bottom: 10px;
-			width: 300px;
+			margin-bottom: 20px;
+			width: 100%;
+			max-width: 300px;
 			color: white;
 			background-color: #333;
 		}
 		button {
 			padding: 10px 20px;
-			margin: 10px 0px 0px 0px;
+			margin-top: 10px;
 			background-color: #007BFF;
 			color: white;
 			border: none;
 			border-radius: 5px;
 			cursor: pointer;
+			width: 100%;
+			max-width: 200px;
 		}
 		button:hover {
 			background-color: #0056b3;
 		}
 		.buttons {
-			margin-top: 20px;
+			margin-top: 30px;
 			display: flex;
 			justify-content: center;
+			width: 100%;
 		}
 		.buttons a {
 			text-decoration: none;
@@ -68,6 +79,8 @@
 			padding: 10px;
 			border-radius: 5px;
 			text-align: center;
+			width: 100%;
+			max-width: 400px;
 		}
 		.success {
 			background-color: #28a745;
@@ -79,11 +92,20 @@
 </head>
 <body>
 	<div>
-		<h1>📤 Send a POST Request 📤</h1>
-		<form id="postForm" enctype="multipart/form-data" onsubmit="sendPostRequest(event)">
+		<h1>📤 Upload & Delete Files 📤</h1>
+
+		<!-- Formulaire d'upload -->
+		<form id="uploadForm" enctype="multipart/form-data" onsubmit="sendPostRequest(event)">
 			<input type="file" id="fileInput" name="fileUpload[]" multiple required>
-			<button type="submit">Send</button>
+			<button type="submit">Upload</button>
 		</form>
+
+		<!-- Formulaire de suppression -->
+		<form id="deleteForm" onsubmit="sendDeleteRequest(event)">
+			<input type="text" id="fileToDelete" name="file" placeholder="Enter file name to delete" required>
+			<button type="submit">Delete File</button>
+		</form>
+
 		<div class="buttons">
 			<a href="/index.html" role="button">Go Back</a>
 		</div>
@@ -92,6 +114,7 @@
 	</div>
 
 	<script>
+		// Fonction d'upload de fichier
 		function sendPostRequest(event) {
 			event.preventDefault();
 
@@ -126,6 +149,41 @@
 			};
 
 			xhr.send(formData);
+		}
+
+		// Fonction de suppression de fichier
+		function sendDeleteRequest(event) {
+			event.preventDefault();
+
+			const fileName = document.getElementById('fileToDelete').value.trim();
+			if (!fileName) {
+				alert("Please enter a file name to delete.");
+				return;
+			}
+
+			const xhr = new XMLHttpRequest();
+			xhr.open("DELETE", "/uploads/" + encodeURIComponent(fileName), true);
+
+			const responseMessage = document.getElementById('responseMessage');
+
+			xhr.onload = function () {
+				if (xhr.status >= 200 && xhr.status < 300) {
+					responseMessage.innerText = `Success: File "${fileName}" deleted successfully.`;
+					responseMessage.className = "message success";
+				} else {
+					responseMessage.innerText = `Error: ${xhr.status} - ${xhr.statusText}`;
+					responseMessage.className = "message error";
+				}
+				responseMessage.style.display = "block";
+			};
+
+			xhr.onerror = function () {
+				responseMessage.innerText = "Network error: Please try again later.";
+				responseMessage.className = "message error";
+				responseMessage.style.display = "block";
+			};
+
+			xhr.send();
 		}
 	</script>
 </body>

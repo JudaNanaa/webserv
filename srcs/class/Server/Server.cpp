@@ -99,6 +99,9 @@ void	Server::handleLocation(Client *client) {
     		return ;
 		}
 	}
+	if (request->getContentLenght() == -1)
+    		client->setResponse();
+
 }
 
 bool	Server::isCgi( const std::string& path ) {
