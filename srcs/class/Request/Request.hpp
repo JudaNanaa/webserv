@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/28 22:31:43 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/30 20:43:59 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ class Request : public RawBits {
 		~Request();
 
 		/*	GETTER	*/
-		int	method( void ) const;
+		const int&	method( void ) const;
 		const std::string& path( void ) const;
 		const std::string& host( void ) const;
 		const std::string& find( std::string key ) const;
@@ -74,27 +74,26 @@ class Request : public RawBits {
 		const int &getMethode(void) const;
 		const std::string &getResponsCode(void) const;
 		bool isACgi(void) const;
-		std::string& getMap(std::string key);
+		std::string& getMap(const std::string &key);
 		
 		/*	SETTER	*/
 
-		void	method( int newMethod );
+		void	method( const int& newMethod );
 		void	host( std::string newHost );
 		void	setStatus( t_state newStatus );
 		void	path( std::string newPath );
-		void	add( std::string key, std::string value );
 		void	setSizeBody(long long nb);
-		void setMethode(std::string methode);
-		void setResponsCode(std::string code);
+		void setMethode(const std::string &methode);
+		void setResponsCode(const std::string &code);
 		void setIsACgi(bool boolean);
-		t_parse addHeaderRequest(char *buff, int n);
-		t_parse addBodyRequest(char *buff, int n, bool add);
+		t_parse addHeaderRequest(const char *buff, const int &n);
+		t_parse addBodyRequest(const char *buff, const int &n, const bool &add);
     	void addServer(Server* server);
-		void addRequestToMap(std::string key, std::string value);
+		void addHeaderLineToMap(const std::string &key, const std::string &value);
 		bool isKeyfindInHeader(std::string const &key) const;
-		void	setRedirect(bool b);
+		void	setRedirect(const bool &b);
 		bool& 	getRedirect(void);
-		void	incrementSizeBody(unsigned long long n);
+		void	incrementSizeBody(const unsigned long long &n);
 
 		/*	OTHERS	*/
 		void	uploadBody();

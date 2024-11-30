@@ -170,7 +170,7 @@ void	Server::_parseRequestLine( std::string line, Request *clientRequest) {
 	std::string	value = line.substr(line.find(": ") + 2);
 
 	std::string key = line.erase(line.find(": "));	// erase the value (keep the key)
-	clientRequest->addRequestToMap(key, value);
+	clientRequest->addHeaderLineToMap(key, value);
 }
 
 void Server::_parseClientHeader(Client *client) {
@@ -211,7 +211,7 @@ void Server::_parseClientHeader(Client *client) {
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
 		clientRequest->setSizeBody(std::atoll(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;
-		//TODO : secure this (si Content-Lenght ou Content-Type ne sont pas present dans la requete on throw une exception et on ne renvoie pas de reponse au client)
+		//TODO: secure this (si Content-Lenght ou Content-Type ne sont pas present dans la requete on throw une exception et on ne renvoie pas de reponse au client)
     //alors qu'on doit en renvoyer une
 		if (clientRequest->isKeyfindInHeader("Content-Type")) {
 			if (clientRequest->find("Content-Type").find("boundary") != std::string::npos) {

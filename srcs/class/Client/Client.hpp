@@ -19,7 +19,7 @@ class Client {
 		bool _readyToParseBody;
 		bool _readyToResponse;
 		Request *_request;
-		void setReadyToresponse(bool boolean);
+		void setReadyToresponse(const bool &boolean);
 	public:
 		Client(int const fd, Server *server);
 		~Client();
@@ -27,20 +27,20 @@ class Client {
 		Client &operator=(Client const &other);
 		Server *_server;
 		void setResponse(const std::string &code = "200");
-		void setPid(int pid);
+		void setPid(const int &pid);
 		const int &getPid(void) const;
-		void setCGIStatus(int pid);
+		void setCGIStatus(const int &status);
 		const int &getCGIStatus(void) const;
 		void	cleanRequest( void );
-		void	setCGIFD(int fd);
-		int getCGIFD(void);
-		void	setParentToCGI(int fd);
-		int getParentToCGI(void);
-		void setUseBuffer(bool boolean);
+		void	setCGIFD(const int &fd);
+		const int & getCGIFD(void);
+		void	setParentToCGI(const int &fd);
+		const int & getParentToCGI(void);
+		void setUseBuffer(const bool &boolean);
 		bool getUseBuffer(void) const;
-		int getClientFd(void) const;
+		const int & getClientFd(void) const;
 		bool const &isReadyToResponse(void) const; 
-		void pushHeaderRequest(char *str, int n);
+		void pushHeaderRequest(char *str, const int &n);
     	void setServerReq(Server *server);
 		const t_state &whatToDo(void) const;
 		const bool &getReadyToParseHeader(void) const;

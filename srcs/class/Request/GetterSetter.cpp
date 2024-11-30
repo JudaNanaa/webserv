@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/29 20:04:21 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/30 20:40:06 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ bool Request::isACgi(void) const {
 	return _isCgi;
 }
 
-int	Request::method( void	) const {
+const int &Request::method( void	) const {
 	return (_method);
 }
 
@@ -44,7 +44,7 @@ const t_state &Request::getStatus(void) const {
 	return _state;
 }
 
-void	Request::method( int newMethod ) {
+void	Request::method( const int &newMethod ) {
 	_method = newMethod;
 }
 
@@ -68,7 +68,7 @@ const long	long &Request::getContentLenght(void) const {
 	return _contentLenght;
 }
 
-std::string& Request::getMap(std::string key) {
+std::string& Request::getMap(const std::string &key) {
   static std::string def = "";
   if (_others.find("key") != _others.end())
     return _others[key];
@@ -79,7 +79,7 @@ void	Request::addServer(Server* server) {
   _server = server;
 } 
 
-void Request::setMethode(std::string methode) {
+void Request::setMethode(const std::string &methode) {
 	if (methode == "GET")
 		_method = GET_;
 	else if (methode == "POST")
@@ -92,7 +92,7 @@ const int& Request::getMethode(void) const {
 	return _method;
 }
 
-void Request::setResponsCode(std::string code) {
+void Request::setResponsCode(const std::string &code) {
 	_ResponsCode = code;
 }
 
@@ -100,7 +100,7 @@ const std::string& Request::getResponsCode(void) const {
 	return _ResponsCode;
 }
 
-void Request::setRedirect(bool b) {
+void Request::setRedirect(const bool &b) {
 	_isRedirect = b;
 }
 
@@ -108,7 +108,7 @@ bool& Request::getRedirect(void) {
 	return _isRedirect;
 }
 
-void	Request::incrementSizeBody(unsigned long long n)
+void	Request::incrementSizeBody(const unsigned long long &n)
 {
 	RawBits::_lenBody += n;
 	RawBits::_lenTotalBody += n;

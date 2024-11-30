@@ -35,7 +35,7 @@ Request::~Request() {
 	
 }
 
-void Request::addRequestToMap(std::string key, std::string value) {
+void Request::addHeaderLineToMap(const std::string &key, const std::string &value) {
 	if (key == "HOST") {
 		if (_server->isServerHost(value) == false) { // check si le host est bien celui du server
 			throw std::invalid_argument("Error header: Not the server host: " + value);
@@ -51,7 +51,7 @@ bool Request::isKeyfindInHeader(std::string const &key) const {
 	return _others.find(key) != _others.end();
 }
 
-t_parse	Request::addHeaderRequest(char *buff, int n) {
+t_parse	Request::addHeaderRequest(const char *buff, const int &n) {
 	RawBits::BuffToRaw(buff, n);
 	if (RawBits::find("\r\n\r\n") == -1) {
 		return NOT_READY;
@@ -82,7 +82,7 @@ void	Request::uploadBody() {
 	}
 }
 
-t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
+t_parse	Request::addBodyRequest(const char *buff, const int &n, const bool &add) {
 	if (add)
 		appendBody(buff, n);
 	if (_method == POST_)

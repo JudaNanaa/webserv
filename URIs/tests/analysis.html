@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire d'Analyse</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Formulaire d'Analyse</h1>
+
+<form action="/tests/analysis.py" method="post">
+    <label for="first_name">Prénom :</label>
+    <input type="text" id="first_name" name="first_name" required>
+
+    <label for="last_name">Nom :</label>
+    <input type="text" id="last_name" name="last_name" required>
+
+    <label for="gender">Genre :</label>
+    <select id="gender" name="gender" required>
+        <option value="male">Homme</option>
+        <option value="female">Femme</option>
+    </select>
+
+    <label for="birthdate">Date de naissance :</label>
+    <input type="date" id="birthdate" name="birthdate" required>
+
+    <label for="height">Taille (cm) :</label>
+    <input type="number" id="height" name="height" required>
+
+    <label for="weight">Poids (kg) :</label>
+    <input type="number" id="weight" name="weight" required>
+
+    <label for="activity">Niveau d'activité :</label>
+    <select id="activity" name="activity" required>
+        <option value="sedentary">Sédentaire</option>
+        <option value="lightly_active">Légèrement actif</option>
+        <option value="moderately_active">Modérément actif</option>
+        <option value="very_active">Très actif</option>
+        <option value="super_active">Extrêmement actif</option>
+    </select>
+
+    <button type="submit">Analyser</button>
+</form>
+
+</body>
+</html>

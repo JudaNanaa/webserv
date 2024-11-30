@@ -6,11 +6,12 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/30 17:09:38 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/30 21:21:13 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Server.hpp"
+#include <cstddef>
 #include <cstring>
 #include <fstream>
 #include <stdexcept>
@@ -24,7 +25,8 @@ void Server::_responseCgiIfNoProblem(Client *client)
 	char buff[BUFFER_SIZE];
 	int nbRead = BUFFER_SIZE;
 
-	toSend = strdup("HTTP/1.1 200 Ok\r\n");
+	toSend = new char[19];
+	std::memcpy(toSend, "HTTP/1.1 200 Ok\r\n\0", 19);
 	total = strlen(toSend);
 	while (nbRead == BUFFER_SIZE)
 	{

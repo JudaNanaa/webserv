@@ -35,7 +35,7 @@ void Client::setResponse(const std::string &code)
 	_request->setResponsCode(code);
 }
 
-void Client::setCGIStatus(int status) {
+void Client::setCGIStatus(const int &status) {
 	if (WIFEXITED(status)) {
 		_CGIStatus = WEXITSTATUS(status);
 	} else if (WIFSIGNALED(status)) {
@@ -54,7 +54,7 @@ const int &Client::getCGIStatus(void) const {
 }
 
 
-void Client::setPid(int pid) {
+void Client::setPid(const int &pid) {
 	_pid = pid;
 }
 
@@ -62,20 +62,20 @@ const int &Client::getPid(void) const {
 	return _pid;
 }
 
-void	Client::setCGIFD(int fd) {
+void	Client::setCGIFD(const int &fd) {
 	_pipeFD = fd;
 
 }
 
-int Client::getCGIFD(void) {
+const int &Client::getCGIFD(void) {
 	return _pipeFD;
 }
 
-void	Client::setParentToCGI(int fd) {
+void	Client::setParentToCGI(const int &fd) {
 	_ParentToCGI = fd;
 }
 
-int Client::getParentToCGI(void) {
+const int &Client::getParentToCGI(void) {
 	return _ParentToCGI;
 }
 
@@ -87,7 +87,7 @@ const bool &Client::getReadyToParseBody(void) const {
 	return _readyToParseBody;
 }
 
-void Client::setUseBuffer(bool boolean) {
+void Client::setUseBuffer(const bool &boolean) {
 	_useBuffer = boolean;
 }
 
@@ -100,11 +100,11 @@ const t_state &Client::whatToDo(void) const {
 	return _request->getStatus();
 }
 
-int Client::getClientFd(void) const {
+const int &Client::getClientFd(void) const {
 	return _fd;
 }
 
-void Client::setReadyToresponse(bool boolean) {
+void Client::setReadyToresponse(const bool &boolean) {
 	_readyToResponse = boolean;
 }
 
@@ -116,7 +116,7 @@ Request *Client::getRequest(void) {
 	return _request; 
 }
 
-void Client::pushHeaderRequest(char *str, int n) {
+void Client::pushHeaderRequest(char *str, const int &n) {
 	t_parse result;
 
 	result = _request->addHeaderRequest(str, n);

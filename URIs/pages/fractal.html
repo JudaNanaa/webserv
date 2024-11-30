@@ -7,6 +7,7 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -16,12 +17,30 @@
             font-family: Arial, sans-serif;
         }
 
+        #goBackButton {
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #goBackButton:hover {
+            background-color: #0056b3;
+        }
+
         canvas {
             border: 2px solid #333;
         }
     </style>
 </head>
 <body>
+
+<button id="goBackButton" onclick="history.back()">Go Back</button>
 
 <canvas id="fractalCanvas" width="800" height="800"></canvas>
 
@@ -37,7 +56,7 @@
     function mandelbrot(cRe, cIm, maxIterations) {
         let x = 0, y = 0;
         let iteration = 0;
-        
+
         while (x * x + y * y <= 4 && iteration < maxIterations) {
             let xNew = x * x - y * y + cRe;
             y = 2 * x * y + cIm;
