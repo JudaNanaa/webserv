@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/29 20:39:59 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/30 19:55:57 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,10 @@ void Server::sendResponse(int fd, Client *client) {
 
 	file.close();
 	if (send(fd, response.c_str(), response.size(), MSG_EOR) == -1)
+	{
+		client->setResponse("500");
 		throw std::runtime_error("Can't send the message !");
+	}
 }
 
 void Server::sendRedirect(std::string redirect, int fd, Client *client) {
@@ -178,7 +181,10 @@ void Server::sendRedirect(std::string redirect, int fd, Client *client) {
 	// std::cerr << response << std::endl;
 
 	if (send(fd, response.c_str(), response.size(), MSG_EOR) == -1)
+	{
+		client->setResponse("500");
 		throw std::runtime_error("Can't send the message !");
+	}
 }
 
 void Server::giveClientResponseByLocation(int fd) {
@@ -218,7 +224,10 @@ void Server::handleAuth(Client* client) {
 		response << "Location: " << MYCEOO << "\r\n"; 
 		response << "\r\n";
 		if (send(client->getClientFd(), response.str().c_str(), response.str().size(), MSG_EOR) == -1)
+		{
+			client->setResponse("500");
 			throw std::runtime_error("Can't send the message !");
+		}
 	} else if (request->path() == "/auth/secret") {
 		std::string header = request->getHeader();
 		if (request->isKeyfindInHeader("Cookie") == true) {
@@ -251,13 +260,9 @@ void Server::giveClientResponse(int fd) {
 		giveClientResponseByLocation(fd);
 	} else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) == 0 && client->getRequest()->getResponsCode() == "200") {
 		handleAuth(client);
-	} else if (client->getRequest()->isACgi() == true) {
-	std::cerr << "test3" << std::endl;
+	} else if (client->getRequest()->isACgi() == true)
 		responseCGI(client);
-	}
 	else 
 		sendResponse(fd, client); //this methode send response with appropriate code
-	client->cleanRequest();
-	client->setPid(-1);
-	client->setCGIFD(-1);
+	client->afterResponse();
 }

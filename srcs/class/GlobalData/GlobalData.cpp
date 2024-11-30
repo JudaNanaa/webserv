@@ -117,7 +117,6 @@ void GlobalData::handleClientIn(int fd) {
 		server->addClientRequest(fd);
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
-		// removeClient(fd);
 	}
 }
 
@@ -130,7 +129,7 @@ void GlobalData::handleClientOut(int fd) {
 		server->giveClientResponse(fd);
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
-		removeClient(fd);
+		// removeClient(fd);
 	}
 }
 

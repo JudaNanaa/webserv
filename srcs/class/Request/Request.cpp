@@ -62,7 +62,6 @@ t_parse	Request::addHeaderRequest(char *buff, int n) {
 }
 
 void	Request::uploadBody() {
-	std::cerr << "es ce que je passe par la ?" << std::endl;
 	bool	multipart;
 
 	try {
@@ -71,11 +70,7 @@ void	Request::uploadBody() {
 		multipart = false;
 	}
 	if (multipart == true) {
-		// find bondaries
-		if (RawBits::checkBondaries() == FINISHED) {	// transform this function
-			// _client->setReadyToresponse(true);
-		}
-		// std::cerr << "\e" << getCurrentFile()->get("filename") << ": " << (RawBits::getLenTotalBody() / _contentLenght) * 100 << "%\r";
+		RawBits::checkBondaries();
 	} else {	// if no bondaries
 		if (defaultFile.is_open() == false) {
 			defaultFile.open(DEFAULT_UPLOAD_FILE, std::ios::trunc | std::ios::out);
@@ -92,7 +87,6 @@ t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 		appendBody(buff, n);
 	if (_method == POST_)
 		uploadBody();
-	std::cerr << "Content-length: " << _contentLenght << " | Len Body: " << getLenTotalBody() << std::endl;
 	if (RawBits::getLenTotalBody() == _contentLenght) {
 		if (defaultFile.is_open())
 			defaultFile.close();
@@ -101,8 +95,7 @@ t_parse	Request::addBodyRequest(char *buff, int n, bool add) {
 	if (RawBits::getLenTotalBody() > _contentLenght && _contentLenght != -1) {
 		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
 		std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
-   		setResponsCode("400");
-		_client->setResponse();
+		_client->setResponse("413");
 		return ERROR;
 	}
 	return NOT_READY;

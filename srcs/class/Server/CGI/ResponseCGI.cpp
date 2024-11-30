@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/28 23:06:48 by madamou          ###   ########.fr       */
+/*   Updated: 2024/11/30 17:09:38 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void Server::_responseCgiIfNoProblem(Client *client)
 		total += nbRead;
 	}
 	close(client->getCGIFD());
-	write(2, toSend, total);
 	if (send(client->getClientFd(), toSend, total, MSG_EOR) == -1)
 		throw std::runtime_error("Can't send the message !");
 }
@@ -67,12 +66,7 @@ void Server::_responseCgiError(Client *client)
 	oss << html_content.size();
     response += "Content-Length: " + oss.str() + "\r\n";
     response += "\r\n";
-
     response += html_content;
-
-	// std::cerr << "RESPONSE : " << std::endl;
-	// std::cerr << response << std::endl;
-
 	file.close();
 	if (send(client->getClientFd(), response.c_str(), response.size(), MSG_EOR) == -1)
 		throw std::runtime_error("Can't send the message !");
@@ -80,6 +74,7 @@ void Server::_responseCgiError(Client *client)
 
 void Server::responseCGI(Client *client)
 {
+	std::cerr << "-------- RESPONSE CGI --------" << std::endl;
 	if (client->getCGIStatus() == EXIT_SUCCESS)
 		_responseCgiIfNoProblem(client);
 	else

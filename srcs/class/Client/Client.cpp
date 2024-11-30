@@ -132,3 +132,10 @@ void	Client::cleanRequest( void ) {
 		delete _request;
 	_request = new Request(this);
 }
+
+void Client::afterResponse(void) {
+	cleanRequest();
+	setPid(-1);
+	setCGIFD(-1);
+	setReadyToresponse(false);
+}

@@ -138,8 +138,6 @@ void	Server::handleRequest( Client *client ) {
 	if (request->getContentLenght() == -1) {
 		client->setResponse();
 	}
-	// if (request->getMethode() & GET_ && request->getLenTotalBody() == request->getContentLenght())
-	// 	client->setReadyToresponse(true);
 }
 
 void	Server::chooseParsing( Client *client ) {
@@ -196,8 +194,6 @@ void Server::_parseClientHeader(Client *client) {
 	}
 	clientRequest->setMethode(lineSplit[0]);
 	clientRequest->path(lineSplit[1]);
-	
-	std::cout << "-------------------------------------PATH : " + clientRequest->path() << std::endl;
 	if (lineSplit[2].compare(0, 6, "HTTP/1") != 0) {
 		// le htpp nest pas bon !!
 		client->setResponse("505");
@@ -211,7 +207,7 @@ void Server::_parseClientHeader(Client *client) {
 			client->setResponse("400");
 		}
 	}
-	std::cerr << "REQUEST:\n" << *clientRequest << std::endl;
+	std::cerr << *clientRequest << std::endl;
 	if (clientRequest->isKeyfindInHeader("Content-Length") == true) {
 		clientRequest->setSizeBody(std::atoll(clientRequest->find("Content-Length").c_str()));
 		std::string bondary;
@@ -309,9 +305,6 @@ void Server::addClientRequest(int fd) {
 		client->setResponse("400");
 		throw std::runtime_error("Empty recv !");
 	}
-	std::cerr << "buff == \n[";
-	write(STDERR_FILENO, buff, n);
-	std::cerr << "]" << std::endl;
 	if (client->whatToDo() == ON_HEADER) {
 		try {
 	 		client->pushHeaderRequest(buff, n);

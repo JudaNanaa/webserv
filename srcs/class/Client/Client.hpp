@@ -46,7 +46,7 @@ class Client {
 		const bool &getReadyToParseHeader(void) const;
 		const bool &getReadyToParseBody(void) const;
 		Request *getRequest(void);
-
+		void afterResponse(void);
 };
 
 #endif
