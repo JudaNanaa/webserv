@@ -241,8 +241,8 @@ void Server::checkCgi( void ) {
 				case -1: { std::cerr << "waitpid failed" << std::endl ; continue; } // error 
 				case 0: { continue; } // not finished
 				default:
-					client->setCGIStatus(status);
 					client->setResponse();
+					client->setCGIStatus(status);
 			}
 		}
 	}

@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include <csignal>
 #include <unistd.h>
 #include <iostream>
 
@@ -38,12 +39,14 @@ void Client::setCGIStatus(int status) {
 	if (WIFEXITED(status)) {
 		_CGIStatus = WEXITSTATUS(status);
 	} else if (WIFSIGNALED(status)) {
-		_CGIStatus = WTERMSIG(status);
+		_CGIStatus = 128 + WTERMSIG(status);
 	} else if (WIFSTOPPED(status)) {
-		_CGIStatus = WSTOPSIG(status);
+		_CGIStatus = 128 + WSTOPSIG(status);
 	}
-	if (_CGIStatus != 0)
+	if (_CGIStatus == 1)
 		_request->setResponsCode("500");
+	else if (_CGIStatus == 128 + SIGALRM)
+		_request->setResponsCode("504");
 }
 
 const int &Client::getCGIStatus(void) const {

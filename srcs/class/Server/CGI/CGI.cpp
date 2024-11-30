@@ -92,6 +92,7 @@ void Server::CgiDefaultGesture(Client *client) {
             exit(1);
         }
         close(CGIToParent[1]);
+        alarm(5);
         execve(cgi[0], cgi, _env);
         std::cerr << "execve failed: ";
         perror(cgi[0]);
