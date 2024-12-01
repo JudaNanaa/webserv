@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/30 23:53:47 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/01 15:18:03 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <stdexcept>
 #include <string>
 
-#define SECRET "https://www.morganphilips.com/fr-fra/conseils-et-actus/les-9-choses-a-faire-a-20-ans-pour-devenir-millionnaire-a-30-ans"
+#define SECRET "https://www.cat29.fr/riche-et-independant/"
 #define SINGE "https://media.tenor.com/_uIJwdpxI8UAAAAM/mono-serio.gif"
 #define MYCEOO "https://pbs.twimg.com/media/EaoNasxXYAUE8pA.jpg"
 #define MYCEOC "https://pbs.twimg.com/media/EaoNYXkXkAMHJJK.jpg"
@@ -205,7 +205,10 @@ void Server::giveClientResponseByLocation(int fd) {
 }
 
 void setCookie(std::stringstream &response, std::string key, std::string value) {
-	response << "Set-Cookie: " << key << "=" << value << "\r\n";
+	response
+	<< "Set-Cookie: " << key << "=" << value << ";"
+	<< "Max-Age=300"
+	<< "\r\n";
 }
 
 void Server::handleAuth(Client* client) {
