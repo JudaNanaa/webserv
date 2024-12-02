@@ -128,7 +128,7 @@ void GlobalData::handleClientOut(int fd) {
 		server->giveClientResponse(fd);
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
-		// removeClient(fd);
+		removeClient(fd);
 	}
 }
 
@@ -157,13 +157,10 @@ void	GlobalData::handleEvent( struct epoll_event& event ) {
 		}
 	} else if (event.events & (EPOLLRDHUP | EPOLLHUP)) {
 		removeClient(fd);
-	} else {
-		if (event.events & EPOLLIN) {
+	} else if (event.events & EPOLLIN)
 			handleClientIn(fd);
-		} if (event.events & EPOLLOUT) {
-			handleClientOut(fd);
-		}
-	}
+	else if (event.events & EPOLLOUT)
+		handleClientOut(fd);
 }
 
 void GlobalData::runServers(std::vector<Server> &servVec) {

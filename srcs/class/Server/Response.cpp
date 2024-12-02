@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/02 19:28:46 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/02 20:27:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,12 +167,12 @@ std::string	Server::getContentType(const std::string& path) {
 	return ContentType(extension);
 }
 
-std::string	Server::getResponseHeader(Request *request, std::ifstream& file, const std::string& path) {
-	file.seekg(0, std::ios::end);
+std::string	Server::getResponseHeader(Request *request, const std::string& path, std::size_t fileSize) {
 	int code = atoi(request->getResponsCode().c_str());
 
 	std::cerr << "debug code : " << code << std::endl;
 	std::ostringstream oss;
+	oss << fileSize;
     std::string header = "HTTP/1.1 " + request->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
     header += "Content-Type: " + getContentType(path) + "\r\n";
 	std::cerr << "Content type: " << getContentType(path) << std::endl;
@@ -209,7 +209,10 @@ void Server::sendResponse(int fd, Client *client) {
 			else if (stat((finalPath).c_str(), &buf) == -1)
 				clientRequest->setResponsCode("500");
 			else if (S_ISDIR(buf.st_mode))
+			{
+				finalPath += "/" + _data->_index;
 				file.open((finalPath + "/" + _data->_index).c_str());
+			}
 			else
 				file.open((finalPath).c_str());
 		}
@@ -223,8 +226,10 @@ void Server::sendResponse(int fd, Client *client) {
 	}
 	
 	// buffer << file.rdbuf();
+	file.seekg(0, std::ios::end);
+	std::size_t fileSize = file.tellg();
 
-	std::string	header = getResponseHeader(clientRequest, file, finalPath);
+	std::string	header = getResponseHeader(clientRequest, finalPath, fileSize);
 	if (send(fd, header.c_str(), header.size(), MSG_EOR) == -1) {
 		client->setResponse("500");
 		throw std::runtime_error("Can't send the message !");
@@ -233,22 +238,14 @@ void Server::sendResponse(int fd, Client *client) {
 	char	buffer[1000000];
 	std::size_t	n = 0;
 	std::size_t total = 0;
-	file.seekg(0, std::ios::end);
-	std::size_t fileSize = file.tellg();
-
-	file.seekg(0);
+	file.close();
+	file.open(finalPath.c_str());
 	while (total < fileSize) {
-		// std::cerr << "RESPONSE : " << std::endl;
-		// std::cerr << response << std::endl;
 
 		file.read(buffer, 1000000);
 		n = file.gcount();
 		total += n;
-		std::cerr << "read " << n << "bits" << std::endl;
-		if (n == 0) {
-			break ;
-		}
-
+		// std::cerr << "read " << n << "bits" << std::endl;
 		if (send(fd, buffer, n, MSG_EOR) == -1)
 		{
 			client->setResponse("500");
@@ -257,7 +254,7 @@ void Server::sendResponse(int fd, Client *client) {
 	}
 	std::cerr << "response send ! " << std::endl;
 	file.close();
-	close(fd);
+	// close(fd);
 }
 
 void Server::sendRedirect(std::string redirect, int fd, Client *client) {

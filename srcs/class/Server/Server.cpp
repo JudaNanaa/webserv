@@ -301,6 +301,7 @@ void Server::addClientRequest(int fd) {
 	Client *client = getClient(fd);
 	Request *clientRequest = client->getRequest();
 
+
 	client->setUseBuffer(true);
 	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
 	if (n == -1) {

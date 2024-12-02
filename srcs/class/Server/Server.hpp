@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/02 19:08:56 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/02 20:05:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ class Server {
 		void _responseCgiIfNoProblem(Client *client);
 		void _responseCgiError(Client *client);
 		std::string	getContentType(const std::string& path);
-		std::string	getResponseHeader(Request *request, std::ifstream& file, const std::string& path);
+		std::string	getResponseHeader(Request *request, const std::string& path, std::size_t fileSize);
 		int	sendToFd(const char *msg, std::size_t msgSize, int fd);
 
 	public:
