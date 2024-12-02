@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Web d'Exemple</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav {
+            background: #555;
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        nav a {
+            color: #fff;
+            margin: 0 1rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .section {
+            margin: 2rem 0;
+        }
+
+        .section h2 {
+            margin-bottom: 1rem;
+            color: #4CAF50;
+        }
+
+        .cards {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: #fff;
+            padding: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .card img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        form input, form textarea, form button {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        form button {
+            background: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        footer {
+            background: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Bienvenue sur Notre Site Web</h1>
+    <p>Découvrez nos services et contactez-nous pour plus d'informations !</p>
+</header>
+
+<nav>
+    <a href="#home">Accueil</a>
+    <a href="#services">Nos Services</a>
+    <a href="#gallery">Galerie</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<div class="container">
+
+    <section id="home" class="section">
+        <h2>Accueil</h2>
+        <p>Bienvenue sur notre site web. Nous vous proposons une large gamme de services adaptés à vos besoins. Explorez nos sections pour en savoir plus et n'hésitez pas à nous contacter !</p>
+    </section>
+
+    <section id="services" class="section">
+        <h2>Nos Services</h2>
+        <div class="cards">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" alt="Service 1">
+                <h3>Service 1</h3>
+                <p>Description de notre premier service. Nous offrons une qualité et un support exceptionnels.</p>
+            </div>
+            <div class="card">
+                <img src="https://via.placeholder.com/150" alt="Service 2">
+                <h3>Service 2</h3>
+                <p>Description de notre deuxième service. Nos experts sont toujours là pour vous aider.</p>
+            </div>
+            <div class="card">
+                <img src="https://via.placeholder.com/150" alt="Service 3">
+                <h3>Service 3</h3>
+                <p>Description de notre troisième service. Nous nous efforçons de répondre à vos attentes.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="section">
+        <h2>Galerie</h2>
+        <div class="gallery">
+            <img src="https://via.placeholder.com/300" alt="Image 1">
+            <img src="https://via.placeholder.com/300" alt="Image 2">
+            <img src="https://via.placeholder.com/300" alt="Image 3">
+        </div>
+    </section>
+
+    <section id="contact" class="section">
+        <h2>Contactez-Nous</h2>
+        <form action="#" method="post">
+            <label for="name">Nom</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+
+            <button type="submit">Envoyer</button>
+        </form>
+    </section>
+
+</div>
+
+<footer>
+    <p>&copy; 2024 Notre Entreprise. Tous droits réservés.</p>
+</footer>
+
+</body>
+</html>

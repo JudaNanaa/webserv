@@ -74,11 +74,10 @@ void GlobalData::addNewClient(Server &server) {
 	unsigned int socklen;
 
 	socklen = sizeof(client_addr);
-	clientFd = accept(server.getSocketFd(),  (struct sockaddr *)&client_addr, &socklen); // TODO: Secure this
+	clientFd = accept(server.getSocketFd(),  (struct sockaddr *)&client_addr, &socklen);
 	if (clientFd == -1)
 		throw std::runtime_error("Can't accept the connexion with the client");
-	addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLRDHUP); // TODO: try catch this
-
+	addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLRDHUP);
 	client = new Client(clientFd, &server);
 	client->setServerReq(&server);
 	server.addClientToMap(client);

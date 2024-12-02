@@ -3,21 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/01 15:18:03 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/12/02 19:28:46 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include <fcntl.h>
+#include <fstream>
 #include <iostream>
 #include <ostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #define SECRET "https://www.cat29.fr/riche-et-independant/"
 #define SINGE "https://media.tenor.com/_uIJwdpxI8UAAAAM/mono-serio.gif"
@@ -85,18 +92,7 @@ const std::string getMessageCode(int code) {
 	codes_responses[449] = "Retry With";
 	codes_responses[450] = "Blocked by Windows Parental Controls";
 	codes_responses[451] = "Unavailable For Legal Reasons";
-	codes_responses[456] = "Unrecoverable Error";
-	codes_responses[444] = "No Response";
-	codes_responses[495] = "SSL Certificate Error";
-	codes_responses[496] = "SSL Certificate Required";
-	codes_responses[497] = "HTTP Request Sent to HTTPS Port";
-	codes_responses[498] = "Token expired/invalid";
-	codes_responses[499] = "Client Closed Request";
-	codes_responses[500] = "Internal Server Error";
-	codes_responses[501] = "Not Implemented";
-	codes_responses[502] = "Bad Gateway or Proxy Error";
-	codes_responses[503] = "Service Unavailable";
-	codes_responses[504] = "Gateway Time-out";
+	codes_responses[456] = "Unrecoverable Erstatus()";
 	codes_responses[505] = "HTTP Version not supported";
 	codes_responses[506] = "Variant Also Negotiates";
 	codes_responses[507] = "Insufficient storage";
@@ -115,54 +111,153 @@ const std::string getMessageCode(int code) {
 	return codes_responses[code];
 }
 
+std::string ContentType(const std::string& extension) {
+    std::map<std::string, std::string> contentTypes;
+	contentTypes[".txt"] = "text/plain";
+	contentTypes[".html"] = "text/html";
+	contentTypes[".htm"] = "text/html";
+	contentTypes[".css"] = "text/css";
+	contentTypes[".js"] = "application/javascript";
+	contentTypes[".json"] = "application/json";
+	contentTypes[".xml"] = "application/xml";
+	contentTypes[".pdf"] = "application/pdf";
+	contentTypes[".zip"] = "application/zip";
+	contentTypes[".gz"] = "application/gzip";
+	contentTypes[".doc"] = "application/msword";
+	contentTypes[".docx"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	contentTypes[".xls"] = "application/vnd.ms-excel";
+	contentTypes[".xlsx"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	contentTypes[".ppt"] = "application/vnd.ms-powerpoint";
+	contentTypes[".pptx"] = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+	contentTypes[".jpg"] = "image/jpeg";
+	contentTypes[".jpeg"] = "image/jpeg";
+	contentTypes[".png"] = "image/png";
+	contentTypes[".gif"] = "image/gif";
+	contentTypes[".webp"] = "image/webp";
+	contentTypes[".svg"] = "image/svg+xml";
+	contentTypes[".mp3"] = "audio/mpeg";
+	contentTypes[".ogg"] = "audio/ogg";
+	contentTypes[".wav"] = "audio/wav";
+	contentTypes[".mp4"] = "video/mp4";
+	contentTypes[".webm"] = "video/webm";
+	contentTypes[".ogv"] = "video/ogg";
+	contentTypes[".tar"] = "application/x-tar";
+	contentTypes[".7z"] = "application/x-7z-compressed";
+	contentTypes[".rar"] = "application/x-rar-compressed";
+	contentTypes[".md"] = "text/markdown";
+	contentTypes[".rtf"] = "application/rtf";
+	contentTypes[".sh"] = "application/x-sh";
+	contentTypes[".py"] = "application/x-python";
+	contentTypes[".jar"] = "application/x-java-archive";
+
+    std::map<std::string, std::string>::const_iterator it = contentTypes.find(extension);
+    if (it != contentTypes.end()) {
+		return it->second;
+	} else {
+		return "application/octet-stream";  // Retourne ce type par défaut si l'extension est inconnue
+	}
+}
+
+std::string	Server::getContentType(const std::string& path) {
+	if (path.find('.') == std::string::npos) {
+		return ("text/plain");
+	}
+
+	std::string extension = path.substr(path.find_last_of('.'));
+	return ContentType(extension);
+}
+
+std::string	Server::getResponseHeader(Request *request, std::ifstream& file, const std::string& path) {
+	file.seekg(0, std::ios::end);
+	int code = atoi(request->getResponsCode().c_str());
+
+	std::cerr << "debug code : " << code << std::endl;
+	std::ostringstream oss;
+    std::string header = "HTTP/1.1 " + request->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
+    header += "Content-Type: " + getContentType(path) + "\r\n";
+	std::cerr << "Content type: " << getContentType(path) << std::endl;
+    header += "Content-Length: " + oss.str() + "\r\n";
+    header += "\r\n";
+	return header;
+}
+
 void Server::sendResponse(int fd, Client *client) {
-	std::ostringstream buffer;
 	std::ifstream file;
 	Request *clientRequest = client->getRequest();
 
 	std::cerr << "SEND RESPONSE" << std::endl;
 	std::cerr << "RESPONSE CODE : " << clientRequest->getResponsCode() << std::endl;
+	std::string	finalPath;
 	if (clientRequest->getResponsCode() == "200") {
 		if (clientRequest->path() == "/" || clientRequest->method() == DELETE_) {
-			
+			finalPath = _data->_root + _data->_index;
+			if (access((finalPath).c_str(), F_OK | R_OK) == -1)
+				clientRequest->setResponsCode("404");
+			else
+				file.open((finalPath).c_str());
 			std::cerr << "root : " + _data->_root << std::endl;
-			file.open((_data->_root + _data->_index).c_str());
-			std::cerr << "if root : " << _data->_root + _data->_index << std::endl;
-
+			std::cerr << "if root : " << finalPath << std::endl;
 		}
 		else {
-			std::cerr << "if no root : " << _data->_root + clientRequest->path() << std::endl;
-			file.open((_data->_root + clientRequest->path()).c_str());
+			//TODO: check if is dir 
+			// if yes path + index
+			finalPath = _data->_root + clientRequest->path();
+			std::cerr << "if no root : " << finalPath << std::endl;
+			struct stat buf;
+			if (access((finalPath).c_str(), F_OK | R_OK) == -1)
+				clientRequest->setResponsCode("404");
+			else if (stat((finalPath).c_str(), &buf) == -1)
+				clientRequest->setResponsCode("500");
+			else if (S_ISDIR(buf.st_mode))
+				file.open((finalPath + "/" + _data->_index).c_str());
+			else
+				file.open((finalPath).c_str());
 		}
-		if (file.fail()) {
+		if (clientRequest->getResponsCode() == "200" && file.fail())
 			clientRequest->setResponsCode("404");
-		}
 	}
 	if (clientRequest->getResponsCode() != "200")
-		file.open(("URIs/errors/" + clientRequest->getResponsCode() + ".html").c_str());
-	buffer << file.rdbuf();
-	std::string html_content = buffer.str();
-	int code = atoi(clientRequest->getResponsCode().c_str());
-
-	std::cerr << "debug code : " << code << std::endl;
-	std::ostringstream oss;
-    std::string response = "HTTP/1.1 " + clientRequest->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
-    response += "Content-Type: text/html\r\n";
-	oss << html_content.size();
-    response += "Content-Length: " + oss.str() + "\r\n";
-    response += "\r\n";
-
-    response += html_content;
-
-	// std::cerr << "RESPONSE : " << std::endl;
-	// std::cerr << response << std::endl;
-
-	file.close();
-	if (send(fd, response.c_str(), response.size(), MSG_EOR) == -1)
 	{
+		finalPath = "URIs/errors/" + clientRequest->getResponsCode() + ".html";
+		file.open(finalPath.c_str());
+	}
+	
+	// buffer << file.rdbuf();
+
+	std::string	header = getResponseHeader(clientRequest, file, finalPath);
+	if (send(fd, header.c_str(), header.size(), MSG_EOR) == -1) {
 		client->setResponse("500");
 		throw std::runtime_error("Can't send the message !");
 	}
+
+	char	buffer[1000000];
+	std::size_t	n = 0;
+	std::size_t total = 0;
+	file.seekg(0, std::ios::end);
+	std::size_t fileSize = file.tellg();
+
+	file.seekg(0);
+	while (total < fileSize) {
+		// std::cerr << "RESPONSE : " << std::endl;
+		// std::cerr << response << std::endl;
+
+		file.read(buffer, 1000000);
+		n = file.gcount();
+		total += n;
+		std::cerr << "read " << n << "bits" << std::endl;
+		if (n == 0) {
+			break ;
+		}
+
+		if (send(fd, buffer, n, MSG_EOR) == -1)
+		{
+			client->setResponse("500");
+			throw std::runtime_error("Can't send the message !");
+		}
+	}
+	std::cerr << "response send ! " << std::endl;
+	file.close();
+	close(fd);
 }
 
 void Server::sendRedirect(std::string redirect, int fd, Client *client) {
