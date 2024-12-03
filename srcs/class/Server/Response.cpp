@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/03 20:19:32 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/03 22:07:58 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,7 +245,7 @@ void Server::sendResponse(int fd, Client *client) {
 	char	buffer[BUFFER_SIZE];
 	std::size_t	n = 0;
 	n += clientRequest->readResponseFile(buffer, BUFFER_SIZE);
-	if (send(fd, buffer, n, MSG_EOR) == -1)
+	if (send(fd, buffer, n, MSG_NOSIGNAL) == -1)
 	{
 		clientRequest->closeResponseFile();
 		client->setResponse("500");
@@ -274,9 +274,10 @@ void Server::sendRedirect(std::string redirect, int fd, Client *client) {
   	// std::cerr << "RESPONSE : " << std::endl;
 	// std::cerr << response << std::endl;
 
-	if (send(fd, response.c_str(), response.size(), MSG_EOR) == -1)
+	if (send(fd, response.c_str(), response.size(), MSG_NOSIGNAL) == -1)
 	{
 		client->setResponse("500");
+		std::cerr << "test yesy yes" << std::endl;
 		throw std::runtime_error("Can't send the message !");
 	}
 }

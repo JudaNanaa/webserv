@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/03 20:14:36 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/03 22:23:04 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-# define MAX_CLIENTS 100
+# define MAX_CLIENTS 1000
 # define MAX_EVENTS 1000
 # define PORT 9999
 

@@ -64,7 +64,7 @@ int GlobalData::waitFdsToBeReady(void) {
 	
 	while (it != end)
 		(it++)->second.checkCgi();
-	return epoll_wait(_epoll_fd, _events, MAX_EVENTS, 100);
+	return epoll_wait(_epoll_fd, _events, MAX_EVENTS, 1);
 }
 
 void GlobalData::addNewClient(Server &server) {
