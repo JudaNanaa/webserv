@@ -12,6 +12,7 @@
 
 #include <asm-generic/socket.h>
 #include <cerrno>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -69,7 +70,7 @@ void Server::init(void) {
         throw std::runtime_error("Can't bind the socket");
 	}
 
-	if (listen(this->_socket_fd, MAX_CLIENTS) < 0) {
+	if (listen(this->_socket_fd, INT_MAX) < 0) {
         throw std::runtime_error("Can't listen on this socket");		
 	}
 	std::stringstream ss;
