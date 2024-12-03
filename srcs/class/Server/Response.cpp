@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/02 20:27:08 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/03 20:19:32 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,12 +167,12 @@ std::string	Server::getContentType(const std::string& path) {
 	return ContentType(extension);
 }
 
-std::string	Server::getResponseHeader(Request *request, const std::string& path, std::size_t fileSize) {
+std::string	Server::getResponseHeader(Request *request, const std::string& path) {
 	int code = atoi(request->getResponsCode().c_str());
 
 	std::cerr << "debug code : " << code << std::endl;
 	std::ostringstream oss;
-	oss << fileSize;
+	oss << request->getResponseFileSize();
     std::string header = "HTTP/1.1 " + request->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
     header += "Content-Type: " + getContentType(path) + "\r\n";
 	std::cerr << "Content type: " << getContentType(path) << std::endl;
@@ -181,20 +181,17 @@ std::string	Server::getResponseHeader(Request *request, const std::string& path,
 	return header;
 }
 
-void Server::sendResponse(int fd, Client *client) {
-	std::ifstream file;
-	Request *clientRequest = client->getRequest();
-
-	std::cerr << "SEND RESPONSE" << std::endl;
-	std::cerr << "RESPONSE CODE : " << clientRequest->getResponsCode() << std::endl;
+std::string Server::_openResponseFile(Request *clientRequest)
+{
 	std::string	finalPath;
+
 	if (clientRequest->getResponsCode() == "200") {
 		if (clientRequest->path() == "/" || clientRequest->method() == DELETE_) {
 			finalPath = _data->_root + _data->_index;
 			if (access((finalPath).c_str(), F_OK | R_OK) == -1)
 				clientRequest->setResponsCode("404");
 			else
-				file.open((finalPath).c_str());
+				clientRequest->openResponseFile(finalPath.c_str());
 			std::cerr << "root : " + _data->_root << std::endl;
 			std::cerr << "if root : " << finalPath << std::endl;
 		}
@@ -211,50 +208,55 @@ void Server::sendResponse(int fd, Client *client) {
 			else if (S_ISDIR(buf.st_mode))
 			{
 				finalPath += "/" + _data->_index;
-				file.open((finalPath + "/" + _data->_index).c_str());
+				clientRequest->openResponseFile((finalPath + "/" + _data->_index).c_str());
 			}
 			else
-				file.open((finalPath).c_str());
+				clientRequest->openResponseFile((finalPath).c_str());
 		}
-		if (clientRequest->getResponsCode() == "200" && file.fail())
+		if (clientRequest->getResponsCode() == "200" && clientRequest->responseFileOpen() == false)
 			clientRequest->setResponsCode("404");
 	}
 	if (clientRequest->getResponsCode() != "200")
 	{
 		finalPath = "URIs/errors/" + clientRequest->getResponsCode() + ".html";
-		file.open(finalPath.c_str());
+		clientRequest->openResponseFile(finalPath.c_str());
 	}
+	return finalPath;
+}
+
+void Server::sendResponse(int fd, Client *client) {
+	Request *clientRequest = client->getRequest();
+
+	std::cerr << "SEND RESPONSE" << std::endl;
+	std::cerr << "RESPONSE CODE : " << clientRequest->getResponsCode() << std::endl;
+	std::string	finalPath;
 	
-	// buffer << file.rdbuf();
-	file.seekg(0, std::ios::end);
-	std::size_t fileSize = file.tellg();
-
-	std::string	header = getResponseHeader(clientRequest, finalPath, fileSize);
-	if (send(fd, header.c_str(), header.size(), MSG_EOR) == -1) {
-		client->setResponse("500");
-		throw std::runtime_error("Can't send the message !");
-	}
-
-	char	buffer[1000000];
-	std::size_t	n = 0;
-	std::size_t total = 0;
-	file.close();
-	file.open(finalPath.c_str());
-	while (total < fileSize) {
-
-		file.read(buffer, 1000000);
-		n = file.gcount();
-		total += n;
-		// std::cerr << "read " << n << "bits" << std::endl;
-		if (send(fd, buffer, n, MSG_EOR) == -1)
-		{
+	if (clientRequest->responseFileOpen() == false)
+	{
+		finalPath = _openResponseFile(clientRequest);
+		std::string	header = getResponseHeader(clientRequest, finalPath);
+		if (send(fd, header.c_str(), header.size(), MSG_EOR) == -1) {
 			client->setResponse("500");
 			throw std::runtime_error("Can't send the message !");
 		}
 	}
-	std::cerr << "response send ! " << std::endl;
-	file.close();
-	// close(fd);
+
+
+	char	buffer[BUFFER_SIZE];
+	std::size_t	n = 0;
+	n += clientRequest->readResponseFile(buffer, BUFFER_SIZE);
+	if (send(fd, buffer, n, MSG_EOR) == -1)
+	{
+		clientRequest->closeResponseFile();
+		client->setResponse("500");
+		throw std::runtime_error("Can't send the message !");
+	}
+	clientRequest->addResponseFileTotalSend(n);
+	if (clientRequest->getResponseFileTotalSend() == clientRequest->getResponseFileSize())
+	{
+		clientRequest->closeResponseFile();
+		client->afterResponse();
+	}
 }
 
 void Server::sendRedirect(std::string redirect, int fd, Client *client) {
@@ -353,11 +355,18 @@ void Server::giveClientResponse(int fd) {
 	if (client->getRequest()->getRedirect()) { 
 		std::cerr << "location find ! with path == " + client->getRequest()->path() << std::endl;
 		giveClientResponseByLocation(fd);
-	} else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) == 0 && client->getRequest()->getResponsCode() == "200") {
+		client->afterResponse();
+	}
+	else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) == 0 && client->getRequest()->getResponsCode() == "200")
+	{
 		handleAuth(client);
-	} else if (client->getRequest()->isACgi() == true)
+		client->afterResponse();
+	}
+	else if (client->getRequest()->isACgi() == true)
+	{
 		responseCGI(client);
+		client->afterResponse();
+	}
 	else 
 		sendResponse(fd, client); //this methode send response with appropriate code
-	client->afterResponse();
 }

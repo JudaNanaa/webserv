@@ -6,12 +6,14 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/30 20:40:06 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/03 20:07:59 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "../Client/Client.hpp"
+#include <cstddef>
+#include <iterator>
 
 void Request::setIsACgi(bool boolean) {
 	_isCgi = boolean;
@@ -112,4 +114,20 @@ void	Request::incrementSizeBody(const unsigned long long &n)
 {
 	RawBits::_lenBody += n;
 	RawBits::_lenTotalBody += n;
+}
+
+bool Request::responseFileOpen(void) const {
+	return _responseFile.file.is_open();
+}
+
+std::size_t Request::getResponseFileSize(void) const {
+	return _responseFile.fileSize;
+}
+
+std::size_t Request::getResponseFileTotalSend(void) const {
+	return _responseFile.totalSend;
+}
+		
+void	Request::addResponseFileTotalSend(std::size_t nbSend) {
+	_responseFile.totalSend += nbSend;
 }

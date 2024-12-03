@@ -35,6 +35,27 @@ Request::~Request() {
 	
 }
 
+void	Request::openResponseFile(const char *fileName) {
+	_responseFile.file.open(fileName);
+	if (_responseFile.file.is_open() == true)
+	{
+		_responseFile.file.seekg(0, std::ios::end);
+		_responseFile.fileSize = _responseFile.file.tellg();
+		_responseFile.totalSend = 0;
+		_responseFile.file.seekg(0);
+	}
+}
+
+std::size_t	Request::readResponseFile(char *buffer, std::size_t n) {
+	_responseFile.file.read(buffer, n);
+	return _responseFile.file.gcount();
+}
+
+
+void	Request::closeResponseFile(void) {
+	_responseFile.file.close();
+}
+
 void Request::addHeaderLineToMap(const std::string &key, const std::string &value) {
 	if (key == "HOST") {
 		if (_server->isServerHost(value) == false) { // check si le host est bien celui du server

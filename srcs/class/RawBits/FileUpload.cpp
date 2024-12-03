@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   FileUpload.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:42:11 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/29 19:53:53 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/12/03 20:48:23 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,9 @@ int	RawBits::handleFileHeader(void) {
 	std::string	header;
 
 	fileStart = findInBody(("--" + _boundary).c_str()) + _boundary.size() + 4; // +4 pour sauter /r/n/r/n
+	if (fileStart == -1) {	/* header incomplete */
+		return STOP;
+	}
 	headerEnd = findInBody("\r\n\r\n", fileStart);
 	if (headerEnd == -1) {	/* header incomplete */
 		return STOP;

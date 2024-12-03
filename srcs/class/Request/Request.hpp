@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/30 20:43:59 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/03 20:08:42 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include "../../../includes/includes.hpp"
 #include "../RawBits/RawBits.hpp"
+#include <cstddef>
+#include <fstream>
 #include <map>
 #include <ostream>
 #include <string>
@@ -40,6 +42,13 @@ typedef enum s_state
 class Server;
 class Client;
 
+typedef struct s_responseFile
+{
+	std::ifstream file;
+	std::size_t fileSize;
+	std::size_t totalSend;
+} t_responseFile;
+
 class Request : public RawBits {
 	private:
 		t_state _state;
@@ -54,6 +63,7 @@ class Request : public RawBits {
 		long long _contentLenght;
 		Client *_client;
 		bool _isRedirect;
+		t_responseFile _responseFile;
 
 		void	parseRequest(void);
 		void	parseRequestLine( std::string line );
@@ -75,9 +85,14 @@ class Request : public RawBits {
 		const std::string &getResponsCode(void) const;
 		bool isACgi(void) const;
 		std::string& getMap(const std::string &key);
+		bool responseFileOpen() const;
+		void	openResponseFile(const char *fileName);
+		std::size_t getResponseFileSize(void) const;
+		std::size_t getResponseFileTotalSend(void) const;
 		
 		/*	SETTER	*/
 
+		void	addResponseFileTotalSend(std::size_t nbSend);
 		void	method( const int& newMethod );
 		void	host( std::string newHost );
 		void	setStatus( t_state newStatus );
@@ -97,7 +112,9 @@ class Request : public RawBits {
 
 		/*	OTHERS	*/
 		void	uploadBody();
-
+		std::size_t	readResponseFile(char *buffer, std::size_t n);
+		void	closeResponseFile(void);
+		
 		friend std::ostream& operator<<(std::ostream& os, const Request& request );
 };
 

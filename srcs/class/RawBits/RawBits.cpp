@@ -14,6 +14,7 @@
 #include "../Parser/Parser.hpp"
 #include <algorithm>
 #include <cstddef>
+#include <cstdio>
 #include <cstring>
 #include <fcntl.h>
 #include <fstream>
@@ -77,6 +78,9 @@ long RawBits::find(const char *str) const {
 }
 
 long RawBits::findInBody(const char *str, unsigned long pos) const {
+	size_t lenStr = strlen(str);
+	if (_lenBody < lenStr)
+		return -1;
 	for (size_t lenStr = strlen(str); pos <= _lenBody - lenStr; pos++) {
 		if (std::memcmp(&_body[pos], str, lenStr) == 0) {
 			return pos;

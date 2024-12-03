@@ -155,10 +155,11 @@ void	GlobalData::handleEvent( struct epoll_event& event ) {
 		} catch (std::exception &e) {
 			std::cerr << "Error: " << e.what() << std::endl;
 		}
-	} else if (event.events & (EPOLLRDHUP | EPOLLHUP)) {
+	}
+	else if (event.events & (EPOLLRDHUP | EPOLLHUP))
 		removeClient(fd);
-	} else if (event.events & EPOLLIN)
-			handleClientIn(fd);
+	else if (event.events & EPOLLIN)
+		handleClientIn(fd);
 	else if (event.events & EPOLLOUT)
 		handleClientOut(fd);
 }
