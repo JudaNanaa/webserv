@@ -30,7 +30,7 @@
 			max-width: 400px;
 			margin-bottom: 30px;
 		}
-		input[type="file"] {
+		input[type="text"], input[type="file"] {
 			padding: 10px;
 			border-radius: 5px;
 			border: none;
@@ -54,19 +54,23 @@
 		button:hover {
 			background-color: #0056b3;
 		}
-		.file-list {
+		.buttons {
 			margin-top: 30px;
 			display: flex;
-			flex-direction: column;
-			align-items: center;
+			justify-content: center;
 			width: 100%;
 		}
-		.file-list button {
-			background-color: grey;
+		.buttons a {
+			text-decoration: none;
 			color: white;
-			margin: 5px 0;
-			width: 100%;
-			max-width: 300px;
+			background-color: grey;
+			padding: 10px 20px;
+			margin: 0 10px;
+			border-radius: 5px;
+			display: inline-block;
+		}
+		.buttons a:hover {
+			background-color: #0056b3;
 		}
 		.message {
 			margin-top: 20px;
@@ -96,66 +100,41 @@
 			<button type="submit">Upload</button>
 		</form>
 
-		<div id="responseMessage" class="message" style="display: none;"></div>
+		<!-- Formulaire de suppression -->
+		<form id="deleteForm" onsubmit="sendDeleteRequest(event)">
+			<input type="text" id="fileToDelete" name="file" placeholder="Enter file name to delete" required>
+			<button type="submit">Delete File</button>
+		</form>
 
-		<!-- Liste des fichiers -->
-		<div class="file-list" id="fileList">
-			<h2>📄 Uploaded Files 📄</h2>
-			<!-- Les fichiers seront listés ici -->
+		<div class="buttons">
+			<a href="/index.html" role="button">Go Back</a>
 		</div>
+
+		<div id="responseMessage" class="message" style="display: none;"></div>
 	</div>
 
 	<script>
-		// Fonction pour lister les fichiers
-		function listFiles() {
-			const xhr = new XMLHttpRequest();
-			xhr.open("GET", "/uploads/list", true); // Assurez-vous que ce chemin retourne la liste des fichiers JSON
-
-			xhr.onload = function () {
-				if (xhr.status >= 200 && xhr.status < 300) {
-					const files = JSON.parse(xhr.responseText);
-					const fileList = document.getElementById('fileList');
-					fileList.innerHTML = '<h2>📄 Uploaded Files 📄</h2>';
-					files.forEach(file => {
-						const button = document.createElement('button');
-						button.textContent = file;
-						button.onclick = function () {
-							deleteFile(file);
-						};
-						fileList.appendChild(button);
-					});
-				} else {
-					console.error("Error listing files: " + xhr.status);
-				}
-			};
-
-			xhr.onerror = function () {
-				console.error("Network error while listing files.");
-			};
-
-			xhr.send();
-		}
-
 		// Fonction d'upload de fichier
 		function sendPostRequest(event) {
 			event.preventDefault();
 
-			const fileInput = document.getElementById('fileInput').files;
+			const fileInput = document.getElementById('fileInput').files; // Récupère tous les fichiers
 			const formData = new FormData();
 
+			// Ajoute tous les fichiers au FormData
 			for (let i = 0; i < fileInput.length; i++) {
 				formData.append("fileUpload[]", fileInput[i]);
 			}
 
 			const xhr = new XMLHttpRequest();
 			xhr.open("POST", "/uploads/post.html", true);
+
 			const responseMessage = document.getElementById('responseMessage');
 
 			xhr.onload = function () {
 				if (xhr.status >= 200 && xhr.status < 300) {
 					responseMessage.innerText = "Success: Files uploaded successfully!";
 					responseMessage.className = "message success";
-					listFiles(); // Mettre à jour la liste après l'upload
 				} else {
 					responseMessage.innerText = "Error: " + xhr.status + " - " + xhr.statusText;
 					responseMessage.className = "message error";
@@ -173,16 +152,24 @@
 		}
 
 		// Fonction de suppression de fichier
-		function deleteFile(fileName) {
+		function sendDeleteRequest(event) {
+			event.preventDefault();
+
+			const fileName = document.getElementById('fileToDelete').value.trim();
+			if (!fileName) {
+				alert("Please enter a file name to delete.");
+				return;
+			}
+
 			const xhr = new XMLHttpRequest();
 			xhr.open("DELETE", "/uploads/" + encodeURIComponent(fileName), true);
+
 			const responseMessage = document.getElementById('responseMessage');
 
 			xhr.onload = function () {
 				if (xhr.status >= 200 && xhr.status < 300) {
 					responseMessage.innerText = `Success: File "${fileName}" deleted successfully.`;
 					responseMessage.className = "message success";
-					listFiles(); // Mettre à jour la liste après suppression
 				} else {
 					responseMessage.innerText = `Error: ${xhr.status} - ${xhr.statusText}`;
 					responseMessage.className = "message error";
@@ -198,9 +185,6 @@
 
 			xhr.send();
 		}
-
-		// Lancer la liste des fichiers au chargement
-		document.addEventListener('DOMContentLoaded', listFiles);
 	</script>
 </body>
 </html>
