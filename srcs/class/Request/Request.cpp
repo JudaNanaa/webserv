@@ -72,13 +72,12 @@ bool Request::isKeyfindInHeader(std::string const &key) const {
 	return _others.find(key) != _others.end();
 }
 
-t_parse	Request::addHeaderRequest(const char *buff, const int &n) {
+t_parse	Request::addHeaderRequest(const char *buff, const int &n)
+{
 	RawBits::BuffToRaw(buff, n);
-	if (RawBits::find("\r\n\r\n") == -1) {
+	if (RawBits::find("\r\n\r\n") == -1)
 		return NOT_READY;
-	}
 	RawBits::splitRequest();
-
 	return READY_PARSE_HEADER;
 }
 
@@ -86,7 +85,7 @@ void	Request::uploadBody() {
 	bool	multipart;
 
 	try {
-		multipart = find("Content-Type").find("multipart") != std::string::npos;
+		multipart = find("Content-Type").find("multipart") not_found;
 	} catch (...) {
 		multipart = false;
 	}

@@ -6,26 +6,18 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/09 19:33:33 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/05 23:16:28 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Location.hpp"
 
 Location::Location() {
-	_location = "";
-
-	_root = "";
-	_cgi = "";
-	_redirect = "";
 	_allowedMethods = 0;
 	_client_max_body_size = -1; // no limit (?)
 
-	_index = "";
 	_autoIndex = false;
 
-	_file_upload = false;
-	_uploadFolder = "";
 }
 
 Location::~Location() {
@@ -69,7 +61,7 @@ const std::string&	Location::redirect( void ) const {
 int Location::allowedMethods( void ) const {
 	return _allowedMethods;
 } // allowedMethods
-int	Location::maxBodySize( void ) const {
+long long	Location::maxBodySize( void ) const {
 	return _client_max_body_size;
 } // maxBodySize
 
@@ -80,9 +72,6 @@ bool	Location::autoIndex( void ) const {
 	return _autoIndex;
 } // autoIndex
 
-bool	Location::fileUpload( void ) const {
-	return _file_upload;
-} // fileUpload
 const std::string&	Location::uploadFolder( void ) const {
 	return _uploadFolder;
 } // string
@@ -105,7 +94,7 @@ void	Location::redirect( std::string newRedirect ) {
 void	Location::allowedMethods( int newAllowedMethods ) {
 	_allowedMethods = newAllowedMethods;
 } // allowedMethods
-void	Location::maxBodySize( int newMaxBodySize ) {
+void	Location::maxBodySize( long long newMaxBodySize ) {
 	_client_max_body_size = newMaxBodySize;
 } // maxBodySize
 
@@ -116,9 +105,6 @@ void	Location::autoIndex( bool newAutoIndex ) {
 	_autoIndex = newAutoIndex;
 } // autoIndex
 
-void	Location::fileUpload( bool newFileUpload ) {
-	_file_upload = newFileUpload;
-} // fileUpload
 void	Location::uploadFolder( std::string newUploadFolder ) {
 	_uploadFolder = newUploadFolder;
 } // uploadFolder
@@ -156,7 +142,6 @@ std::ostream& operator<<(std::ostream& os, const Location& location) {
 		std::cout << "\t" << "max body size: " << "default" << std::endl;
 	else
 		std::cout << "\t" << "max body size: " << location.maxBodySize() << std::endl;
-	std::cout << "\t" << "file upload: " << (location.fileUpload()? "true":"false") << std::endl;
 	std::cout << "\t" << "upload folder: " << isDefault(location.uploadFolder()) << std::endl;
 	std::cout << "}" << std::endl;
 	

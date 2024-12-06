@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/03 22:23:04 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/05 23:22:49 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 
 # define MAX_CLIENTS 1000
 # define MAX_EVENTS 1000
-# define PORT 9999
 
 struct Data ;
 
@@ -36,14 +35,23 @@ class Server {
 		std::map<int, Client*> _clientMap;
 		char	**_env;
 
-		void _parseClientHeader(Client *client);
-		void	_parseRequestLine( std::string line, Request *clientRequest);
+		// CGI
+		void _setCgiArgs(Client *client, char **cgi);
 		void _responseCgiIfNoProblem(Client *client);
 		void _responseCgiError(Client *client);
+		void _childProcess(char **cgi, int ParentToCGI[2], int CGIToParent[2]);
+
+		// Parsing header
+		void _parseClientHeader(Client *client);
+		void	_addHeaderLine( std::string line, Request *clientRequest);
+		
 		std::string	getContentType(const std::string& path);
 		std::string	getResponseHeader(Request *request, const std::string& path);
 		int	sendToFd(const char *msg, std::size_t msgSize, int fd);
 		std::string _openResponseFile(Request *clientRequest);
+		void _parseFirstLineHeader(Client *client, const std::vector<std::string> &headerSplit);
+		void _parseOtherLinesHeader(Client *client, const std::vector<std::string> &headerSplit);
+		void _parseContentLengthAndBoundary(Request *clientRequest);
 	public:
 		Server();
 		
@@ -62,7 +70,6 @@ class Server {
   		void addData(Data* data);
 		int getSocketFd() const;
 		bool isServerHost(std::string const &str) const;
-		int nbOfClient(void) const;
 		void addClientRequest(int fd);
 		void responseCGI(Client *client);
 		void sendResponse(int fd, Client *client);
@@ -72,7 +79,6 @@ class Server {
     	void MergeLocationData(std::string path);
 		Location *findLocation(const std::string &uri);
 		void chooseParsing( Client *client );
-		void parseHeaderWithLocation(Client *client, Request *request);
     	Data *_data;
 		bool	isCgi( const std::string& path );
 		void	handleCgi( Client *client );

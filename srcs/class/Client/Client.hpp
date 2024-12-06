@@ -19,13 +19,14 @@ class Client {
 		bool _readyToParseBody;
 		bool _readyToResponse;
 		Request *_request;
+		Server *_server;
+
 		void setReadyToresponse(const bool &boolean);
 	public:
-		Client(int const fd, Server *server);
+		Client(int const &fd, Server *server);
 		~Client();
 
 		Client &operator=(Client const &other);
-		Server *_server;
 		void setResponse(const std::string &code = "200");
 		void setPid(const int &pid);
 		const int &getPid(void) const;
@@ -41,7 +42,6 @@ class Client {
 		const int & getClientFd(void) const;
 		bool const &isReadyToResponse(void) const; 
 		void pushHeaderRequest(char *str, const int &n);
-    	void setServerReq(Server *server);
 		const t_state &whatToDo(void) const;
 		const bool &getReadyToParseHeader(void) const;
 		const bool &getReadyToParseBody(void) const;

@@ -6,13 +6,13 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:41:17 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/24 19:42:41 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/05 22:51:10 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RawBits.hpp"
 
-void RawBits::setBondary(std::string str) {
+void RawBits::setBondary(const std::string &str) {
 	_boundary = str;
 }
 

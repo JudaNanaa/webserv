@@ -35,48 +35,8 @@
 #include "../../GlobalData/GlobalData.hpp"
 #include "../../Parser/Parser.hpp"
 
-void closePipePanic(int pipe[2])
+void Server::_childProcess(char **cgi, int ParentToCGI[2], int CGIToParent[2])
 {
-    if (pipe[0] != -1)
-        close(pipe[0]);
-    if (pipe[1] != -1)
-        close(pipe[1]);
-}
-
-void Server::CgiDefaultGesture(Client *client) {
-    
-    Request* request = client->getRequest();
-    std::size_t extension = request->path().find_last_of('.');
-    char* cgi[3];
-    int ParentToCGI[2] = {-1, -1};
-    int CGIToParent[2] = {-1, -1};
-
-    std::string tmp = _data->_root + request->path();
-    std::cerr << "executable: " << _data->_cgi[request->path().substr(extension)] << " | path: " << (char *)const_cast<char*>((_data->_root + request->path()).c_str()) << std::endl;
-    cgi[0] = const_cast<char*>(_data->_cgi[request->path().substr(extension)].c_str());
-    cgi[1] =  const_cast<char*>(tmp.c_str());
-    cgi[2] = NULL;
-    std::cerr << "cgi[0] : " << cgi[0] << std::endl;
-    std::cerr << "cgi[1] : " << cgi[1] << std::endl;
-
-    if (pipe(ParentToCGI) == -1 || pipe(CGIToParent) == -1)
-    {
-        closePipePanic(ParentToCGI);
-        closePipePanic(CGIToParent);
-        std::cerr << "Pipe fail !" << std::endl;
-        client->setResponse("500");
-        return;
-    }
-    int pid = fork();
-    if (pid == -1)
-    {
-        closePipePanic(ParentToCGI);
-        closePipePanic(CGIToParent);
-        std::cerr << "Fork fail !" << std::endl;
-        client->setResponse("500");
-        return;
-    }
-    if (pid == 0) {
         close(ParentToCGI[1]);
         close(CGIToParent[0]);
         if (dup2(ParentToCGI[0], STDIN_FILENO) == -1)
@@ -96,12 +56,57 @@ void Server::CgiDefaultGesture(Client *client) {
         execve(cgi[0], cgi, _env);
         std::cerr << "execve failed: ";
         perror(cgi[0]);
-        exit(1);
+        exit(1);    
+}
+
+void closePipePanic(int pipe[2])
+{
+    if (pipe[0] != -1)
+        close(pipe[0]);
+    if (pipe[1] != -1)
+        close(pipe[1]);
+}
+
+void Server::_setCgiArgs(Client *client, char **cgi)
+{
+    Request* request = client->getRequest();
+    std::size_t extension = request->path().find_last_of('.');
+
+    std::string tmp = _data->_root + request->path();
+    std::cerr << "executable: " << _data->_cgi[request->path().substr(extension)] << " | path: " << (char *)const_cast<char*>((_data->_root + request->path()).c_str()) << std::endl;
+    cgi[0] = const_cast<char*>(_data->_cgi[request->path().substr(extension)].c_str());
+    cgi[1] =  const_cast<char*>(tmp.c_str());
+    cgi[2] = NULL;
+    std::cerr << "cgi[0] : " << cgi[0] << std::endl;
+    std::cerr << "cgi[1] : " << cgi[1] << std::endl;
+}
+
+void Server::CgiDefaultGesture(Client *client) {
+    
+    char* cgi[3];
+    int ParentToCGI[2] = {-1, -1};
+    int CGIToParent[2] = {-1, -1};
+
+    _setCgiArgs(client, cgi);
+    if (pipe(ParentToCGI) == -1 || pipe(CGIToParent) == -1)
+    {
+        closePipePanic(ParentToCGI), closePipePanic(CGIToParent);
+        std::cerr << "Pipe fail !" << std::endl;
+        client->setResponse("500");
+        return;
     }
-    close(ParentToCGI[0]);
-    close(CGIToParent[1]);
+    int pid = fork();
+    if (pid == -1)
+    {
+        closePipePanic(ParentToCGI), closePipePanic(CGIToParent);
+        std::cerr << "Fork fail !" << std::endl;
+        client->setResponse("500");
+        return;
+    }
+    if (pid == 0)
+        _childProcess(cgi, ParentToCGI, CGIToParent);
+    close(ParentToCGI[0]), close(CGIToParent[1]);
 	client->setParentToCGI(ParentToCGI[1]);
     client->setCGIFD(CGIToParent[0]);
     client->setPid(pid);
-
 }

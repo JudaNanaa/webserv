@@ -102,12 +102,6 @@ void RawBits::splitRequest(void) {
 	_request = NULL;
 }
 
-void RawBits::printBody(void) const {
-	for (unsigned int i = 0; i < _lenBody; i++) {
-		std::cout << _body[i];
-	}
-}
-
 char* RawBits::substrBody(size_t pos, size_t n) {
 	char *result = new char[n + 1];
 

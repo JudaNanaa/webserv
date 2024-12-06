@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <iostream>
 
-Client::Client(int const fd, Server *server)
+Client::Client(int const &fd, Server *server)
 	: _fd(fd), _server(server) {
 	_request = new Request(this);
 	_readyToResponse = false;
@@ -122,12 +122,6 @@ void Client::pushHeaderRequest(char *str, const int &n) {
 	result = _request->addHeaderRequest(str, n);
 	if (result == READY_PARSE_HEADER)
 		_readyToParseHeader = true;
-	else
-		_readyToParseBody = false;
-}
-
-void Client::setServerReq(Server *server) {
-  _request->addServer(server);
 }
 
 void	Client::cleanRequest( void ) {

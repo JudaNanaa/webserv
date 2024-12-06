@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/24 19:36:53 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 01:08:42 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,20 +50,20 @@ void Pars::addUpFoldDir(Data* data, std::string path) {
 void Pars::addAllowedMethodes(Data* data, std::string str) {
 	int	methods = 0;
 
-	if (str.find(";") != std::string::npos) {
+	if (str.find(";") is_found) {
 		str.erase(str.find(';'), 1);
 	}
 
-	if (str.find("GET") != std::string::npos) {
+	if (str.find("GET") is_found) {
 		methods = methods | GET_;
 		str.erase(str.find("GET"), 3);
-	} if (str.find("POST") != std::string::npos) {
+	} if (str.find("POST") is_found) {
 		methods = methods | POST_;
 		str.erase(str.find("POST"), 4);
-	} if (str.find("DELETE") != std::string::npos) {
+	} if (str.find("DELETE") is_found) {
 		methods = methods | DELETE_;
 		str.erase(str.find("DELETE"), 6);
-	} if (str.find("OPTIONS") != std::string::npos) {
+	} if (str.find("OPTIONS") is_found) {
 		methods = methods | OPTIONS_;
 		str.erase(str.find("OPTIONS"), 7);
 	}
@@ -88,7 +88,7 @@ void Pars::addAutoIndex(Data* data, std::string w) {
 
 void Pars::addCgi(Data* data, std::string cgi) {
   //TODO: add cgi logic
-  if (cgi.find(" ") != std::string::npos) {
+  if (cgi.find(" ") not_found) {
     data->_cgi[cgi.substr(0, cgi.find(' '))] = trim(cgi.substr(cgi.find(' ')));
   }
 }
@@ -106,14 +106,18 @@ void Pars::addIndex(Data* data, std::string index) {
 
 std::string trim(const std::string& str) {
     size_t start = str.find_first_not_of(" \t\n\r\f\v\"");
-    if (start == std::string::npos) return ""; // Chaîne vide si uniquement des espaces
+    if (start not_found) return ""; // Chaîne vide si uniquement des espaces
     size_t end = str.find_last_not_of(" \t\n\r\f\v\"");
     return str.substr(start, end - start + 1);
 }
 
 void trimn(std::string& str) {
     size_t start = str.find_first_not_of(" \t\n\r\f\v");
-    if (start == std::string::npos) return ; // Chaîne vide si uniquement des espaces
+    if (start not_found)
+    {
+      str.clear();
+      return ; // Chaîne vide si uniquement des espaces
+    }
     size_t end = str.find_last_not_of(" \t\n\r\f\v");
     str.erase(end + 1);
     str.erase(0, start);

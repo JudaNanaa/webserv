@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/03 22:10:29 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 01:22:27 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int main(int argc, char **argv, char **env) {
 		data.runServers(servVec);
 	} catch(std::exception& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
-		std::cerr << "test yesy yes" << std::endl;
 		return (1);
 	}
 	return 0;

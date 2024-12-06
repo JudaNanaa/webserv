@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/23 23:06:07 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/05 21:57:14 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,11 @@
 #include <unistd.h>
 #include <cstddef>
 
+# define printnl(arg) (std::cerr << arg << std::endl)
+# define is ==
+# define is_not !=
+# define not_found == std::string::npos
+# define is_found != std::string::npos
 extern bool g_running;
 
 #endif

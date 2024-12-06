@@ -6,23 +6,23 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 23:09:46 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/23 23:11:22 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 01:18:12 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 bool Server::checkAllowMethodes(std::string methode) {
-	if (methode.compare("GET") == 0) {
+	if (methode.compare("GET") is 0) {
 		return (_data->_allowedMethods & GET_);
 	}
-	if (methode.compare("POST")  == 0) {
+	if (methode.compare("POST")  is 0) {
 		return (_data->_allowedMethods & POST_);
 	}
-	if (methode.compare("DELETE")  == 0) {
+	if (methode.compare("DELETE")  is 0) {
 		return (_data->_allowedMethods & DELETE_);
 	}
-	if (methode.compare("OPTIONS")  == 0) {
+	if (methode.compare("OPTIONS")  is 0) {
 		return (_data->_allowedMethods & OPTIONS_);
 	}
 	if (!methode.empty())
@@ -31,7 +31,7 @@ bool Server::checkAllowMethodes(std::string methode) {
 }
 
 bool Server::ifClientInServer(int fd) const {
-	if (this->_clientMap.find(fd) == this->_clientMap.end()) {
+	if (this->_clientMap.find(fd) is this->_clientMap.end()) {
 		return false;
 	}
 	return true;
@@ -45,12 +45,8 @@ void Server::removeClientInMap(int fd) {
 	this->_clientMap.erase(fd);
 }
 
-int Server::nbOfClient(void) const {
-	return this->_clientMap.size();
-}
-
 bool Server::isServerHost(std::string const &str) const {
-	if (_host[0] == str || _host[1] == str) {
+	if (_host[0] is str || _host[1] is str) {
 		return true;
 	}
 	return false;

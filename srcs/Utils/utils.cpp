@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/23 23:05:28 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 01:31:49 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
     std::string token;
     std::vector<std::string> res;
 
-    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+    while ((pos_end = s.find(delimiter, pos_start)) is_found) {
         token = s.substr (pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
         res.push_back (token);

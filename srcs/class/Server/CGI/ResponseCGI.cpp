@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/30 22:02:41 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/05 22:26:22 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,4 +82,5 @@ void Server::responseCGI(Client *client)
 		_responseCgiIfNoProblem(client);
 	else
 		_responseCgiError(client);
+	client->afterResponse();
 }

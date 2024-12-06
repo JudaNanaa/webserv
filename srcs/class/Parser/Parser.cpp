@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/24 15:19:35 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 01:32:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,11 @@ void normalizeLine(std::string &line) {
 	const std::string tabReplacement = "    ";
 	size_t pos = 0;
 
-	while ((pos = line.find('\t', pos)) != std::string::npos) {
+	while ((pos = line.find('\t', pos)) is_found) {
 	  line.replace(pos, 1, tabReplacement);
 	  pos += tabReplacement.length();
 	}
-  if (line.find(";") != std::string::npos)
+  if (line.find(";") is_found)
     line.erase(line.find(';'), 1);
 	trimn(line);
 }
@@ -51,22 +51,22 @@ void normalizeLine(std::string &line) {
 void	Pars::parseConfigPath(std::string path) {
 	if (path == ".conf") {
 		throw std::invalid_argument("not a '.conf' file");
-	} if (path.find('.') == std::string::npos) {	// no '.' found
+	} if (path.find('.') not_found) {	// no '.' found
 		throw std::invalid_argument("not a '.conf' file");
 	}
 
-	if (path.substr(path.find('.')) != ".conf") {
+	if (path.substr(path.find_last_of('.')) != ".conf") {
 		throw std::invalid_argument("not a '.conf' file");
 	}
 }
 
 void	addLocationLine(std::string &line, Location& location) {
 
-	if (line.empty() || trim(line).empty())
+	if (trim(line).empty())
 		return ;
-	else if (line.find(' ') == std::string::npos)
+	else if (line.find(' ') not_found)
 		throw std::invalid_argument("invalid line 2: " + line);
-	else if (line.find(";") == std::string::npos)
+	else if (line.find(";") not_found)
 		throw std::invalid_argument("`;' expected");
 
 	std::string value = trim(line.substr(line.find(' ')));
@@ -81,8 +81,6 @@ void	addLocationLine(std::string &line, Location& location) {
 		throw std::invalid_argument("missing value");
 	}
 
-	// std::cerr << "KEY == '" << key<< "' | VALUE == '" << value << "'" << std::endl;
-
 	if (key == "index") {	//			INDEX
 		location.index(value);
 	} else if (key == "root") {	//			ROOT
@@ -93,71 +91,52 @@ void	addLocationLine(std::string &line, Location& location) {
 		location.redirect(value);
 	} else if (key == "allowed_methods") {	//			ALLOWED METHODS
 		int methods = 0;
-		if (value.find("GET") != std::string::npos) {
+		if (value.find("GET") is_found) {
 			methods = methods | GET_;
-		} if (value.find("POST") != std::string::npos) {
+		} if (value.find("POST") is_found) {
 			methods = methods | POST_;
-		} if (value.find("DELETE") != std::string::npos) {
+		} if (value.find("DELETE") is_found) {
 			methods = methods | DELETE_;
-		} if (value.find("OPTIONS") != std::string::npos) {
-			methods = methods | OPTIONS_;
-		} 
-		
+		}
 		if (methods == 0) {	// no methods found
 			throw std::invalid_argument("GET, DELETE or POST expected");
 		} else {
 			location.allowedMethods(methods);
 		}
-			
 	} else if (key == "uploads_folder") {	//			UPLOADS_FOLDER
 		location.uploadFolder(value);
 	} else if (key == "client_max_body_size") {	//			CLIENT_MAX_BODY_SIZE
-		int	int_value = std::atoi(value.c_str());
-		if (int_value <= 0 || value.find_first_not_of("0123456789") != std::string::npos)
+		int	int_value = std::atoll(value.c_str());
+		if (int_value <= 0 || value.find_first_not_of("0123456789") is_found)
 			throw std::invalid_argument("invalid value");
 		location.maxBodySize(int_value);
 	} else if (key == "auto_index") {	//			AUTO_INDEX
-		if (value == "on") {
-			location.autoIndex(true);
-		} else if (value == "off") {
-			location.autoIndex(false);
-		} else
-			throw std::invalid_argument("invalid value: expected 'on' or 'off'");
-	} else if (key == "file_upload") {	//			FILE_UPLOAD
-		if (value == "on") {
-			location.fileUpload(true);
-		} else if (value == "off") {
-			location.fileUpload(false);
-		} else
-			throw std::invalid_argument("invalid value: expected 'on' or 'off'");
+		value == "on" ? location.autoIndex(true) : value == "off" ? location.autoIndex(false) :
+			 throw std::invalid_argument("invalid value: expected 'on' or 'off'");
 	} else {
 		throw std::invalid_argument("unknow assignement `" + key + "'");
 	}
 }
 
 void	handleLocation(std::string &line, std::ifstream &configFile, Data& data, int &lineNumber) {
-	if (line.find(" ") == std::string::npos) {
+	Location	location;
+	if (line.find(" ") not_found) {
 		throw std::invalid_argument("format: location <path>");
 	}
 
-	Location	location;
-	std::string	location_path = trim(line.substr(
-		line.find_first_of(" ")
-	));
-	// location_path = location_path.erase(location_path.find(" "));
+	std::string	location_path = trim(line.substr(line.find_first_of(" ")));
 	location.location(location_path);
 		
 	std::getline(configFile, line);
-	if (line.find("{") == std::string::npos) {
+	trimn(line);
+	if (line.find("{") not_found) {
 		throw std::invalid_argument("`{' expected");
 	} ++lineNumber;
 
 	for (;std::getline(configFile, line); lineNumber++) {
-		// std::cerr << "{" << lineNumber << "}'" << trim(line) << "'" << std::endl;
-		if (line.find("}") != std::string::npos) {
+		if (line.find("}") is_found) {
 			break;
 		}
-		
 		addLocationLine(line, location);
 	}
 	std::cout << location << std::endl;
@@ -166,16 +145,9 @@ void	handleLocation(std::string &line, std::ifstream &configFile, Data& data, in
 
 // for each lines apply the associated function
 void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, int &lineNumber) {
-	// (void)lineNumber;
-	/*typedef void (Pars::*FunctionType)(Data*, std::string);*/
-
-	if (trim(line).empty()) {
-		return ;
-	}
-
 	std::map<std::string, void (Pars::*)(Data*, std::string)> functionMap;
 
-  (void)lineNumber;
+  	(void)lineNumber;
 
 	functionMap["listen"] = &Pars::addPort;
 	functionMap["server_names"] = &Pars::addServName;
@@ -192,22 +164,18 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 
 	normalizeLine(line);
 	type = line.substr(0, line.find(' '));
-	// std::cout << "{" << lineNumber << ": " << type << "}" << "'->";
-	// debugPrint(line);
-	// std::cout << "<-'" << std::endl;
 
 	if (type == "location") {
 		handleLocation(line, configFile, *data, lineNumber);
 		return ;
 	}
 
-	// std::cout << "{" << lineNumber << "}" << "[" << trim(type) << "]" << std::endl;
 	if (functionMap.find(trim(type)) == functionMap.end()) {	// type not in the map
 		throw std::invalid_argument("unknow keyword: " + trim(type));
 	}
 	Pars parsInstance; //for now is the only method to do what i want i will change this soon
 	(parsInstance.*functionMap[trim(type)])(data, trim(line.substr(line.find(" "))));
-	std::cout << trim(type) << ": " << line.substr(line.find(" ")) << std::endl;;
+	std::cout << trim(type) << ": " << line.substr(line.find(" ")) << std::endl;
 }
 
 //for each server configuration check synthax and give each line to handleLine()
@@ -216,18 +184,15 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	Data *data = new Data();
 
 	std::getline(configFile, line);
+	trimn(line);
 	if (line != "{") {
 		throw std::invalid_argument("invalid line 1");
 	}
-
 	++lineNumber;
-	// std::cout << lineNumber << std::endl;
-
 	for (;std::getline(configFile, line); lineNumber++) {
-	//   std::cout << "debug : " << line << std::endl;
-	  if (line.find('}') != std::string::npos)
+	  if (line.find('}') is_found)
 	    break;
-	  if (!line.empty())
+	  if (!trim(line).empty())
 		  handleLine(line, configFile, data, lineNumber);
 	}
 	serv.addData(data);
@@ -243,17 +208,14 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath, char **env
 	if (configFile.fail()) {
 	  throw std::invalid_argument("Can't open the config file");
 	}
-	for (int lineNumber = 0;std::getline(configFile, line); lineNumber++) {
-	  if (line.empty() || trim(line).empty()) continue;
+	for (int lineNumber = 0; std::getline(configFile, line); lineNumber++) {
+	  if (line.empty() || trim(line).empty())
+		continue;
 	  if (trim(line) == "server") {
 	    std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
 	    Server	newServ;
-	    try {
-	    	parseServer(newServ, configFile, lineNumber);
-			newServ.setEnv(env);
-		} catch (std::exception& e) {
-	      throw std::invalid_argument(e.what());
-	    }
+		parseServer(newServ, configFile, lineNumber);
+		newServ.setEnv(env);
 	    servVec.push_back(newServ);
 	  }
 	}
@@ -263,8 +225,3 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath, char **env
 std::vector<Server> Pars::parse(std::string path, char **env) {
 	return parseConfigFile(path, env);
 }
-
-
-
-
-

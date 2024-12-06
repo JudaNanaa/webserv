@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/30 20:49:10 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/05 22:50:55 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ class RawBits {
 		const char *		getBody(void) const; 
 		const char *		getRequest(void) const;
 		File* getCurrentFile(void) const; 
-		void 				setBondary(std::string str);
+		void 				setBondary(const std::string &str);
 		void 				BuffToRaw(const char *buff, const int n);
 		void 				appendBody(const char *str, const int n);
 		void 				splitRequest(void);
