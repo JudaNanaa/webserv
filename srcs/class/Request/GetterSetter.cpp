@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/03 20:07:59 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 14:30:47 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 #include <cstddef>
 #include <iterator>
 
-void Request::setIsACgi(bool boolean) {
-	_isCgi = boolean;
+void Request::setRequestType(const int &type) {
+	_requestType = type;
 }
 
-bool Request::isACgi(void) const {
-	return _isCgi;
+const int &Request::getRequestType(void) const {
+	return _requestType;
 }
 
 const int &Request::method( void	) const {

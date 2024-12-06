@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 01:51:03 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 02:09:21 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 16:43:06 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,15 @@ void	Server::chooseParsing( Client *client ) {
 	Request	*request = client->getRequest();
 
 	if (_data->checkLocation(request->path()) != NULL) {
+		request->setRequestType(LOCATION);
 		std::cerr << "LOCATION" << std::endl;
 		handleLocation(client);
 	} else if (isCgi(request->path()) is true) {
+		request->setRequestType(CGI);
 		std::cerr << "CGI" << std::endl;
 		handleCgi(client);
 	} else {
+		request->setRequestType(DEFAULT);
 		std::cerr << "DEFAULT" << std::endl;
 		handleRequest(client);
 	}

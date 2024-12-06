@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/05 23:05:15 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 14:31:03 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,10 @@ typedef struct s_responseFile
 
 class Request : public RawBits {
 	private:
+		int _requestType;
 		t_state _state;
 		int	_method;
 		std::ofstream	defaultFile;
-		bool _isCgi;
 		std::string	_path;
 		std::string	_Host;
 		std::string _ResponsCode;
@@ -87,15 +87,15 @@ class Request : public RawBits {
 		const long long	&getContentLenght(void) const;
 		const int &getMethode(void) const;
 		const std::string &getResponsCode(void) const;
-		bool isACgi(void) const;
 		std::string& getMap(const std::string &key);
 		bool responseFileOpen() const;
 		void	openResponseFile(const char *fileName);
 		std::size_t getResponseFileSize(void) const;
 		std::size_t getResponseFileTotalSend(void) const;
+		const int	&getRequestType(void) const;
 		
 		/*	SETTER	*/
-
+		void	setRequestType(const int &type);
 		void	addResponseFileTotalSend(std::size_t nbSend);
 		void	method( const int& newMethod );
 		void	host( std::string newHost );
@@ -104,7 +104,6 @@ class Request : public RawBits {
 		void	setSizeBody(long long nb);
 		void setMethode(const std::string &methode);
 		void setResponsCode(const std::string &code);
-		void setIsACgi(bool boolean);
 		t_parse addHeaderRequest(const char *buff, const int &n);
 		t_parse addBodyRequest(const char *buff, const int &n, const bool &add);
     	void addServer(Server* server);

@@ -6,20 +6,21 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 18:36:18 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/19 00:57:41 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 16:43:05 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/includes.hpp"
 #include <cstddef>
+#include <fstream>
+#include <ostream>
 
 #ifndef FILE_HPP
 # define FILE_HPP
 
 class File {
 	private:
-		char*						_content;
-		size_t						_lenFile;
+		size_t									_lenFile;
 		std::map<std::string, std::string>		_infos;
 	public:
 		File();
@@ -31,10 +32,9 @@ class File {
 		// search a the value of key, throw an std::exception if not found
 		std::string			get( std::string key );
 
-		void	content( char* newContent );
 		void	lenFile(size_t len);
 		void	set( std::string key, std::string value );
-		void	freeContent(void);
+		void	clean(void);
 };
 
 #endif

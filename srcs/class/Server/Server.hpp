@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 02:08:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 16:43:06 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,9 @@ class Server {
 		char	**_env;
 
 		// CGI
-		void	_setCgiArgs(Client *client, char **cgi);
 		void	_responseCgiIfNoProblem(Client *client);
 		void	_responseCgiError(Client *client);
-		void	_childProcess(char **cgi, int ParentToCGI[2], int CGIToParent[2]);
+		void	_childProcess(Client *client, int ParentToCGI[2], int CGIToParent[2]);
 
 		// Parsing header
 		void	_parseClientHeader(Client *client);
@@ -89,7 +88,6 @@ class Server {
 		void	handleDELETE(Client* client);
 		void 	writeBodyToCgi(Client *client, char *buff, int n);
 		//CGI
-		void	CgiDefaultGesture(Client *client);
 
 		//request Parsing
 		bool checkAllowMethodes(std::string methodes);

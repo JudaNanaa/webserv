@@ -27,15 +27,17 @@
 #include <unistd.h>
 #include <vector>
 
-RawBits::RawBits(void) {
-	_currentFile = NULL;
-	_request = NULL;
-	_fileState = ON_HEADER;
-	_body = NULL;
-	_lenBody = 0;
-	_lenTotalBody = 0;
-	_lenRequest = 0;
+RawBits::RawBits(void)
+	: _fileState(ON_HEADER),
+	  _body(NULL),
+	  _request(NULL),
+	  _lenBody(0),
+	  _lenTotalBody(0),
+	  _lenRequest(0)
+{
+
 }
+
 
 RawBits::~RawBits(void) {
 	if (_body)
@@ -46,7 +48,7 @@ RawBits::~RawBits(void) {
 
 void RawBits::appendBody(const char *str, const int n) {
 	char *dest = new char[_lenBody + n];
-	std::memset(dest, 0, sizeof(char) * _lenBody + n);
+
 	if (_body) {
 		std::memmove(dest, _body, _lenBody);
 		delete [] _body;
@@ -59,6 +61,7 @@ void RawBits::appendBody(const char *str, const int n) {
 
 void RawBits::BuffToRaw(const char *buff, const int n) {
 	char *dest = new char[_lenRequest + n];
+
 	if (_request) {
 		std::memmove(dest, _request, _lenRequest);
 		delete [] _request;
@@ -118,8 +121,4 @@ void RawBits::eraseInBody(size_t pos, size_t n) {
     delete[] _body;
     _body = newBody;
     _lenBody = _lenBody - n;
-}
-
-int RawBits::compareInBody(char *s, size_t n) {
-  return memcmp(_body, s, n);
 }

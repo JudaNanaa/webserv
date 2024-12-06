@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/06 01:08:42 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 16:43:06 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void Pars::addAutoIndex(Data* data, std::string w) {
 
 void Pars::addCgi(Data* data, std::string cgi) {
   //TODO: add cgi logic
-  if (cgi.find(" ") not_found) {
+  if (cgi.find(" ") is_found) {
     data->_cgi[cgi.substr(0, cgi.find(' '))] = trim(cgi.substr(cgi.find(' ')));
   }
 }

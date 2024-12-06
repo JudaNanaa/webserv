@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:35:03 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/24 02:29:59 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 16:43:05 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,14 @@
 
 Data::Data() {
   _allowedMethods = 0;
-  _index = "";
-  _root = "";
-  _serverName = "";
   _port = 0;
-  // _cgi = "";
   _autoIndex = false;
-  _errorPage = "";
-  _uploadFolder = "";
   _clientMaxBodySize = -1;
 }
 
-Data::~Data() {}
+Data::~Data() {
+  
+}
 
 Data& Data::operator=(const Data& src) {
   if (this != &src) {

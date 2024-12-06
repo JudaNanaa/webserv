@@ -20,24 +20,27 @@
 #include <variant>
 #include <vector>
 
-Request::Request(Client *client) : RawBits() {
+Request::Request(Client *client)
+    : RawBits(),
+      _state(ON_HEADER),
+      _method(0),
+      _ResponsCode("200"),
+      _contentLenght(-1),
+      _client(client),
+      _isRedirect(false)
+{
 
-	_method = 0;
-	_state = ON_HEADER;
-	_contentLenght = -1;
-	_ResponsCode = "200";
-	_isRedirect = false;
-	_client = client;
-	_isCgi = false;
 }
 
-Request::~Request() {
-	
+
+Request::~Request()
+{
+
 }
 
 void	Request::openResponseFile(const char *fileName) {
 	_responseFile.file.open(fileName);
-	if (_responseFile.file.is_open() == true)
+	if (_responseFile.file.is_open() is true)
 	{
 		_responseFile.file.seekg(0, std::ios::end);
 		_responseFile.fileSize = _responseFile.file.tellg();
@@ -57,8 +60,8 @@ void	Request::closeResponseFile(void) {
 }
 
 void Request::addHeaderLineToMap(const std::string &key, const std::string &value) {
-	if (key == "HOST") {
-		if (_server->isServerHost(value) == false) { // check si le host est bien celui du server
+	if (key is "HOST") {
+		if (_server->isServerHost(value) is false) { // check si le host est bien celui du server
 			throw std::invalid_argument("Error header: Not the server host: " + value);
 		}
 	}
@@ -75,7 +78,7 @@ bool Request::isKeyfindInHeader(std::string const &key) const {
 t_parse	Request::addHeaderRequest(const char *buff, const int &n)
 {
 	RawBits::BuffToRaw(buff, n);
-	if (RawBits::find("\r\n\r\n") == -1)
+	if (RawBits::find("\r\n\r\n") is -1)
 		return NOT_READY;
 	RawBits::splitRequest();
 	return READY_PARSE_HEADER;
@@ -85,14 +88,14 @@ void	Request::uploadBody() {
 	bool	multipart;
 
 	try {
-		multipart = find("Content-Type").find("multipart") not_found;
+		multipart = find("Content-Type").find("multipart") is_found;
 	} catch (...) {
 		multipart = false;
 	}
-	if (multipart == true) {
-		RawBits::checkBondaries();
+	if (multipart is true) {
+		RawBits::uploadMultipart();
 	} else {	// if no bondaries
-		if (defaultFile.is_open() == false) {
+		if (defaultFile.is_open() is false) {
 			defaultFile.open(DEFAULT_UPLOAD_FILE, std::ios::trunc | std::ios::out);
 			if (defaultFile.fail())
 				throw std::invalid_argument("failed to open DEFAULT_UPLOAD_FILE");
@@ -105,9 +108,9 @@ void	Request::uploadBody() {
 t_parse	Request::addBodyRequest(const char *buff, const int &n, const bool &add) {
 	if (add)
 		appendBody(buff, n);
-	if (_method == POST_)
+	if (_method is POST_)
 		uploadBody();
-	if (RawBits::getLenTotalBody() == _contentLenght) {
+	if (RawBits::getLenTotalBody() is _contentLenght) {
 		if (defaultFile.is_open())
 			defaultFile.close();
 		_client->setResponse();

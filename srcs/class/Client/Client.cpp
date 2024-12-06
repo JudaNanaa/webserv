@@ -4,12 +4,16 @@
 #include <iostream>
 
 Client::Client(int const &fd, Server *server)
-	: _fd(fd), _server(server) {
-	_request = new Request(this);
-	_readyToResponse = false;
-	_readyToParseHeader = false;
-	_pid = -1;
-	_CGIStatus = -1;
+    : _fd(fd),
+      _pid(-1),
+      _CGIStatus(-1),
+      _readyToParseHeader(false),
+      _readyToParseBody(false),
+      _readyToResponse(false),
+      _request(new Request(this)),
+      _server(server)
+{
+
 }
 
 Client::~Client() {

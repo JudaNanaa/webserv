@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/05 22:34:04 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 15:32:02 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,11 +151,9 @@ std::string ContentType(const std::string& extension) {
 	contentTypes[".jar"] = "application/x-java-archive";
 
     std::map<std::string, std::string>::const_iterator it = contentTypes.find(extension);
-    if (it != contentTypes.end()) {
+    if (it != contentTypes.end())
 		return it->second;
-	} else {
-		return "application/octet-stream";  // Retourne ce type par défaut si l'extension est inconnue
-	}
+	return "application/octet-stream";  // Retourne ce type par défaut si l'extension est inconnue
 }
 
 std::string	Server::getContentType(const std::string& path) {
@@ -185,10 +183,10 @@ std::string Server::_openResponseFile(Request *clientRequest)
 {
 	std::string	finalPath;
 
-	if (clientRequest->getResponsCode() == "200") {
-		if (clientRequest->path() == "/" || clientRequest->method() == DELETE_) {
+	if (clientRequest->getResponsCode() is "200") {
+		if (clientRequest->path() is "/" || clientRequest->method() is DELETE_) {
 			finalPath = _data->_root + _data->_index;
-			if (access((finalPath).c_str(), F_OK | R_OK) == -1)
+			if (access((finalPath).c_str(), F_OK | R_OK) is -1)
 				clientRequest->setResponsCode("404");
 			else
 				clientRequest->openResponseFile(finalPath.c_str());
@@ -201,9 +199,9 @@ std::string Server::_openResponseFile(Request *clientRequest)
 			finalPath = _data->_root + clientRequest->path();
 			std::cerr << "if no root : " << finalPath << std::endl;
 			struct stat buf;
-			if (access((finalPath).c_str(), F_OK | R_OK) == -1)
+			if (access((finalPath).c_str(), F_OK | R_OK) is -1)
 				clientRequest->setResponsCode("404");
-			else if (stat((finalPath).c_str(), &buf) == -1)
+			else if (stat((finalPath).c_str(), &buf) is -1)
 				clientRequest->setResponsCode("500");
 			else if (S_ISDIR(buf.st_mode))
 			{
@@ -213,7 +211,7 @@ std::string Server::_openResponseFile(Request *clientRequest)
 			else
 				clientRequest->openResponseFile((finalPath).c_str());
 		}
-		if (clientRequest->getResponsCode() == "200" && clientRequest->responseFileOpen() == false)
+		if (clientRequest->getResponsCode() is "200" && clientRequest->responseFileOpen() is false)
 			clientRequest->setResponsCode("404");
 	}
 	if (clientRequest->getResponsCode() != "200")
@@ -226,32 +224,32 @@ std::string Server::_openResponseFile(Request *clientRequest)
 
 void Server::sendResponse(int fd, Client *client) {
 	Request *clientRequest = client->getRequest();
+	char	buffer[BUFFER_SIZE];
+	std::size_t	n = 0;
 
 	std::cerr << "SEND RESPONSE" << std::endl;
 	std::cerr << "RESPONSE CODE : " << clientRequest->getResponsCode() << std::endl;
 	std::string	finalPath;
 	
-	if (clientRequest->responseFileOpen() == false)
+	if (clientRequest->responseFileOpen() is false)
 	{
 		finalPath = _openResponseFile(clientRequest);
 		std::string	header = getResponseHeader(clientRequest, finalPath);
-		if (send(fd, header.c_str(), header.size(), MSG_EOR) == -1) {
+		if (send(fd, header.c_str(), header.size(), MSG_EOR) is -1) {
 			client->setResponse("500");
 			throw std::runtime_error("Can't send the message !");
 		}
 	}
 
-	char	buffer[BUFFER_SIZE];
-	std::size_t	n = 0;
 	n += clientRequest->readResponseFile(buffer, BUFFER_SIZE);
-	if (send(fd, buffer, n, MSG_NOSIGNAL) == -1)
+	if (send(fd, buffer, n, MSG_NOSIGNAL) is -1)
 	{
 		clientRequest->closeResponseFile();
 		client->setResponse("500");
 		throw std::runtime_error("Can't send the message !");
 	}
 	clientRequest->addResponseFileTotalSend(n);
-	if (clientRequest->getResponseFileTotalSend() == clientRequest->getResponseFileSize())
+	if (clientRequest->getResponseFileTotalSend() is clientRequest->getResponseFileSize())
 	{
 		clientRequest->closeResponseFile();
 		client->afterResponse();
@@ -270,7 +268,7 @@ void Server::sendRedirect(std::string redirect, int fd, Client *client) {
 
 	std::string response = oss.str();
 
-	if (send(fd, response.c_str(), response.size(), MSG_NOSIGNAL) == -1)
+	if (send(fd, response.c_str(), response.size(), MSG_NOSIGNAL) is -1)
 	{
 		client->setResponse("500");
 		std::cerr << "test yesy yes" << std::endl;
@@ -305,20 +303,20 @@ void Server::handleAuth(Client* client) {
 	std::stringstream response;
 
 	client->getRequest()->setResponsCode("302");
-	if (request->path() == "/auth/login"){
+	if (request->path() is "/auth/login"){
 		response << "HTTP/1.1 " << request->getResponsCode() << " " << getMessageCode(std::atoi(request->getResponsCode().c_str())) << "\r\n"; 
 		response << "Content-Length: 0\r\n";
-		if (request->isKeyfindInHeader("Cookie") == false || request->find("Cookie").find("auth=true") not_found) {
+		if (request->isKeyfindInHeader("Cookie") is false || request->find("Cookie").find("auth=true") not_found) {
 			setCookie(response, "auth", "true");
 		}
 		response << "\r\n";
-		if (send(client->getClientFd(), response.str().c_str(), response.str().size(), MSG_EOR) == -1) {
+		if (send(client->getClientFd(), response.str().c_str(), response.str().size(), MSG_EOR) is -1) {
 			client->setResponse("500");
 			throw std::runtime_error("Can't send the message !");
 		}
-	} else if (request->path() == "/auth/secret") {
+	} else if (request->path() is "/auth/secret") {
 		std::string header = request->getHeader();
-		if (request->isKeyfindInHeader("Cookie") == true) {
+		if (request->isKeyfindInHeader("Cookie") is true) {
 			if (request->find("Cookie").find("auth=true") not_found) 
 				sendRedirect(SECRET, client->getClientFd(), client);
 			else 
@@ -335,13 +333,13 @@ void Server::giveClientResponse(int fd) {
 	std::ifstream file;
 
 	client = getClient(fd);
-	if (client->isReadyToResponse() == false)
+	if (client->isReadyToResponse() is false)
 		return;
 	if (client->getRequest()->getRedirect()) 
 		giveClientResponseByLocation(fd);
-	else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) == 0 && client->getRequest()->getResponsCode() == "200")
+	else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) is 0 && client->getRequest()->getResponsCode() is "200")
 		handleAuth(client);
-	else if (client->getRequest()->isACgi() == true) 
+	else if (client->getRequest()->getRequestType() is CGI) 
 		responseCGI(client);
 	else 
 		sendResponse(fd, client); //this methode send response with appropriate code

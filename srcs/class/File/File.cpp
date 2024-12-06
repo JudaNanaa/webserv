@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   File.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 18:46:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/11/29 19:40:00 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/12/06 16:43:06 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,11 @@
 #include <stdexcept>
 
 File::File() {
+
 }
 
 File::~File() {
-	
-}
 
-void	File::freeContent(void) {
-	
-}
-
-const char*	File::content( void ) {
-	return (_content);	
 }
 
 std::string	File::get( std::string key ) {
@@ -38,10 +31,6 @@ std::string	File::get( std::string key ) {
 	} catch (std::exception &e) {
 		throw std::invalid_argument("not found: " + key);
 	}
-}
-
-void	File::content( char* newContent ) {
-	_content = newContent;
 }
 
 void	File::set( std::string key, std::string value ) {
@@ -55,3 +44,11 @@ void	File::lenFile(size_t len) {
 const size_t &File::lenFile(void) const {
 	return _lenFile;
 }
+
+void	File::clean(void)
+{
+	_lenFile = 0;
+	_infos.clear();
+}
+
+

@@ -6,14 +6,19 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:41:17 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/05 22:51:10 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 16:43:06 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RawBits.hpp"
+#include <string>
 
 void RawBits::setBondary(const std::string &str) {
 	_boundary = str;
+}
+
+const std::string &RawBits::getBondary(void) const {
+	return _boundary;
 }
 
 const std::string &RawBits::getHeader(void) const {
@@ -22,10 +27,6 @@ const std::string &RawBits::getHeader(void) const {
 
 const char *RawBits::getBody(void) const {
 	return _body;
-} 
-
-const char *RawBits::getRequest(void) const {
-	return _request;
 }
 
 const unsigned int &RawBits::getLenBody(void) const {
@@ -34,12 +35,4 @@ const unsigned int &RawBits::getLenBody(void) const {
 
 const long long &RawBits::getLenTotalBody(void) const {
 	return _lenTotalBody;
-}
-
-void RawBits::setHeader(std::string header) {
-	_header = header;
-}
-
-File* RawBits::getCurrentFile(void) const {
-	return _currentFile;
 }

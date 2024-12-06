@@ -27,7 +27,6 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <sys/epoll.h>
-#include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
 #include "Server.hpp"
@@ -39,6 +38,8 @@ Server::Server(void) {
 Server::~Server(void) {
 	if (this->_socket_fd != -1)
 		close(this->_socket_fd);
+	// if (_data)
+	// 	delete _data;
 }
 
 void Server::init(void) {
@@ -59,7 +60,7 @@ void Server::init(void) {
     } 
 	// config address and port
 	
-	std::memset(&server_addr, 0, sizeof(struct sockaddr_in));
+	// std::memset(&server_addr, 0, sizeof(struct sockaddr_in));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	server_addr.sin_port = htons(this->_data->_port);
@@ -84,9 +85,8 @@ void	Server::handleLocation(Client *client) {
   Location* location = _data->checkLocation(request->path());
   //check des methodes
 
-  if (!location->redirect().empty()) {
+  if (!location->redirect().empty())
 	request->setRedirect(true);
-  }
 
   if ((location->allowedMethods() & request->method()) is 0) {
     client->setResponse("405");
@@ -106,7 +106,12 @@ void	Server::handleLocation(Client *client) {
 bool	Server::isCgi( const std::string& path ) {
 	std::size_t	extension;
 
+	printnl("je passe ici");
+	printnl("path == " + path);
+
 	extension = path.find_last_of('.');
+	printnl("path.substr(extension) == " + path.substr(extension));
+	_data->_cgi.find(path.substr(extension)) is _data->_cgi.end() ? printnl("not found") : printnl("found");
 	if (extension not_found)
 		return (false);
 	else if (_data->_cgi.find(path.substr(extension)) is _data->_cgi.end())
@@ -133,35 +138,10 @@ void	Server::handleRequest( Client *client ) {
 	}
 }
 
-void Server::checkCgi( void ) {
-	std::map<int, Client*>::iterator it, ite;
-
-	it = _clientMap.begin();
-	ite = _clientMap.end();
-
-	for (;it != ite; it++) {
-		Client	*client = it->second;
-		int		pid = client->getPid();
-
-		if (pid is -1) {	// no 
-			continue ;
-		} else {
-			int	status;
-			switch (waitpid(pid, &status, WNOHANG)) {
-				case -1: { std::cerr << "waitpid failed" << std::endl ; continue; } // error 
-				case 0: { continue; } // not finished
-				default:
-					client->setResponse();
-					client->setCGIStatus(status);
-			}
-		}
-	}
-}
-
 void Server::handleDELETE(Client* client) {
 	Request	*request = client->getRequest();
 
-	if (request->path().find("..") not_found) {
+	if (request->path().find("..") is_found) {
 		return (client->setResponse("403"));
 	} else if (std::strncmp(request->path().c_str(), "/uploads/", 9) != 0) {
 		return (client->setResponse("403"));
@@ -180,26 +160,6 @@ void Server::handleDELETE(Client* client) {
 		std::cerr << "DELETE: unlink() failed" << std::endl;
 	}
 	client->setResponse("200");
-}
-
-void Server::writeBodyToCgi(Client *client, char *buff, int n)
-{
-	Request *clientRequest = client->getRequest();
-	int result;
-
-	if (client->getUseBuffer() is true)
-	{
-		result = write(client->getParentToCGI(), buff, n);
-		clientRequest->incrementSizeBody(n);
-	}
-	else
-		result = write(client->getParentToCGI(), clientRequest->getBody(), clientRequest->getLenBody());
-	(void)result;
-	if (clientRequest->getLenTotalBody() is clientRequest->getContentLenght() || clientRequest->getContentLenght() is -1)
-	{
-		close(client->getParentToCGI());
-		client->setParentToCGI(-1);
-	}
 }
 
 void Server::addClientRequest(int fd) {
@@ -223,7 +183,7 @@ void Server::addClientRequest(int fd) {
 	if (client->whatToDo() is ON_HEADER)
 		_addingHeader(client, buff, n);
 	if (client->whatToDo() is ON_BODY) {
-		if (clientRequest->isACgi() is true)
+		if (clientRequest->getRequestType() is CGI)
 			writeBodyToCgi(client, buff, n);
 		else
 			clientRequest->addBodyRequest(buff, n, client->getUseBuffer());
