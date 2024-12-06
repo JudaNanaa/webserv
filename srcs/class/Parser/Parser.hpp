@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/11/24 15:15:36 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 19:00:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 #define PARSER_HPP
 
 #include "../../../includes/includes.hpp"
-#include "Location.hpp"
-#include "../Server/Server.hpp"
 #include <fstream>
 #include <vector>
 #include <map>
+
+struct Location;
+class Server;
+
 
 struct Data {
   public:

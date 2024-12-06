@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 16:43:06 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 19:00:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "../Client/Client.hpp"
 #include "../Request/Request.hpp"
 #include "../Parser/Parser.hpp"
+#include "../Parser/Location.hpp"
 #include <exception>
 #include <map>
 #include <ostream>
@@ -48,10 +49,14 @@ class Server {
 		void	_parseContentLengthAndBoundary(Request *clientRequest);
 		void	_parseFirstLineHeader(Client *client, const std::vector<std::string> &headerSplit);
 		
-		std::string	getContentType(const std::string& path);
-		std::string	getResponseHeader(Request *request, const std::string& path);
+		// Response
+		std::string  generateAutoIndex(Client *client, const std::string &directoryPath);
 		int	sendToFd(const char *msg, std::size_t msgSize, int fd);
 		std::string _openResponseFile(Request *clientRequest);
+		std::string _normalOpenFile(Request *clientRequest);
+		
+		std::string	getContentType(const std::string& path);
+		std::string	getResponseHeader(Request *request, const std::string& path);
 	public:
 		Server();
 		

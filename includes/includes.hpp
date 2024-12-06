@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/05 21:57:14 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 19:00:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,28 @@
 #define POST_ 00000010
 #define DELETE_ 00000100
 #define OPTIONS_ 00001000
+
+typedef enum s_state
+{
+	ON_HEADER,
+	ON_BODY,
+}t_state;
+
+# define BUFFER_SIZE 1000000
+
+# define DEFAULT_UPLOAD_FILE "URIs/uploads/default"
+
+typedef enum s_parse
+{
+	NOT_READY,
+	READY_PARSE_HEADER,
+	READY_PARSE_BODY,
+	ERROR,
+}t_parse;
+
+# define DEFAULT 1
+# define CGI 2
+# define LOCATION 3
 
 #include <iostream>
 #include <unistd.h>

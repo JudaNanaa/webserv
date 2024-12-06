@@ -6,11 +6,12 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/05 23:16:28 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 19:00:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Location.hpp"
+#include "Parser.hpp"
 
 Location::Location() {
 	_allowedMethods = 0;
@@ -45,6 +46,20 @@ Location::~Location() {
 
 /*	GETTER	*/
 
+void Location::printMap()
+{
+    std::map<std::string, std::string>::iterator it = _cgi.begin();
+    std::map<std::string, std::string>::iterator end = _cgi.end();
+
+	printnl("yes je test");
+    while (it != end)
+    {
+        printnl("key == " + it->first << " value == " + it->second);
+        it++;
+    }
+}
+
+
 const std::string&	Location::location( void ) const {
 	return _location;
 } // LOCATION
@@ -52,7 +67,9 @@ const std::string&	Location::location( void ) const {
 const std::string&	Location::root( void ) const {
 	return _root;
 } // string
-const std::string&	Location::cgi( void ) const {
+
+
+const std::map<std::string, std::string>& Location::cgi( void ) const {
 	return _cgi;
 } // string
 const std::string&	Location::redirect( void ) const {
@@ -85,9 +102,7 @@ void	Location::location( std::string newLocation ) {
 void	Location::root( std::string newRoot ) {
 	_root = newRoot;
 } // root
-void	Location::cgi( std::string newCgi ) {
-	_cgi = newCgi;
-} // cgi
+
 void	Location::redirect( std::string newRedirect ) {
 	_redirect = newRedirect;
 } // redirect
@@ -130,20 +145,11 @@ std::string	printMethods(int methods) {
 	return (result);
 }
 
-std::ostream& operator<<(std::ostream& os, const Location& location) {
-	std::cout << "location " << isDefault(location.location()) << "\n{" << std::endl;
-	std::cout << "\t" << "root: " << isDefault(location.root()) << std::endl;
-	std::cout << "\t" << "index: " << isDefault(location.index()) << std::endl;
-	std::cout << "\t" << "autoIndex: " << (location.autoIndex()? "true":"false") << std::endl;
-	std::cout << "\t" << "cgi: " << isDefault(location.cgi()) << std::endl;
-	std::cout << "\t" << "redirect: " << isDefault(location.redirect()) << std::endl;
-	std::cout << "\t" << "allowed Methods: " << printMethods(location.allowedMethods()) << std::endl;
-	if (location.maxBodySize() == -1)
-		std::cout << "\t" << "max body size: " << "default" << std::endl;
-	else
-		std::cout << "\t" << "max body size: " << location.maxBodySize() << std::endl;
-	std::cout << "\t" << "upload folder: " << isDefault(location.uploadFolder()) << std::endl;
-	std::cout << "}" << std::endl;
-	
-	return (os);
+void Location::addCgi(std::string cgi) {
+  //TODO: add cgi logic
+  if (cgi.find(" ") is_found) {
+    _cgi[cgi.substr(0, cgi.find(' '))] = trim(cgi.substr(cgi.find(' ')));
+	std::cerr << "CGI ADDED !" << std::endl;
+	printnl("key == " << cgi.substr(0, cgi.find(' ')) << " value == " << trim(cgi.substr(cgi.find(' '))));
+  }
 }

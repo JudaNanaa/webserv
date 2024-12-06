@@ -19,6 +19,7 @@
 #include <iomanip>
 #include <cstring>
 #include <iterator>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <sstream>
@@ -56,16 +57,42 @@ void Server::writeBodyToCgi(Client *client, char *buff, int n)
 	}
 }
 
+// void printMap(std::map<std::string, std::string> map)
+// {
+//     std::map<std::string, std::string>::iterator it = map.begin();
+//     std::map<std::string, std::string>::iterator end = map.end();
+
+//     while (it is_not end)
+//     {
+//         printnl("key == " + it->first << " value == " + it->second);
+//         it++;
+//     }
+// }
+
 void Server::_childProcess(Client *client , int ParentToCGI[2], int CGIToParent[2])
 {
     char *cgi[3];
     Request* request = client->getRequest();
     std::size_t extension = request->path().find_last_of('.');
 
-    std::string tmp = _data->_root + request->path();
+    std::string script_path;
+    std::string interpreter_path;
+    if (_data->checkLocation(request->path())) {
+        Location *location = _data->checkLocation(request->path());
+        std::map<std::string, std::string> cgi_map = location->cgi();
+        interpreter_path = cgi_map.find(request->path().substr(extension))->second.c_str();
+        script_path = location->root() + request->path();
+    }
+    else
+    {
+        script_path = _data->_root + request->path();
+        interpreter_path = _data->_cgi[request->path().substr(extension)].c_str();
+        std::cerr << "debug : " << script_path << std::endl;
+    }
+
     std::cerr << "executable: " << _data->_cgi[request->path().substr(extension)] << " | path: " << (char *)const_cast<char*>((_data->_root + request->path()).c_str()) << std::endl;
-    cgi[0] = const_cast<char*>(_data->_cgi[request->path().substr(extension)].c_str());
-    cgi[1] =  const_cast<char*>(tmp.c_str());
+    cgi[0] = const_cast<char*>(interpreter_path.c_str());
+    cgi[1] =  const_cast<char*>(script_path.c_str());
     cgi[2] = NULL;
     std::cerr << "cgi[0] : " << cgi[0] << std::endl;
     std::cerr << "cgi[1] : " << cgi[1] << std::endl;

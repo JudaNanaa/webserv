@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 15:32:02 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 19:00:34 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <dirent.h>
 
 #define SECRET "https://www.cat29.fr/riche-et-independant/"
 #define SINGE "https://media.tenor.com/_uIJwdpxI8UAAAAM/mono-serio.gif"
@@ -179,41 +180,98 @@ std::string	Server::getResponseHeader(Request *request, const std::string& path)
 	return header;
 }
 
+#include <string>
+#include <dirent.h> // Pour opendir, readdir, closedir
+#include <sys/types.h> // Pour struct dirent
+#include <iostream> // Pour std::cerr
+
+std::string Server::generateAutoIndex(Client *client, const std::string &directoryPath) {
+    std::string html;
+    html += "<!DOCTYPE html>\r\n";
+    html += "<html lang=\"en\">\r\n";
+    html += "<head>\r\n";
+    html += "    <meta charset=\"UTF-8\">\r\n";
+    html += "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n";
+    html += "    <title>Index of " + directoryPath + "</title>\r\n";
+    html += "    <style>\r\n";
+    html += "        body { font-family: Arial, sans-serif; margin: 20px; }\r\n";
+    html += "        h1 { color: #333; }\r\n";
+    html += "        ul { list-style-type: none; padding: 0; }\r\n";
+    html += "        li { margin: 5px 0; }\r\n";
+    html += "        a { text-decoration: none; color: #0073e6; }\r\n";
+    html += "        a:hover { text-decoration: underline; }\r\n";
+    html += "    </style>\r\n";
+    html += "</head>\r\n";
+    html += "<body>\r\n";
+    html += "    <h1>Index of " + directoryPath + "</h1>\r\n";
+    html += "    <ul>\r\n";
+    html += "        <li><a href=\"../\">../ (Parent Directory)</a></li>\r\n";
+
+    DIR *currentDir = opendir(directoryPath.c_str());
+    if (currentDir == NULL) {
+        std::cerr << "Error: Could not open directory " << directoryPath << std::endl;
+        client->setResponse("500");
+        return "";
+    }
+
+    struct dirent *elem;
+    while ((elem = readdir(currentDir)) != NULL) {
+        std::string name = elem->d_name;
+
+        if (name == "." || name == "..")
+            continue;
+        html += "        <li><a href=\"" + name + "\">" + name + "</a></li>\r\n";
+    }
+    closedir(currentDir);
+    html += "    </ul>\r\n";
+    html += "</body>\r\n";
+    html += "</html>\r\n";
+    return html;
+}
+
+
+std::string Server::_normalOpenFile(Request *clientRequest)
+{
+	std::string finalPath;
+
+	if (clientRequest->path() is "/" || clientRequest->method() is DELETE_) {
+		finalPath = _data->_root + _data->_index;
+		if (access((finalPath).c_str(), F_OK | R_OK) is -1)
+			clientRequest->setResponsCode("404");
+		else
+			clientRequest->openResponseFile(finalPath.c_str());
+		std::cerr << "root : " + _data->_root << std::endl;
+		std::cerr << "if root : " << finalPath << std::endl;
+	}
+	else {
+		//TODO: check if is dir 
+		// if yes path + index
+		finalPath = _data->_root + clientRequest->path();
+		std::cerr << "if no root : " << finalPath << std::endl;
+		struct stat buf;
+		if (access((finalPath).c_str(), F_OK | R_OK) is -1)
+			clientRequest->setResponsCode("404");
+		else if (stat((finalPath).c_str(), &buf) is -1)
+			clientRequest->setResponsCode("500");
+		else if (S_ISDIR(buf.st_mode))
+		{
+			finalPath += "/" + _data->_index;
+			clientRequest->openResponseFile((finalPath + "/" + _data->_index).c_str());
+		}
+		else
+			clientRequest->openResponseFile((finalPath).c_str());
+	}
+	if (clientRequest->getResponsCode() is "200" && clientRequest->responseFileOpen() is false)
+		clientRequest->setResponsCode("404");
+	return finalPath;
+}
+
 std::string Server::_openResponseFile(Request *clientRequest)
 {
 	std::string	finalPath;
 
-	if (clientRequest->getResponsCode() is "200") {
-		if (clientRequest->path() is "/" || clientRequest->method() is DELETE_) {
-			finalPath = _data->_root + _data->_index;
-			if (access((finalPath).c_str(), F_OK | R_OK) is -1)
-				clientRequest->setResponsCode("404");
-			else
-				clientRequest->openResponseFile(finalPath.c_str());
-			std::cerr << "root : " + _data->_root << std::endl;
-			std::cerr << "if root : " << finalPath << std::endl;
-		}
-		else {
-			//TODO: check if is dir 
-			// if yes path + index
-			finalPath = _data->_root + clientRequest->path();
-			std::cerr << "if no root : " << finalPath << std::endl;
-			struct stat buf;
-			if (access((finalPath).c_str(), F_OK | R_OK) is -1)
-				clientRequest->setResponsCode("404");
-			else if (stat((finalPath).c_str(), &buf) is -1)
-				clientRequest->setResponsCode("500");
-			else if (S_ISDIR(buf.st_mode))
-			{
-				finalPath += "/" + _data->_index;
-				clientRequest->openResponseFile((finalPath + "/" + _data->_index).c_str());
-			}
-			else
-				clientRequest->openResponseFile((finalPath).c_str());
-		}
-		if (clientRequest->getResponsCode() is "200" && clientRequest->responseFileOpen() is false)
-			clientRequest->setResponsCode("404");
-	}
+	if (clientRequest->getResponsCode() is "200")
+		finalPath = _normalOpenFile(clientRequest);
 	if (clientRequest->getResponsCode() != "200")
 	{
 		finalPath = "URIs/errors/" + clientRequest->getResponsCode() + ".html";
@@ -309,6 +367,8 @@ void Server::handleAuth(Client* client) {
 		if (request->isKeyfindInHeader("Cookie") is false || request->find("Cookie").find("auth=true") not_found) {
 			setCookie(response, "auth", "true");
 		}
+		std::cerr << "redirected on : " << MYCEOO << std::endl;
+		response << "Location: " << MYCEOO << "\r\n";
 		response << "\r\n";
 		if (send(client->getClientFd(), response.str().c_str(), response.str().size(), MSG_EOR) is -1) {
 			client->setResponse("500");

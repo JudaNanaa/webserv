@@ -36,10 +36,8 @@ Server::Server(void) {
 }
 
 Server::~Server(void) {
-	if (this->_socket_fd != -1)
+	if (this->_socket_fd is_not -1)
 		close(this->_socket_fd);
-	// if (_data)
-	// 	delete _data;
 }
 
 void Server::init(void) {
@@ -57,7 +55,7 @@ void Server::init(void) {
  
 	if(setsockopt(this->_socket_fd, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) is -1) { 
         throw std::runtime_error("Could not set socket options");	
-    } 
+    }
 	// config address and port
 	
 	// std::memset(&server_addr, 0, sizeof(struct sockaddr_in));
@@ -106,12 +104,7 @@ void	Server::handleLocation(Client *client) {
 bool	Server::isCgi( const std::string& path ) {
 	std::size_t	extension;
 
-	printnl("je passe ici");
-	printnl("path == " + path);
-
 	extension = path.find_last_of('.');
-	printnl("path.substr(extension) == " + path.substr(extension));
-	_data->_cgi.find(path.substr(extension)) is _data->_cgi.end() ? printnl("not found") : printnl("found");
 	if (extension not_found)
 		return (false);
 	else if (_data->_cgi.find(path.substr(extension)) is _data->_cgi.end())
@@ -143,7 +136,7 @@ void Server::handleDELETE(Client* client) {
 
 	if (request->path().find("..") is_found) {
 		return (client->setResponse("403"));
-	} else if (std::strncmp(request->path().c_str(), "/uploads/", 9) != 0) {
+	} else if (std::strncmp(request->path().c_str(), "/uploads/", 9) is_not 0) {
 		return (client->setResponse("403"));
 	} else if (request->path() is "/uploads/post.html") {
 		return (client->setResponse("403"));
@@ -151,7 +144,7 @@ void Server::handleDELETE(Client* client) {
 		return (client->setResponse("403"));
 	}
 
-	if (access((_data->_root + request->path()).c_str(), F_OK) != 0) {
+	if (access((_data->_root + request->path()).c_str(), F_OK) is_not 0) {
 		client->setResponse("404");
 		return ;
 	}

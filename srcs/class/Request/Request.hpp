@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/06 14:31:03 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 17:32:03 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,28 +20,6 @@
 #include <map>
 #include <ostream>
 #include <string>
-
-# define BUFFER_SIZE 1000000
-
-# define DEFAULT_UPLOAD_FILE "URIs/uploads/default"
-
-typedef enum s_parse
-{
-	NOT_READY,
-	READY_PARSE_HEADER,
-	READY_PARSE_BODY,
-	ERROR,
-}t_parse;
-
-typedef enum s_state
-{
-	ON_HEADER,
-	ON_BODY,
-}t_state;
-
-# define DEFAULT 1
-# define CGI 2
-# define LOCATION 3
 
 class Server;
 class Client;

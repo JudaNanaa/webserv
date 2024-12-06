@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/06 01:32:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 18:11:39 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	Pars::parseConfigPath(std::string path) {
 	}
 }
 
-void	addLocationLine(std::string &line, Location& location) {
+void	Location::addLocationLine(std::string &line) {
 
 	if (trim(line).empty())
 		return ;
@@ -82,13 +82,13 @@ void	addLocationLine(std::string &line, Location& location) {
 	}
 
 	if (key == "index") {	//			INDEX
-		location.index(value);
+		index(value);
 	} else if (key == "root") {	//			ROOT
-		location.root(value);
+		root(value);
 	} else if (key == "cgi") {	//			CGI
-		location.cgi(value);
+		addCgi(value);
 	} else if (key == "redirect") {	//			REDIRECT
-		location.redirect(value);
+		redirect(value);
 	} else if (key == "allowed_methods") {	//			ALLOWED METHODS
 		int methods = 0;
 		if (value.find("GET") is_found) {
@@ -101,17 +101,17 @@ void	addLocationLine(std::string &line, Location& location) {
 		if (methods == 0) {	// no methods found
 			throw std::invalid_argument("GET, DELETE or POST expected");
 		} else {
-			location.allowedMethods(methods);
+			allowedMethods(methods);
 		}
 	} else if (key == "uploads_folder") {	//			UPLOADS_FOLDER
-		location.uploadFolder(value);
+		uploadFolder(value);
 	} else if (key == "client_max_body_size") {	//			CLIENT_MAX_BODY_SIZE
 		int	int_value = std::atoll(value.c_str());
 		if (int_value <= 0 || value.find_first_not_of("0123456789") is_found)
 			throw std::invalid_argument("invalid value");
-		location.maxBodySize(int_value);
+		maxBodySize(int_value);
 	} else if (key == "auto_index") {	//			AUTO_INDEX
-		value == "on" ? location.autoIndex(true) : value == "off" ? location.autoIndex(false) :
+		value == "on" ? autoIndex(true) : value == "off" ? autoIndex(false) :
 			 throw std::invalid_argument("invalid value: expected 'on' or 'off'");
 	} else {
 		throw std::invalid_argument("unknow assignement `" + key + "'");
@@ -137,10 +137,12 @@ void	handleLocation(std::string &line, std::ifstream &configFile, Data& data, in
 		if (line.find("}") is_found) {
 			break;
 		}
-		addLocationLine(line, location);
+		data._locations[location_path].addLocationLine(line);
+		// location.addLocationLine(line);
 	}
-	std::cout << location << std::endl;
-	data._locations[location_path] = location;
+	data._locations[location_path].location(location_path);
+	// std::cout << location << std::endl;
+	// data._locations[location_path] = location;
 }
 
 // for each lines apply the associated function

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 13:55:03 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/05 23:16:04 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 19:00:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,17 @@
 # define LOCATION_HPP
 
 #include "../../../includes/includes.hpp"
+#include "Parser.hpp"
 #include <ostream>
+
+struct Data;
 
 struct	Location {
 	private:
 		std::string		_location;
 
 		std::string		_root;
-		std::string		_cgi; // temporary a string maybe a special struc later
+		std::map<std::string, std::string>  _cgi;
 		std::string		_redirect;
 		int				_allowedMethods;
 		long long		_client_max_body_size;
@@ -41,7 +44,7 @@ struct	Location {
 		const std::string&	location( void ) const;
 
 		const std::string&	root( void ) const;
-		const std::string&	cgi( void ) const;
+		const std::map<std::string, std::string>&	cgi( void ) const;
 		const std::string&	redirect( void ) const;
 		int					allowedMethods( void ) const;
 		long long			maxBodySize( void ) const;
@@ -64,7 +67,10 @@ struct	Location {
 		void	autoIndex( bool newAutoIndex );
 		
 		void	uploadFolder( std::string newUploadFolder );
+		void 	addCgi(std::string cgi);
 
+		void	addLocationLine(std::string &line);
+		void printMap(void);
 };
 
 std::string	isDefault(const std::string& var);
