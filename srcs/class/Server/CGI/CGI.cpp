@@ -110,3 +110,8 @@ void Server::CgiDefaultGesture(Client *client) {
     client->setCGIFD(CGIToParent[0]);
     client->setPid(pid);
 }
+
+void	Server::handleCgi( Client *client ) {
+	client->getRequest()->setIsACgi(true);
+	CgiDefaultGesture(client);
+}

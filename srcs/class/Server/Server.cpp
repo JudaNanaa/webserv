@@ -93,14 +93,14 @@ void	Server::handleLocation(Client *client) {
     return ;
   }
   //check de la body Size
-	if (location->maxBodySize() > 0) {
-		if ((unsigned)location->maxBodySize() < request->getContentLenght()) {
+	if (location->maxBodySize() >= 0) {
+		if (location->maxBodySize() < request->getContentLenght()) {
     		client->setResponse("413");
     		return ;
 		}
 	}
 	if (request->getContentLenght() is -1) // no body
-    		client->setResponse();
+    	client->setResponse();
 }
 
 bool	Server::isCgi( const std::string& path ) {
@@ -112,11 +112,6 @@ bool	Server::isCgi( const std::string& path ) {
 	else if (_data->_cgi.find(path.substr(extension)) is _data->_cgi.end())
 		return (false);
 	return (true);
-}
-
-void	Server::handleCgi( Client *client ) {
-	client->getRequest()->setIsACgi(true);
-	CgiDefaultGesture(client);
 }
 
 void	Server::handleRequest( Client *client ) {
@@ -136,22 +131,6 @@ void	Server::handleRequest( Client *client ) {
 	if (request->getContentLenght() is -1) {
 		client->setResponse();
 	}
-}
-
-void	Server::chooseParsing( Client *client ) {
-	Request	*request = client->getRequest();
-
-	if (_data->checkLocation(request->path()) != NULL) {
-		std::cerr << "LOCATION" << std::endl;
-		handleLocation(client);
-	} else if (isCgi(request->path()) is true) {
-		std::cerr << "CGI" << std::endl;
-		handleCgi(client);
-	} else {
-		std::cerr << "DEFAULT" << std::endl;
-		handleRequest(client);
-	}
-	request->setStatus(ON_BODY);
 }
 
 void Server::checkCgi( void ) {
@@ -241,17 +220,8 @@ void Server::addClientRequest(int fd) {
 		client->setResponse("400");
 		throw std::runtime_error("Empty recv !");
 	}
-	if (client->whatToDo() is ON_HEADER) {
-		try {
-	 		client->pushHeaderRequest(buff, n);
-		} catch (std::exception &e) {
-			client->setResponse("505");
-			throw std::runtime_error(e.what());
-		}
-		client->setUseBuffer(false);
-	 	if (client->getReadyToParseHeader())
-	 		_parseClientHeader(client);
-	}
+	if (client->whatToDo() is ON_HEADER)
+		_addingHeader(client, buff, n);
 	if (client->whatToDo() is ON_BODY) {
 		if (clientRequest->isACgi() is true)
 			writeBodyToCgi(client, buff, n);

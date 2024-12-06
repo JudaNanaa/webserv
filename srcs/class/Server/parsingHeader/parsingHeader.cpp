@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 01:51:03 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 01:53:24 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 02:09:21 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,22 @@ void Server::_parseContentLengthAndBoundary(Request *clientRequest)
 	}
 }
 
+void	Server::chooseParsing( Client *client ) {
+	Request	*request = client->getRequest();
+
+	if (_data->checkLocation(request->path()) != NULL) {
+		std::cerr << "LOCATION" << std::endl;
+		handleLocation(client);
+	} else if (isCgi(request->path()) is true) {
+		std::cerr << "CGI" << std::endl;
+		handleCgi(client);
+	} else {
+		std::cerr << "DEFAULT" << std::endl;
+		handleRequest(client);
+	}
+	request->setStatus(ON_BODY);
+}
+
 void Server::_parseClientHeader(Client *client) {
 	Request *clientRequest = client->getRequest();
 	std::string header = clientRequest->getHeader();
@@ -88,4 +104,17 @@ void Server::_parseClientHeader(Client *client) {
 
 	_parseContentLengthAndBoundary(clientRequest); // set content length et boundary
   	chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
+}
+
+void Server::_addingHeader(Client *client, char *buff, int n)
+{
+	try {
+		client->pushHeaderRequest(buff, n);
+	} catch (std::exception &e) {
+		client->setResponse("505");
+		throw std::runtime_error(e.what());
+	}
+	client->setUseBuffer(false);
+	if (client->getReadyToParseHeader())
+		_parseClientHeader(client);
 }
