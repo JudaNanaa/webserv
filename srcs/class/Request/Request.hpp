@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/06 17:32:03 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 19:46:04 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ class Request : public RawBits {
 		const std::string& host( void ) const;
 		const std::string& find( std::string key ) const;
 		RawBits *getRawRequest(void);
-    	std::string getPath(void);
 		const t_state &getStatus(void) const;
 		const long long	&getContentLenght(void) const;
 		const int &getMethode(void) const;

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 19:00:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 20:05:39 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ class Server {
 		// Response
 		std::string  generateAutoIndex(Client *client, const std::string &directoryPath);
 		int	sendToFd(const char *msg, std::size_t msgSize, int fd);
-		std::string _openResponseFile(Request *clientRequest);
-		std::string _normalOpenFile(Request *clientRequest);
+		std::string _openResponseFile(Request *clientRequest, Client* client);
+		std::string _normalOpenFile(Request *clientRequest, Client* client);
 		
 		std::string	getContentType(const std::string& path);
 		std::string	getResponseHeader(Request *request, const std::string& path);

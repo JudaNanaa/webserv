@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 13:55:03 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/06 19:00:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 20:28:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ struct	Location {
 		long long		_client_max_body_size;
 
 		std::string		_index;
-		bool			_autoIndex;
+		int				_autoIndex;
 
   		std::string		_uploadFolder;
 
@@ -50,7 +50,7 @@ struct	Location {
 		long long			maxBodySize( void ) const;
 
 		const std::string&	index( void ) const;
-		bool				autoIndex( void ) const;
+		const int			&autoIndex( void ) const;
 
 		const std::string&	uploadFolder( void ) const;
 
@@ -64,7 +64,7 @@ struct	Location {
 		void	maxBodySize( long long newMaxBodySize );
 
 		void	index( std::string newIndex );
-		void	autoIndex( bool newAutoIndex );
+		void	autoIndex( const int & newAutoIndex );
 		
 		void	uploadFolder( std::string newUploadFolder );
 		void 	addCgi(std::string cgi);

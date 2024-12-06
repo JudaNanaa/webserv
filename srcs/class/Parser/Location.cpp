@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/06 19:00:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 20:28:09 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Location::Location() {
 	_allowedMethods = 0;
 	_client_max_body_size = -1; // no limit (?)
 
-	_autoIndex = false;
+	_autoIndex = -1;
 
 }
 
@@ -85,7 +85,7 @@ long long	Location::maxBodySize( void ) const {
 const std::string&	Location::index( void ) const {
 	return _index;
 } // string
-bool	Location::autoIndex( void ) const {
+const int &Location::autoIndex( void ) const {
 	return _autoIndex;
 } // autoIndex
 
@@ -116,7 +116,7 @@ void	Location::maxBodySize( long long newMaxBodySize ) {
 void	Location::index( std::string newIndex ) {
 	_index = newIndex;
 } // index
-void	Location::autoIndex( bool newAutoIndex ) {
+void	Location::autoIndex( const int &newAutoIndex ) {
 	_autoIndex = newAutoIndex;
 } // autoIndex
 

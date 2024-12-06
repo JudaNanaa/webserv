@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 19:00:34 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/06 20:27:47 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
@@ -226,52 +227,89 @@ std::string Server::generateAutoIndex(Client *client, const std::string &directo
     html += "    </ul>\r\n";
     html += "</body>\r\n";
     html += "</html>\r\n";
+	
+	
+	Request *clientRequest = client->getRequest();
+	int code = atoi(clientRequest->getResponsCode().c_str());
+
+	std::cerr << "debug code : " << code << std::endl;
+	std::ostringstream oss;
+	oss << html.length();
+    std::string header = "HTTP/1.1 " + clientRequest->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
+    header += "Content-Type: " + std::string("text/html") + "\r\n";
+    header += "Content-Length: " + oss.str() + "\r\n";
+    header += "\r\n";
+
+	if (send(client->getClientFd(), header.c_str(), header.size(), MSG_EOR) == -1)
+		throw std::runtime_error("Can't send the message !");
+	if (send(client->getClientFd(), html.c_str(), html.size(), MSG_EOR) == -1)
+		throw std::runtime_error("Can't send the message !");
+	client->afterResponse();
+	throw std::exception();
     return html;
 }
 
-
-std::string Server::_normalOpenFile(Request *clientRequest)
+std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 {
 	std::string finalPath;
+	struct stat buf;
 
-	if (clientRequest->path() is "/" || clientRequest->method() is DELETE_) {
-		finalPath = _data->_root + _data->_index;
-		if (access((finalPath).c_str(), F_OK | R_OK) is -1)
-			clientRequest->setResponsCode("404");
-		else
-			clientRequest->openResponseFile(finalPath.c_str());
-		std::cerr << "root : " + _data->_root << std::endl;
-		std::cerr << "if root : " << finalPath << std::endl;
+	if (clientRequest->getRequestType() is LOCATION)
+	{
+		Location *location = _data->checkLocation(clientRequest->path());
+		finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path();
 	}
-	else {
-		//TODO: check if is dir 
-		// if yes path + index
+	else if (clientRequest->getRequestType() is DEFAULT)
 		finalPath = _data->_root + clientRequest->path();
-		std::cerr << "if no root : " << finalPath << std::endl;
-		struct stat buf;
-		if (access((finalPath).c_str(), F_OK | R_OK) is -1)
-			clientRequest->setResponsCode("404");
-		else if (stat((finalPath).c_str(), &buf) is -1)
-			clientRequest->setResponsCode("500");
-		else if (S_ISDIR(buf.st_mode))
-		{
-			finalPath += "/" + _data->_index;
-			clientRequest->openResponseFile((finalPath + "/" + _data->_index).c_str());
+	if (access((finalPath).c_str(), F_OK | R_OK) is -1)
+		clientRequest->setResponsCode("404");
+	else if (stat((finalPath).c_str(), &buf) is -1)
+		clientRequest->setResponsCode("500");
+	else if (S_ISDIR(buf.st_mode))
+	{
+		std::string index;
+		if (clientRequest->getRequestType() is LOCATION) {
+			Location *location = _data->checkLocation(clientRequest->path());
+			index = location->index().empty() ? _data->_index : location->index();
 		}
-		else
-			clientRequest->openResponseFile((finalPath).c_str());
+		else if (clientRequest->getRequestType() is DEFAULT)
+			index = _data->_index;
+		if (index.empty() is true)
+		{
+			bool autoIndex;
+			if (clientRequest->getRequestType() is LOCATION)
+			{
+				Location *location = _data->checkLocation(clientRequest->path());
+				autoIndex = location->autoIndex() < 0 ? _data->_autoIndex : location->autoIndex();
+			}
+			else
+				autoIndex = _data->_autoIndex;
+			if (autoIndex)
+				generateAutoIndex(client, finalPath);
+			else 
+				clientRequest->setResponsCode("403");				
+		}
+		else 
+		{
+			finalPath += "/" + index;
+			clientRequest->openResponseFile(finalPath.c_str());
+			if (clientRequest->responseFileOpen() is false)
+				generateAutoIndex(client, finalPath.erase(finalPath.find_last_of('/')));
+		}
 	}
+	else
+		clientRequest->openResponseFile((finalPath).c_str());
 	if (clientRequest->getResponsCode() is "200" && clientRequest->responseFileOpen() is false)
 		clientRequest->setResponsCode("404");
 	return finalPath;
 }
 
-std::string Server::_openResponseFile(Request *clientRequest)
+std::string Server::_openResponseFile(Request *clientRequest, Client* client)
 {
 	std::string	finalPath;
 
 	if (clientRequest->getResponsCode() is "200")
-		finalPath = _normalOpenFile(clientRequest);
+		finalPath = _normalOpenFile(clientRequest, client);
 	if (clientRequest->getResponsCode() != "200")
 	{
 		finalPath = "URIs/errors/" + clientRequest->getResponsCode() + ".html";
@@ -291,7 +329,7 @@ void Server::sendResponse(int fd, Client *client) {
 	
 	if (clientRequest->responseFileOpen() is false)
 	{
-		finalPath = _openResponseFile(clientRequest);
+		finalPath = _openResponseFile(clientRequest, client);
 		std::string	header = getResponseHeader(clientRequest, finalPath);
 		if (send(fd, header.c_str(), header.size(), MSG_EOR) is -1) {
 			client->setResponse("500");
@@ -377,7 +415,7 @@ void Server::handleAuth(Client* client) {
 	} else if (request->path() is "/auth/secret") {
 		std::string header = request->getHeader();
 		if (request->isKeyfindInHeader("Cookie") is true) {
-			if (request->find("Cookie").find("auth=true") not_found) 
+			if (request->find("Cookie").find("auth=true") is_found) 
 				sendRedirect(SECRET, client->getClientFd(), client);
 			else 
 				sendRedirect(MYCEOC, client->getClientFd(), client);
