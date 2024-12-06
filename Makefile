@@ -6,7 +6,7 @@
 #    By: madamou <madamou@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/29 12:42:35 by madamou           #+#    #+#              #
-#    Updated: 2024/12/05 23:37:00 by madamou          ###   ########.fr        #
+#    Updated: 2024/12/06 01:56:58 by madamou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,9 @@ GLOBALDATA = $(addprefix GlobalData/, GlobalData.cpp)
 
 CLIENT = $(addprefix Client/, Client.cpp)
 
-SERVER = $(addprefix Server/, Server.cpp  Response.cpp Utils.cpp GetterSetter.cpp $(CGI))
+PARSING_HEADER = $(addprefix parsingHeader/, parsingHeader.cpp)
+
+SERVER = $(addprefix Server/, Server.cpp  Response.cpp Utils.cpp GetterSetter.cpp $(CGI) $(PARSING_HEADER))
 
 PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp Location.cpp)
 
