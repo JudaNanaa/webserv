@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/06 20:53:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/07 00:28:53 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,5 @@ void Location::addCgi(std::string cgi) {
   //TODO: add cgi logic
   if (cgi.find(" ") is_found) {
     _cgi[cgi.substr(0, cgi.find(' '))] = trim(cgi.substr(cgi.find(' ')));
-	std::cerr << "CGI ADDED !" << std::endl;
-	printnl("key == " << cgi.substr(0, cgi.find(' ')) << " value == " << trim(cgi.substr(cgi.find(' '))));
   }
 }
