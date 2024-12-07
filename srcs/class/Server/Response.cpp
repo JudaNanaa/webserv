@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/07 01:13:56 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/07 15:29:38 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,34 +158,6 @@ std::string ContentType(const std::string& extension) {
 	return "application/octet-stream";  // Retourne ce type par défaut si l'extension est inconnue
 }
 
-std::string	Server::getContentType(const std::string& path) {
-	if (path.find('.') not_found) {
-		return ("text/plain");
-	}
-
-	std::string extension = path.substr(path.find_last_of('.'));
-	return ContentType(extension);
-}
-
-std::string	Server::getResponseHeader(Request *request, const std::string& path) {
-	int code = atoi(request->getResponsCode().c_str());
-
-	std::cerr << "debug code : " << code << std::endl;
-	std::ostringstream oss;
-	oss << request->getResponseFileSize();
-    std::string header = "HTTP/1.1 " + request->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
-    header += "Content-Type: " + getContentType(path) + "\r\n";
-	std::cerr << "Content type: " << getContentType(path) << std::endl;
-    header += "Content-Length: " + oss.str() + "\r\n";
-    header += "\r\n";
-	return header;
-}
-
-#include <string>
-#include <dirent.h> // Pour opendir, readdir, closedir
-#include <sys/types.h> // Pour struct dirent
-#include <iostream> // Pour std::cerr
-
 std::string Server::generateAutoIndex(Client *client, const std::string &directoryPath) {
 	std::string html;
 
@@ -309,6 +281,29 @@ std::string Server::generateAutoIndex(Client *client, const std::string &directo
     return html;
 }
 
+std::string	Server::getContentType(const std::string& path) {
+	if (path.find('.') not_found) {
+		return ("text/plain");
+	}
+
+	std::string extension = path.substr(path.find_last_of('.'));
+	return ContentType(extension);
+}
+
+std::string	Server::getResponseHeader(Request *request, const std::string& path) {
+	int code = atoi(request->getResponsCode().c_str());
+
+	std::cerr << "debug code : " << code << std::endl;
+	std::ostringstream oss;
+	oss << request->getResponseFileSize();
+    std::string header = "HTTP/1.1 " + request->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
+    header += "Content-Type: " + getContentType(path) + "\r\n";
+	std::cerr << "Content type: " << getContentType(path) << std::endl;
+    header += "Content-Length: " + oss.str() + "\r\n";
+    header += "\r\n";
+	return header;
+}
+
 std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 {
 	std::string finalPath;
@@ -391,7 +386,7 @@ void Server::sendResponse(int fd, Client *client) {
 	{
 		finalPath = _openResponseFile(clientRequest, client);
 		std::string	header = getResponseHeader(clientRequest, finalPath);
-		if (send(fd, header.c_str(), header.size(), MSG_EOR) is -1) {
+		if (send(fd, header.c_str(), header.size(), MSG_NOSIGNAL) is -1) {
 			client->setResponse("500");
 			throw std::runtime_error("Can't send the message !");
 		}
