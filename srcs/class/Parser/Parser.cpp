@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/06 18:11:39 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/09 20:13:32 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void	Location::addLocationLine(std::string &line) {
 	} else if (key == "uploads_folder") {	//			UPLOADS_FOLDER
 		uploadFolder(value);
 	} else if (key == "client_max_body_size") {	//			CLIENT_MAX_BODY_SIZE
-		int	int_value = std::atoll(value.c_str());
+		long long	int_value = std::atoll(value.c_str());
 		if (int_value <= 0 || value.find_first_not_of("0123456789") is_found)
 			throw std::invalid_argument("invalid value");
 		maxBodySize(int_value);
@@ -200,6 +200,13 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	serv.addData(data);
 }
 
+void	Pars::checkNecessary(Server& serv) {
+	if (serv._data->_root.empty())
+		throw std::invalid_argument("no root");
+	else if (serv._data->_port <= 1024 || serv._data->_port > 65535)
+		throw std::invalid_argument("invalid port");
+}
+
 std::vector<Server> Pars::parseConfigFile(std::string configFilePath, char **env) {
 	std::vector<Server> servVec;
 	std::string	line;
@@ -218,6 +225,7 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath, char **env
 	    Server	newServ;
 		parseServer(newServ, configFile, lineNumber);
 		newServ.setEnv(env);
+		checkNecessary(newServ);
 	    servVec.push_back(newServ);
 	  }
 	}

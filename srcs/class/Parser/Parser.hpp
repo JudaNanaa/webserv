@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/06 20:09:43 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/09 20:12:26 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ class Pars {
     static void parseConfigPath(std::string path);
     static void handleLine(std::string &line, std::ifstream& configFile, Data *data, int &lineNumber);
     static void parseServer(Server &serv, std::ifstream& configFile, int &lineNumber);
+    static void  checkNecessary(Server& serv);
 
   public:
     static std::vector<Server> parse(std::string path, char **env);

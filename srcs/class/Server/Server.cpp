@@ -81,8 +81,23 @@ void Server::init(void) {
 void	Server::handleLocation(Client *client) {
   Request* request = client->getRequest();
   Location* location = _data->checkLocation(request->path());
+  bool is_cgi = false;
   //check des methodes
 
+	std::size_t	extension;
+
+	extension = request->path().find_last_of('.');
+	if (extension not_found)
+		is_cgi = false;
+	else if (location->cgi().find(request->path().substr(extension)) is_not location->cgi().end())
+		is_cgi = true;
+
+	if (is_cgi is true)
+	{
+		handleCgi(client);
+		printnl("CGI");
+		return;
+	}
   if (!location->redirect().empty())
 	request->setRedirect(true);
 
@@ -90,15 +105,18 @@ void	Server::handleLocation(Client *client) {
     client->setResponse("405");
     return ;
   }
-  //check de la body Size
-	if (location->maxBodySize() >= 0) {
-		if (location->maxBodySize() < request->getContentLenght()) {
+
+	long long client_max_body_size  = location->maxBodySize() < 0 ? _data->_clientMaxBodySize : location->maxBodySize();
+
+	if (client_max_body_size >= 0) {
+		if (client_max_body_size < request->getContentLenght()) {
     		client->setResponse("413");
     		return ;
 		}
 	}
 	if (request->getContentLenght() is -1) // no body
     	client->setResponse();
+	
 }
 
 bool	Server::isCgi( const std::string& path ) {
@@ -175,7 +193,7 @@ void Server::addClientRequest(int fd) {
 	}
 	if (client->whatToDo() is ON_HEADER)
 		_addingHeader(client, buff, n);
-	if (client->whatToDo() is ON_BODY) {
+	if (client->whatToDo() is ON_BODY && client->isReadyToResponse() is false) {
 		if (clientRequest->getRequestType() is CGI)
 			writeBodyToCgi(client, buff, n);
 		else

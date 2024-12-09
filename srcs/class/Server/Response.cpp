@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/07 15:29:38 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/09 18:33:33 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -422,7 +422,6 @@ void Server::sendRedirect(std::string redirect, int fd, Client *client) {
 	if (send(fd, response.c_str(), response.size(), MSG_NOSIGNAL) is -1)
 	{
 		client->setResponse("500");
-		std::cerr << "test yesy yes" << std::endl;
 		throw std::runtime_error("Can't send the message !");
 	}
 }

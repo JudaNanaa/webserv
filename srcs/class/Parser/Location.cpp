@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/07 00:28:53 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/09 19:03:34 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ void	Location::allowedMethods( int newAllowedMethods ) {
 } // allowedMethods
 void	Location::maxBodySize( long long newMaxBodySize ) {
 	_client_max_body_size = newMaxBodySize;
+	// printnl("je passe ici == location == " << _location);
 } // maxBodySize
 
 void	Location::index( std::string newIndex ) {

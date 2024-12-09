@@ -13,7 +13,7 @@ Client::Client(int const &fd, Server *server)
       _request(new Request(this)),
       _server(server)
 {
-
+	_request->addServer(server);
 }
 
 Client::~Client() {
@@ -132,6 +132,7 @@ void	Client::cleanRequest( void ) {
 	if (_request != NULL)
 		delete _request;
 	_request = new Request(this);
+	_request->addServer(_server);
 }
 
 void Client::afterResponse(void) {

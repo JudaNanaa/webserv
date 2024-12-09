@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 01:22:27 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/09 20:01:54 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,17 @@ int main(int argc, char **argv, char **env) {
 	}
 	try {
     	servVec = Pars::parse(argv[1], env);
+
+		if (servVec.empty()) { return printnl("Error: no server found"), 1; }
+
 	} catch (std::exception &e) {
-		std::cout << "Error : " << e.what() << std::endl;
+		std::cerr << "Error : " << e.what() << std::endl;
 		return 1;
 	}
-	std::cout << "PARSING OK!" << std::endl;
-	try {
-		data.runServers(servVec);
-	} catch(std::exception& e) {
+	std::cerr << "PARSING OK!" << std::endl;
+	
+	try { data.runServers(servVec); }
+	catch(std::exception& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return (1);
 	}

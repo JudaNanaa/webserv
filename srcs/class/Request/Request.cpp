@@ -115,6 +115,24 @@ t_parse	Request::addBodyRequest(const char *buff, const int &n, const bool &add)
 			defaultFile.close();
 		_client->setResponse();
 	}
+
+	// long long client_max_body_size = -1;
+
+	// if (_requestType == LOCATION)
+	// {
+	// 	Location *location = _server->_data->checkLocation(path());
+	// 	client_max_body_size = location->maxBodySize() < 0 ? _server->_data->_clientMaxBodySize : location->maxBodySize();
+	// }
+	// else if (_requestType == DEFAULT) 
+	// 	client_max_body_size = _server->_data->_clientMaxBodySize;
+
+	// if (RawBits::getLenTotalBody() > client_max_body_size &&  client_max_body_size != -1)
+	// {
+	// 	std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
+	// 	std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
+	// 	_client->setResponse("413");
+	// 	return ERROR;
+	// }	
 	if (RawBits::getLenTotalBody() > _contentLenght && _contentLenght != -1) {
 		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
 		std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
