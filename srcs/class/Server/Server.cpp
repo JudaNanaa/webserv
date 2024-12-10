@@ -43,6 +43,10 @@ Server::~Server(void) {
 	
 }
 
+void Server::freeAll(void) {
+	delete _data;
+}
+
 void Server::init(void) {
 	struct sockaddr_in server_addr;
 	int opt = 1;
@@ -80,34 +84,28 @@ void Server::init(void) {
 	std::cout << "server on : http://" << this->_host[0] << std::endl;
 }
 
-void Server::freeAll(void) {
-	delete _data;
-}
-
 bool Server::_checkLocationCgi(Location* location, std::string extension, Client* client) {
 	if (location->cgi().empty() || location->cgi().find(extension) == location->cgi().end()) {
 		//check si le fichier existe, si il existe 403 sinon 404
-		client->setResponse();
+		// client->setResponse(); // chelou donc je commente
 		return false;
 	}
-	client->getRequest()->setRequestType(CGI);
 	_handleCGI(client);
-	printnl("CGI");
 	return true;
 }
 
 void	Server::_handleLocation(Client *client) {
   	Request* request = client->getRequest();
-  	Location* location = _data->checkLocation(request->path());
-  	//check des methodes
-
+  	Location* location = _data->getLocation(request->path());
 	std::size_t	extension;
 
+	std::cerr << "LOCATION" << std::endl;
+	request->setRequestType(LOCATION);
 	extension = request->path().find_last_of('.');
 	printnl("debug requests path : " << request->path());
-
 	if (extension != std::string::npos) {
-		if (!_checkLocationCgi(location, request->path().substr(extension), client))
+		// if (!_checkLocationCgi(location, request->path().substr(extension), client)) // je pense que c'est pas la bonne condition
+		if (_checkLocationCgi(location, request->path().substr(extension), client) is true)
 			return ;
 	}
 
@@ -142,8 +140,20 @@ bool	Server::isCgi( const std::string& path ) {
 	return (true);
 }
 
+bool	Server::_isLocation(const std::string &path)
+{
+	return _data->checkLocation(path);
+}
+
 void	Server::_handleRequest( Client *client ) {
 	Request *request = client->getRequest();
+
+	std::cerr << "DEFAULT" << std::endl;
+	request->setRequestType(DEFAULT);
+	if (isCgi(request->path()) is true) {
+		_handleCGI(client);
+		return;
+	}
 
 	if ((_data->_allowedMethods & request->method()) is 0) {
 		client->setResponse("405");

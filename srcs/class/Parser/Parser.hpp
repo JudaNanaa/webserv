@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/10 20:30:16 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 22:50:42 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,10 @@ struct Data {
   public:
     Data();
     ~Data();
-    Location							*checkLocation(std::string path);
-
+    bool								checkLocation(const std::string &path) const;
+	Location 							*getLocation(const std::string &path);
     int									_port;
+
     std::string							_serverName;
     std::string							_root;
     std::string							_uploadFolder;

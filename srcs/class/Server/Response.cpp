@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 20:50:12 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 22:50:07 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,7 +318,7 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 
 	if (clientRequest->getRequestType() is LOCATION)
 	{
-		Location *location = _data->checkLocation(clientRequest->path());
+		Location *location = _data->getLocation(clientRequest->path());
 		printnl("location : " <<  location->location());
 		finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path().substr(location->location().size());
 	}
@@ -333,7 +333,7 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 	{
 		std::string index;
 		if (clientRequest->getRequestType() is LOCATION) {
-			Location *location = _data->checkLocation(clientRequest->path());
+			Location *location = _data->getLocation(clientRequest->path());
 			index = location->index().empty() ? _data->_index : location->index();
 		}
 		else if (clientRequest->getRequestType() is DEFAULT)
@@ -343,7 +343,7 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 			bool autoIndex;
 			if (clientRequest->getRequestType() is LOCATION)
 			{
-				Location *location = _data->checkLocation(clientRequest->path());
+				Location *location = _data->getLocation(clientRequest->path());
 				autoIndex = location->autoIndex() < 0 ? _data->_autoIndex : location->autoIndex();
 			}
 			else
