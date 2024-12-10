@@ -88,7 +88,7 @@ Request *Client::getRequest(void) {
 	return _request;
 }
 
-void Client::pushHeaderRequest(char *str, const int &n) {
+void Client::pushHeaderRequest(const char *str, const int &n) {
 	_request->addHeaderRequest(str, n);
 }
 

@@ -40,7 +40,7 @@ class Client {
 		const t_state	&whatToDo(void) const;
 
 		void			cleanRequest(void);
-		void			pushHeaderRequest(char *str, const int &n);
+		void			pushHeaderRequest(const char *str, const int &n);
 		void			afterResponse(void);
 };
 

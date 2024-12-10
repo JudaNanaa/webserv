@@ -45,7 +45,7 @@ class Server {
 		// Parsing header
 		void					_parseClientHeader(Client *client);
 		void					_addHeaderLine( std::string line, Request *clientRequest);
-		void					_addingHeader(Client *client, char *buff, int n);
+		void					_addingHeader(Client *client, const char *buff, const int &n);
 		void					_parseOtherLinesHeader(Client *client, const std::vector<std::string> &headerSplit);
 		void					_parseContentLengthAndBoundary(Request *clientRequest);
 		void					_parseFirstLineHeader(Client *client, const std::vector<std::string> &headerSplit);

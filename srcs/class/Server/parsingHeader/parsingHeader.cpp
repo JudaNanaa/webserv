@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 01:51:03 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 18:53:30 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 20:55:43 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void Server::_parseClientHeader(Client *client) {
   	_chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
 }
 
-void Server::_addingHeader(Client *client, char *buff, int n)
+void Server::_addingHeader(Client *client, const char *buff, const int &n)
 {
 	try {
 		client->pushHeaderRequest(buff, n);

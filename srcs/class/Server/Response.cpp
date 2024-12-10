@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 18:58:15 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 20:50:12 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,35 +231,42 @@ std::string Server::_generateAutoIndex(Client *client, const std::string &direct
 	html += "</head>\r\n";
 	html += "<body>\r\n";
 	html += "    <h1>Index of " + directoryPath + "</h1>\r\n";
-	html += "    <div class=\"button-container\">\r\n";
+    html += "    <div class=\"button-container\">\r\n";
 
-	DIR *currentDir = opendir(directoryPath.c_str());
-	if (currentDir == NULL) {
-		std::cerr << "Error: Could not open directory " << directoryPath << std::endl;
-		client->setResponse("500");
-		return "";
-	}
+    DIR *currentDir = opendir(directoryPath.c_str());
+    if (currentDir == NULL) {
+        std::cerr << "Error: Could not open directory " << directoryPath << std::endl;
+        client->setResponse("500");
+        return "";
+    }
 
-	struct dirent *elem;
-	int colorIndex = 1;
-	while ((elem = readdir(currentDir)) != NULL) {
-		std::string name = elem->d_name;
+    struct dirent *elem;
+    int colorIndex = 2; // Start with the next color
+    while ((elem = readdir(currentDir)) != NULL) {
+        std::string name = elem->d_name;
 
-		if (name == "." || name == "..")
-			continue;
-		std::ostringstream oss;
+        if (name == "." || name == "..")
+            continue;
+        std::ostringstream oss;
 
-		oss << colorIndex;
-		std::string colorClass = "color-" + oss.str();
-		colorIndex = (colorIndex % 5) + 1;
+        oss << colorIndex;
+        std::string colorClass = "color-" + oss.str();
+        colorIndex = (colorIndex % 5) + 1;
 
-		html += "        <button class=\"" + colorClass + "\" onclick=\"window.location.href='" + client->getRequest()->path() + "/" + name + "'\">" + name + "</button>\r\n";
-	}
-	closedir(currentDir);
+        html += "        <button class=\"" + colorClass + "\" onclick=\"window.location.href='" + client->getRequest()->path() + "/" + name + "'\">" + name + "</button>\r\n";
+    }
+    closedir(currentDir);
 
-	html += "    </div>\r\n";
-	html += "</body>\r\n";
-	html += "</html>\r\n";
+    html += "    </div>\r\n";
+
+    // Add a "Go Back" button styled like other buttons but positioned slightly lower
+    html += "    <div style=\"margin-top: 20px; text-align: center;\">\r\n";
+    html += "        <button class=\"color-1\" onclick=\"window.history.back()\">Go Back</button>\r\n";
+    html += "    </div>\r\n";
+
+    html += "</body>\r\n";
+    html += "</html>\r\n";
+
 
 	Request *clientRequest = client->getRequest();
 	int code = atoi(clientRequest->getResponsCode().c_str());

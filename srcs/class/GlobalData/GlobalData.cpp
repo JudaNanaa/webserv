@@ -62,7 +62,10 @@ int GlobalData::_waitFdsToBeReady(void) {
 	std::map<int, Server>::iterator end = _servMap.end();
 	
 	while (it != end)
-		(it++)->second.checkCgi();
+	{
+		it->second.checkCgi();
+		++it;
+	}
 	return epoll_wait(_epoll_fd, _events, MAX_EVENTS, 1);
 }
 
@@ -151,9 +154,8 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 	_initServers(servVec);
 	while (g_running) {
 		fdsReady = _waitFdsToBeReady();
-		for (int i = 0; i < fdsReady; i++) {
+		for (int i = 0; i < fdsReady; i++)
 			_handleEvent(_events[i]);
-		}
 	}
 }
 
