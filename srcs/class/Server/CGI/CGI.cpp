@@ -57,18 +57,6 @@ void Server::writeBodyToCgi(Client *client, char *buff, int n)
 	}
 }
 
-// void printMap(std::map<std::string, std::string> map)
-// {
-//     std::map<std::string, std::string>::iterator it = map.begin();
-//     std::map<std::string, std::string>::iterator end = map.end();
-
-//     while (it is_not end)
-//     {
-//         printnl("key == " + it->first << " value == " + it->second);
-//         it++;
-//     }
-// }
-
 void Server::_childProcess(Client *client , int ParentToCGI[2], int CGIToParent[2])
 {
     char *cgi[3];
@@ -137,9 +125,9 @@ void Server::checkCgi( void ) {
 		Client	*client = it->second;
 		int		pid = client->getPid();
 
-		if (pid is -1) {	// no 
+		if (pid is -1)	// no 
 			continue ;
-		} else {
+		else {
 			int	status;
 			switch (waitpid(pid, &status, WNOHANG)) {
 				case -1: { std::cerr << "waitpid failed" << std::endl ; continue; } // error 

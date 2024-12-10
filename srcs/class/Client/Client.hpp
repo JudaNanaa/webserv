@@ -26,7 +26,6 @@ class Client {
 		Client(int const &fd, Server *server);
 		~Client();
 
-		Client &operator=(Client const &other);
 		void setResponse(const std::string &code = "200");
 		void setPid(const int &pid);
 		const int &getPid(void) const;

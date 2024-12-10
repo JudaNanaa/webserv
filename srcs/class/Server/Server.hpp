@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 20:05:39 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 15:34:27 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 #include <vector>
 
 # define MAX_CLIENTS 1000
-# define MAX_EVENTS 1000
 
 struct Data ;
 

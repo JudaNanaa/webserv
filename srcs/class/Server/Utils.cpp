@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 23:09:46 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 01:18:12 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 15:42:33 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,7 @@ bool Server::checkAllowMethodes(std::string methode) {
 }
 
 bool Server::ifClientInServer(int fd) const {
-	if (this->_clientMap.find(fd) is this->_clientMap.end()) {
-		return false;
-	}
-	return true;
+	return this->_clientMap.find(fd) is_not this->_clientMap.end();
 }
 
 void Server::removeClientInMap(int fd) {

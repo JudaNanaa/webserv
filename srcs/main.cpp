@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/09 20:01:54 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 15:18:34 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "class/Parser/Parser.hpp"
 #include <exception>
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 #include <csignal>
 
@@ -42,18 +43,21 @@ int main(int argc, char **argv, char **env) {
 	try {
     	servVec = Pars::parse(argv[1], env);
 
-		if (servVec.empty()) { return printnl("Error: no server found"), 1; }
-
+		if (servVec.empty())
+			throw std::runtime_error("Error: no server found");
 	} catch (std::exception &e) {
 		std::cerr << "Error : " << e.what() << std::endl;
 		return 1;
 	}
 	std::cerr << "PARSING OK!" << std::endl;
 	
-	try { data.runServers(servVec); }
+	try { 
+		data.runServers(servVec);
+	}
 	catch(std::exception& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return (1);
 	}
+	data.closeServers();
 	return 0;
 }

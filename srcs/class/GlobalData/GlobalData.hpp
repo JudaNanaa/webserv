@@ -9,29 +9,32 @@
 #include <vector>
 #include <map>
 
+# define MAX_EVENTS 1000
+
 class GlobalData {
 	private:
-		std::map<int, Server> _servMap;
-		int _epoll_fd;
-		struct epoll_event _events[MAX_EVENTS];
-		void addToEpoll(int fd, uint32_t events);
-		int waitFdsToBeReady(void);
-		Client *searchClient(const int fd);
-		void addNewClient(Server &server);
-		void initServers(std::vector<Server> &servVec);
-		void handleClientIn(int fd);
-		void handleClientOut(int fd);
-		void removeClient(int fd);
-		bool isServerFd(const int &fd);
-		Server *getServerWithClientFd(const int fd);
-		void	handleEvent( struct epoll_event& fdsReady );
+		std::map<int, Server>	_servMap;
+		int						_epoll_fd;
+		struct epoll_event		_events[MAX_EVENTS];
+
+		void					_addToEpoll(int fd, uint32_t events);
+		int						_waitFdsToBeReady(void);
+		Client					*_searchClient(const int fd);
+		void					_addNewClient(Server &server);
+		void					_initServers(std::vector<Server> &servVec);
+		void					_handleClientIn(int fd);
+		void					_handleClientOut(int fd);
+		void					_removeClient(int fd);
+		bool					_isServerFd(const int &fd);
+		Server 					*_getServerWithClientFd(const int fd);
+		void					_handleEvent( struct epoll_event& fdsReady );
 	public:
 		GlobalData();
 
 		~GlobalData();
 
-		void runServers(std::vector<Server> &servVec);
-		void closeServers(void);
+		void					runServers(std::vector<Server> &servVec);
+		void					closeServers(void);
 };
 
 #endif

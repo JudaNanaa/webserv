@@ -78,6 +78,16 @@ void Server::init(void) {
 	std::cout << "server on : http://" << this->_host[0] << std::endl;
 }
 
+bool checkLocationCgi(Location* location, std::string extension, Client* client) {
+	if (location->cgi().empty() || location->cgi().find(extension) == location->cgi().end()){
+		//check si le fichier existe, si il existe 403 sinon 404
+		client->setResponse("403");
+		return printnl("no cgi accepted"), false;
+	}
+	printnl("cgi find in this location");
+	return true;
+}
+
 void	Server::handleLocation(Client *client) {
   Request* request = client->getRequest();
   Location* location = _data->checkLocation(request->path());
@@ -87,13 +97,21 @@ void	Server::handleLocation(Client *client) {
 	std::size_t	extension;
 
 	extension = request->path().find_last_of('.');
-	if (extension not_found)
-		is_cgi = false;
-	else if (location->cgi().find(request->path().substr(extension)) is_not location->cgi().end())
-		is_cgi = true;
+	printnl("debug requests path : " << request->path());
+	// if (extension not_found)
+	// 	is_cgi = false, printnl("ext not found");
+	// else if (location->cgi().find(request->path().substr(extension)) is_not location->cgi().end())
+	// 	is_cgi = true, printnl("found");
+
+	if (extension != std::string::npos) {
+		if (!checkLocationCgi(location, request->path().substr(extension), client))
+			return ;
+	}
 
 	if (is_cgi is true)
 	{
+		printnl("oui je passe ici");
+		request->setRequestType(CGI);
 		handleCgi(client);
 		printnl("CGI");
 		return;

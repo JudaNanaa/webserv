@@ -22,17 +22,6 @@ Client::~Client() {
 	std::cerr << "client destroyed" << std::endl;
 }
 
-Client &Client::operator=(Client const &other) {
-	if (this != &other) {
-		_fd = other._fd;
-		_readyToParseHeader = other._readyToParseHeader;
-		_readyToResponse = other._readyToResponse;
-		_request = other._request;
-		_server = other._server;
-	}
-	return *this;
-}
-
 void Client::setResponse(const std::string &code)
 {
 	setReadyToresponse(true);

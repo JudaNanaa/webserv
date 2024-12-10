@@ -29,37 +29,35 @@ GlobalData::~GlobalData() {
 		close(_epoll_fd);
 }
 
-void GlobalData::addToEpoll(int fd, uint32_t events)
+void GlobalData::_addToEpoll(int fd, uint32_t events)
 {
 	struct epoll_event ev;
 
 	ev.events = events;
 	ev.data.fd = fd;
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) is -1)
 		throw std::runtime_error("Setting flags with fcntl failed");
-	}
-	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, fd, &ev) == -1) {
+	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, fd, &ev) is -1)
 		throw std::runtime_error("Epoll add error");
-	}
 }
 
-void GlobalData::initServers(std::vector<Server> &servVec) {
+void GlobalData::_initServers(std::vector<Server> &servVec) {
 	std::vector<Server>::iterator servIt = servVec.begin();
 	std::vector<Server>::iterator end = servVec.end();
 
 	_epoll_fd = epoll_create1(0);
-	if (_epoll_fd == -1)
+	if (_epoll_fd is -1)
 		throw std::runtime_error("epoll_create1 failed !");
 	while (servIt != end) {
 		servIt->init();
 		int servFd = servIt->getSocketFd();
-		addToEpoll(servFd, EPOLLIN);
+		_addToEpoll(servFd, EPOLLIN);
 		_servMap[servFd] = *servIt;
 		servIt++;
 	}
 }
 
-int GlobalData::waitFdsToBeReady(void) {
+int GlobalData::_waitFdsToBeReady(void) {
 	std::map<int, Server>::iterator it = _servMap.begin();
 	std::map<int, Server>::iterator end = _servMap.end();
 	
@@ -68,48 +66,50 @@ int GlobalData::waitFdsToBeReady(void) {
 	return epoll_wait(_epoll_fd, _events, MAX_EVENTS, 1);
 }
 
-void GlobalData::addNewClient(Server &server) {
+void GlobalData::_addNewClient(Server &server) {
 	Client *client;
 	int clientFd;
 	struct sockaddr_in client_addr;
 	unsigned int socklen = sizeof(client_addr);
 
-	clientFd = accept(server.getSocketFd(),  (struct sockaddr *)&client_addr, &socklen);
-	if (clientFd == -1)
-		throw std::runtime_error("Can't accept the connexion with the client");
-	addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLRDHUP);
-	client = new Client(clientFd, &server);
-	server.addClientToMap(client);
+	try {
+		clientFd = accept(server.getSocketFd(),  (struct sockaddr *)&client_addr, &socklen);
+		if (clientFd is -1)
+			throw std::runtime_error("Can't accept the connexion with the client");
+		_addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLHUP);
+		client = new Client(clientFd, &server);
+		server.addClientToMap(client);
+	} catch (const std::exception &e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+	}
 }
 
-Client *GlobalData::searchClient(const int fd)  {
+Client *GlobalData::_searchClient(const int fd)  {
 	std::map<int, Server>::iterator it = _servMap.begin();
 	std::map<int, Server>::iterator end = _servMap.end();
 
 	while (it != end) {
-		if (it->second.ifClientInServer(fd) == true) {
+		if (it->second.ifClientInServer(fd) is true)
 			break;
-		}
 		++it;
 	}
 	return it->second.getClient(fd);
 }
 
-Server *GlobalData::getServerWithClientFd(const int fd)  {
+Server *GlobalData::_getServerWithClientFd(const int fd) {
 	std::map<int, Server>::iterator it = _servMap.begin();
 	std::map<int, Server>::iterator end = _servMap.end();
 
 	while (it is_not end) {
-		if (it->second.ifClientInServer(fd) is true) {
+		if (it->second.ifClientInServer(fd) is true)
 			break;
-		}
 		++it;
 	}
 	return &it->second;
 }
 
-void GlobalData::handleClientIn(int fd) {
-	Server *server = getServerWithClientFd(fd);
+void GlobalData::_handleClientIn(int fd) {
+	Server *server = _getServerWithClientFd(fd);
 
 	try {
 		server->addClientRequest(fd);
@@ -118,58 +118,53 @@ void GlobalData::handleClientIn(int fd) {
 	}
 }
 
-void GlobalData::handleClientOut(int fd) {
+void GlobalData::_handleClientOut(int fd) {
 	Server *server;
 	std::ifstream file;
 
-	server = getServerWithClientFd(fd);
+	server = _getServerWithClientFd(fd);
 	try {
 		server->giveClientResponse(fd);
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
-		removeClient(fd);
+		_removeClient(fd);
 	}
 }
 
 
-void GlobalData::removeClient(int fd) {
-	Server *server = getServerWithClientFd(fd);
+void GlobalData::_removeClient(int fd) {
+	Server *server = _getServerWithClientFd(fd);
 
 	server->removeClientInMap(fd);
 	epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 	close(fd);
 }
 
-bool GlobalData::isServerFd(const int &fd) {
+bool GlobalData::_isServerFd(const int &fd) {
 	return _servMap.find(fd) is_not _servMap.end();
 }
 
-void	GlobalData::handleEvent( struct epoll_event& event ) {
+void	GlobalData::_handleEvent( struct epoll_event& event ) {
 	int	fd = event.data.fd;
 
-	if (isServerFd(fd) is true) {
-		try {
-			addNewClient(_servMap[fd]);
-		} catch (std::exception &e) {
-			std::cerr << "Error: " << e.what() << std::endl;
-		}
-	}
+	if (_isServerFd(fd) is true)
+		_addNewClient(_servMap[fd]);
 	else if (event.events & (EPOLLRDHUP | EPOLLHUP))
-		removeClient(fd);
+		_removeClient(fd);
 	else if (event.events & EPOLLIN)
-		handleClientIn(fd);
+		_handleClientIn(fd);
 	else if (event.events & EPOLLOUT)
-		handleClientOut(fd);
+		_handleClientOut(fd);
 }
 
 void GlobalData::runServers(std::vector<Server> &servVec) {
 	int	fdsReady;
 
-	initServers(servVec);
+	_initServers(servVec);
 	while (g_running) {
-		fdsReady = waitFdsToBeReady();
+		fdsReady = _waitFdsToBeReady();
 		for (int i = 0; i < fdsReady; i++) {
-			handleEvent(_events[i]);
+			_handleEvent(_events[i]);
 		}
 	}
 }
