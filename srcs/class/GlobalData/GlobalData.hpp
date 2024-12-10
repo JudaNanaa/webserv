@@ -19,7 +19,6 @@ class GlobalData {
 
 		void					_addToEpoll(int fd, uint32_t events);
 		int						_waitFdsToBeReady(void);
-		Client					*_searchClient(const int fd);
 		void					_addNewClient(Server &server);
 		void					_initServers(std::vector<Server> &servVec);
 		void					_handleClientIn(int fd);

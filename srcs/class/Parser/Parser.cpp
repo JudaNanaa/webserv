@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/09 20:13:32 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 18:52:32 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ void	Location::addLocationLine(std::string &line) {
 	}
 }
 
-void	handleLocation(std::string &line, std::ifstream &configFile, Data& data, int &lineNumber) {
+void	_handleLocation(std::string &line, std::ifstream &configFile, Data& data, int &lineNumber) {
 	Location	location;
 	if (line.find(" ") not_found) {
 		throw std::invalid_argument("format: location <path>");
@@ -168,7 +168,7 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 	type = line.substr(0, line.find(' '));
 
 	if (type == "location") {
-		handleLocation(line, configFile, *data, lineNumber);
+		_handleLocation(line, configFile, *data, lineNumber);
 		return ;
 	}
 

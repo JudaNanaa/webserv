@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   GetterSetter.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 23:06:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/11/27 01:15:15 by ibaby            ###   ########.fr       */
+/*   Updated: 2024/12/10 18:44:34 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Client *Server::getClient(int fd) {
+Client *Server::_getClient(int fd) {
 	return this->_clientMap[fd];
 }
 
-int Server::getSocketFd(void) const {
+int const &Server::getSocketFd(void) const {
 	return this->_socket_fd;
 }
 

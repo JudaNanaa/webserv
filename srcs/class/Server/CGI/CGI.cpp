@@ -11,33 +11,8 @@
 /* ************************************************************************** */
 
 #include "../Server.hpp"
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
-#include <exception>
-#include <fcntl.h>
-#include <iomanip>
-#include <cstring>
-#include <iterator>
-#include <map>
-#include <stdexcept>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <netinet/in.h>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <cstddef>
-#include <unistd.h>
-#include <sys/wait.h>
-#include "../../../../includes/includes.hpp"
-#include "../../RawBits/RawBits.hpp"
-#include "../../Request/Request.hpp"
-#include "../../GlobalData/GlobalData.hpp"
-#include "../../Parser/Parser.hpp"
 
-void Server::writeBodyToCgi(Client *client, char *buff, int n)
+void Server::_writeBodyToCgi(Client *client, const char *buff, int n)
 {
 	Request *clientRequest = client->getRequest();
 	int result;
@@ -133,6 +108,7 @@ void Server::checkCgi( void ) {
 				case -1: { std::cerr << "waitpid failed" << std::endl ; continue; } // error 
 				case 0: { continue; } // not finished
 				default:
+					printnl("CGI FINISHED !");
 					client->setResponse();
 					client->setCGIStatus(status);
 			}
@@ -140,7 +116,7 @@ void Server::checkCgi( void ) {
 	}
 }
 
-void	Server::handleCgi( Client *client ) {
+void	Server::_handleCGI( Client *client ) {
     int ParentToCGI[2] = {-1, -1};
     int CGIToParent[2] = {-1, -1};
 

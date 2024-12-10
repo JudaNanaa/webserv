@@ -6,8 +6,10 @@
 # define SET 0
 # define GET 1
 
-std::vector<std::string> split(std::string s, std::string delimiter);
-std::string generateFilename(std::string baseName);
-const std::string getMessageCode(int code);
+std::vector<std::string>	split(std::string s, std::string delimiter);
+std::string					generateFilename(std::string baseName);
+const std::string			getMessageCode(int code);
+std::string					trim(const std::string& str);
+void						trimn(std::string& str);
 
 #endif

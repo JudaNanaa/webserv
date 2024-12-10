@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/06 01:31:49 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 20:27:59 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,23 @@ std::string generateFilename(std::string baseName) {
 			<< timeBuffer << "_"
 			<< baseName;
 		return oss.str();
+}
+
+std::string trim(const std::string& str) {
+    size_t start = str.find_first_not_of(" \t\n\r\f\v\"");
+    if (start not_found) return ""; // Chaîne vide si uniquement des espaces
+    size_t end = str.find_last_not_of(" \t\n\r\f\v\"");
+    return str.substr(start, end - start + 1);
+}
+
+void trimn(std::string& str) {
+    size_t start = str.find_first_not_of(" \t\n\r\f\v");
+    if (start not_found)
+    {
+      str.clear();
+      return ; // Chaîne vide si uniquement des espaces
+    }
+    size_t end = str.find_last_not_of(" \t\n\r\f\v");
+    str.erase(end + 1);
+    str.erase(0, start);
 }

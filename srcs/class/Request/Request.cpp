@@ -20,18 +20,18 @@
 #include <variant>
 #include <vector>
 
-Request::Request(Client *client)
+Request::Request(Client *client, Server *server)
     : RawBits(),
       _state(ON_HEADER),
       _method(0),
       _ResponsCode("200"),
       _contentLenght(-1),
+	  _server(server),
       _client(client),
       _isRedirect(false)
 {
 
 }
-
 
 Request::~Request()
 {
@@ -61,13 +61,11 @@ void	Request::closeResponseFile(void) {
 
 void Request::addHeaderLineToMap(const std::string &key, const std::string &value) {
 	if (key is "HOST") {
-		if (_server->isServerHost(value) is false) { // check si le host est bien celui du server
+		if (_server->isServerHost(value) is false) // check si le host est bien celui du server
 			throw std::invalid_argument("Error header: Not the server host: " + value);
-		}
 	}
-	if (_others.find(key) != _others.end()) {	// key already seen
+	if (_others.find(key) != _others.end())	// key already seen
 		throw std::invalid_argument("duplicate argument: " + key);
-	}
 	_others[key] = value;
 }
 
@@ -75,16 +73,16 @@ bool Request::isKeyfindInHeader(std::string const &key) const {
 	return _others.find(key) != _others.end();
 }
 
-t_parse	Request::addHeaderRequest(const char *buff, const int &n)
+void Request::addHeaderRequest(const char *buff, const int &n)
 {
 	RawBits::BuffToRaw(buff, n);
 	if (RawBits::find("\r\n\r\n") is -1)
-		return NOT_READY;
+		return ;
 	RawBits::splitRequest();
-	return READY_PARSE_HEADER;
+	_state = READY_PARSE_HEADER;
 }
 
-void	Request::uploadBody() {
+void	Request::_uploadBody(void) {
 	bool	multipart;
 
 	try {
@@ -95,51 +93,31 @@ void	Request::uploadBody() {
 	if (multipart is true) {
 		RawBits::uploadMultipart();
 	} else {	// if no bondaries
-		if (defaultFile.is_open() is false) {
-			defaultFile.open(DEFAULT_UPLOAD_FILE, std::ios::trunc | std::ios::out);
-			if (defaultFile.fail())
+		if (_defaultFile.is_open() is false) {
+			_defaultFile.open(DEFAULT_UPLOAD_FILE, std::ios::trunc | std::ios::out);
+			if (_defaultFile.fail())
 				throw std::invalid_argument("failed to open DEFAULT_UPLOAD_FILE");
 		}
-		defaultFile.write(RawBits::getBody(), RawBits::getLenBody());
+		_defaultFile.write(RawBits::getBody(), RawBits::getLenBody());
 		eraseInBody(0, RawBits::getLenBody());
 	}
 }
 
-t_parse	Request::addBodyRequest(const char *buff, const int &n, const bool &add) {
+void Request::addBodyRequest(const char *buff, const int &n, const bool &add) {
 	if (add)
 		appendBody(buff, n);
 	if (_method is POST_)
-		uploadBody();
+		_uploadBody();
 	if (RawBits::getLenTotalBody() is _contentLenght) {
-		if (defaultFile.is_open())
-			defaultFile.close();
+		if (_defaultFile.is_open())
+			_defaultFile.close();
 		_client->setResponse();
-	}
-
-	// long long client_max_body_size = -1;
-
-	// if (_requestType == LOCATION)
-	// {
-	// 	Location *location = _server->_data->checkLocation(path());
-	// 	client_max_body_size = location->maxBodySize() < 0 ? _server->_data->_clientMaxBodySize : location->maxBodySize();
-	// }
-	// else if (_requestType == DEFAULT) 
-	// 	client_max_body_size = _server->_data->_clientMaxBodySize;
-
-	// if (RawBits::getLenTotalBody() > client_max_body_size &&  client_max_body_size != -1)
-	// {
-	// 	std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
-	// 	std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
-	// 	_client->setResponse("413");
-	// 	return ERROR;
-	// }	
-	if (RawBits::getLenTotalBody() > _contentLenght && _contentLenght != -1) {
+	}	
+	else if (RawBits::getLenTotalBody() > _contentLenght && _contentLenght != -1) {
 		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
 		std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
 		_client->setResponse("413");
-		return ERROR;
 	}
-	return NOT_READY;
 }
 
 std::ostream& operator<<(std::ostream& os, const Request& request ) {

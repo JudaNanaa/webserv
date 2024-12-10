@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 20:17:42 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 18:47:28 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void Server::_responseCgiError(Client *client)
 		throw std::runtime_error("Can't send the message !");
 }
 
-void Server::responseCGI(Client *client)
+void Server::_responseCGI(Client *client)
 {
 	std::cerr << "-------- RESPONSE CGI --------" << std::endl;
 	if (client->getCGIStatus() == EXIT_SUCCESS)

@@ -38,7 +38,6 @@ RawBits::RawBits(void)
 
 }
 
-
 RawBits::~RawBits(void) {
 	if (_body)
 		delete [] _body;
@@ -85,9 +84,8 @@ long RawBits::findInBody(const char *str, unsigned long pos) const {
 	if (_lenBody < lenStr)
 		return -1;
 	for (size_t lenStr = strlen(str); pos <= _lenBody - lenStr; pos++) {
-		if (std::memcmp(&_body[pos], str, lenStr) == 0) {
+		if (std::memcmp(&_body[pos], str, lenStr) == 0)
 			return pos;
-		}
 	}
 	return -1;
 }
@@ -95,9 +93,8 @@ long RawBits::findInBody(const char *str, unsigned long pos) const {
 void RawBits::splitRequest(void) {
 	long sep = find("\r\n\r\n");
 
-	for (unsigned int i = 0; i < sep; i++) {
+	for (unsigned int i = 0; i < sep; i++)
 		_header.push_back(_request[i]);
-	}
 	sep += 4;
 	if (_lenRequest - sep > 0)
 		appendBody(&_request[sep], _lenRequest - sep);

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/09 19:03:34 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 20:31:20 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,26 +23,6 @@ Location::Location() {
 
 Location::~Location() {
 }
-
-/*; 	copy needed ?	*/
-// Location::Location( const Location &other ) {
-// 	(*this) = other;
-// }
-
-// Location& Location::operator=( const Location &other ) {
-// 	_root = other._root;
-// 	_cgi = other._cgi;
-// 	_redirect = other._redirect;
-// 	_allowedMethods = other._allowedMethods;
-// 	_client_max_body_size = other._client_max_body_size;
-
-// 	_index = other._index;
-// 	_autoIndex = other._autoIndex;
-
-// 	_file_upload = other._file_upload;
-// 	_uploadFolder = other._uploadFolder;
-//	return *this;
-// }
 
 /*	GETTER	*/
 

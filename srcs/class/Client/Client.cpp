@@ -7,13 +7,9 @@ Client::Client(int const &fd, Server *server)
     : _fd(fd),
       _pid(-1),
       _CGIStatus(-1),
-      _readyToParseHeader(false),
-      _readyToParseBody(false),
-      _readyToResponse(false),
-      _request(new Request(this)),
+      _request(new Request(this, server)),
       _server(server)
 {
-	_request->addServer(server);
 }
 
 Client::~Client() {
@@ -24,7 +20,6 @@ Client::~Client() {
 
 void Client::setResponse(const std::string &code)
 {
-	setReadyToresponse(true);
 	_request->setResponsCode(code);
 }
 
@@ -72,14 +67,6 @@ const int &Client::getParentToCGI(void) {
 	return _ParentToCGI;
 }
 
-const bool &Client::getReadyToParseHeader(void) const {
-	return _readyToParseHeader;
-}
-
-const bool &Client::getReadyToParseBody(void) const {
-	return _readyToParseBody;
-}
-
 void Client::setUseBuffer(const bool &boolean) {
 	_useBuffer = boolean;
 }
@@ -90,43 +77,29 @@ bool Client::getUseBuffer(void) const {
 
 
 const t_state &Client::whatToDo(void) const {
-	return _request->getStatus();
+	return _request->getState();
 }
 
 const int &Client::getClientFd(void) const {
 	return _fd;
 }
 
-void Client::setReadyToresponse(const bool &boolean) {
-	_readyToResponse = boolean;
-}
-
-bool const &Client::isReadyToResponse(void) const {
-	return	_readyToResponse;
-} 
-
 Request *Client::getRequest(void) {
-	return _request; 
+	return _request;
 }
 
 void Client::pushHeaderRequest(char *str, const int &n) {
-	t_parse result;
-
-	result = _request->addHeaderRequest(str, n);
-	if (result == READY_PARSE_HEADER)
-		_readyToParseHeader = true;
+	_request->addHeaderRequest(str, n);
 }
 
 void	Client::cleanRequest( void ) {
 	if (_request != NULL)
 		delete _request;
-	_request = new Request(this);
-	_request->addServer(_server);
+	_request = new Request(this, _server);
 }
 
 void Client::afterResponse(void) {
 	cleanRequest();
 	setPid(-1);
 	setCGIFD(-1);
-	setReadyToresponse(false);
 }

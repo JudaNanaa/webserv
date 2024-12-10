@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/07 20:20:46 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 19:11:32 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ class RawBits {
 		long 				find(const char *str) const;
     	long        		findInBody(const char *str, size_t n = 0) const;
     	char*       		substrBody(size_t pos, size_t n);
-		const unsigned int&	getLenBody(void) const;
+		const unsigned int	&getLenBody(void) const;
 		const long long&	getLenTotalBody(void) const;
     	void        		eraseInBody(size_t pos, size_t n);
 		int					handleFileHeader();
 		void				flushBuffer( long pos, long n = 0 );
 		int					handleFileBody();
-		const std::string &getBondary(void) const;		
+		const std::string	&getBondary(void) const;		
 };
 
 #endif

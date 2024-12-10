@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 14:30:47 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 19:01:07 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,6 @@ const std::string&	Request::path( void	) const {
 	return (_path);
 }
 
-const std::string&	Request::host( void	) const {
-	return (_Host);
-}
-
 const std::string&	Request::find( std::string key ) const {
 	if (_others.find(key) == _others.end())
 		throw std::invalid_argument(key + ": key not found");
@@ -42,7 +38,7 @@ const std::string&	Request::find( std::string key ) const {
 	return (_others.at(key));
 }
 
-const t_state &Request::getStatus(void) const {
+const t_state &Request::getState(void) const {
 	return _state;
 }
 
@@ -50,12 +46,8 @@ void	Request::method( const int &newMethod ) {
 	_method = newMethod;
 }
 
-void	Request::host( std::string newHost ) {
-	_Host = newHost;
-}
-
-void	Request::setStatus( t_state newStatus ) {
-	_state = newStatus;
+void	Request::setState( t_state newState ) {
+	_state = newState;
 }
 
 void	Request::path( std::string newPath ) {
@@ -70,32 +62,18 @@ const long	long &Request::getContentLenght(void) const {
 	return _contentLenght;
 }
 
-std::string& Request::getMap(const std::string &key) {
-  static std::string def = "";
-  if (_others.find("key") != _others.end())
-    return _others[key];
-  return def;
-}
-
-void	Request::addServer(Server* server) {
-  _server = server;
-} 
-
 void Request::setMethode(const std::string &methode) {
 	if (methode == "GET")
 		_method = GET_;
 	else if (methode == "POST")
-		_method = POST_; 
+		_method = POST_;
 	else if (methode == "DELETE")
 		_method = DELETE_;
 }
 
-const int& Request::getMethode(void) const {
-	return _method;
-}
-
 void Request::setResponsCode(const std::string &code) {
 	_ResponsCode = code;
+	_state = RESPONSE;
 }
 
 const std::string& Request::getResponsCode(void) const {
@@ -106,7 +84,7 @@ void Request::setRedirect(const bool &b) {
 	_isRedirect = b;
 }
 
-bool& Request::getRedirect(void) {
+bool Request::getRedirect(void) const{
 	return _isRedirect;
 }
 

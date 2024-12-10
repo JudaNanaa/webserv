@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 01:51:03 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/09 20:22:04 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 18:53:30 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,23 +74,23 @@ void Server::_parseContentLengthAndBoundary(Request *clientRequest)
 	}
 }
 
-void	Server::chooseParsing( Client *client ) {
+void	Server::_chooseParsing( Client *client ) {
 	Request	*request = client->getRequest();
 	
+	request->setState(ON_BODY);
  	if (_data->checkLocation(request->path()) != NULL) {
 		request->setRequestType(LOCATION);
 		std::cerr << "LOCATION" << std::endl;
-		handleLocation(client);
+		_handleLocation(client);
 	} else if (isCgi(request->path()) is true) {
 		request->setRequestType(CGI);
 		std::cerr << "CGI" << std::endl;
-		handleCgi(client);
+		_handleCGI(client);
 	} else {
 		request->setRequestType(DEFAULT);
 		std::cerr << "DEFAULT" << std::endl;
-		handleRequest(client);
+		_handleRequest(client);
 	}
-	request->setStatus(ON_BODY);
 }
 
 void Server::_parseClientHeader(Client *client) {
@@ -106,7 +106,7 @@ void Server::_parseClientHeader(Client *client) {
 	std::cerr << *clientRequest << std::endl; // Print Request
 
 	_parseContentLengthAndBoundary(clientRequest); // set content length et boundary
-  	chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
+  	_chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
 }
 
 void Server::_addingHeader(Client *client, char *buff, int n)
@@ -118,6 +118,6 @@ void Server::_addingHeader(Client *client, char *buff, int n)
 		throw std::runtime_error(e.what());
 	}
 	client->setUseBuffer(false);
-	if (client->getReadyToParseHeader())
+	if (client->whatToDo() is READY_PARSE_HEADER)
 		_parseClientHeader(client);
 }

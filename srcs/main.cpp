@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 15:18:34 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 19:13:11 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int main(int argc, char **argv, char **env) {
 	}
 	catch(std::exception& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
-		return (1);
+		return 1;
 	}
 	data.closeServers();
 	return 0;

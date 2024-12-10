@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 13:55:03 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/06 20:53:51 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 20:31:36 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define LOCATION_HPP
 
 #include "../../../includes/includes.hpp"
+#include "../../../includes/utils.hpp"
 #include "Parser.hpp"
 #include <ostream>
 

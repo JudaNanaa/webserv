@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 20:53:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 18:36:31 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,14 @@
 typedef enum s_state
 {
 	ON_HEADER,
+	READY_PARSE_HEADER,
 	ON_BODY,
+	RESPONSE,
 }t_state;
 
 # define BUFFER_SIZE 1000000
 
 # define DEFAULT_UPLOAD_FILE "URIs/uploads/default"
-
-typedef enum s_parse
-{
-	NOT_READY,
-	READY_PARSE_HEADER,
-	READY_PARSE_BODY,
-	ERROR,
-}t_parse;
 
 # define DEFAULT 1
 # define CGI 2
@@ -45,6 +39,7 @@ typedef enum s_parse
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/epoll.h>
+#include <sys/wait.h>
 #include <arpa/inet.h>
 #include <string>
 #include <vector>

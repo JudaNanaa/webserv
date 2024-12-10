@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/09 18:33:33 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 18:58:15 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ std::string ContentType(const std::string& extension) {
 	return "application/octet-stream";  // Retourne ce type par défaut si l'extension est inconnue
 }
 
-std::string Server::generateAutoIndex(Client *client, const std::string &directoryPath) {
+std::string Server::_generateAutoIndex(Client *client, const std::string &directoryPath) {
 	std::string html;
 
 	html += "<!DOCTYPE html>\r\n";
@@ -281,7 +281,7 @@ std::string Server::generateAutoIndex(Client *client, const std::string &directo
     return html;
 }
 
-std::string	Server::getContentType(const std::string& path) {
+std::string	Server::_getContentType(const std::string& path) {
 	if (path.find('.') not_found) {
 		return ("text/plain");
 	}
@@ -290,15 +290,15 @@ std::string	Server::getContentType(const std::string& path) {
 	return ContentType(extension);
 }
 
-std::string	Server::getResponseHeader(Request *request, const std::string& path) {
+std::string	Server::_getResponseHeader(Request *request, const std::string& path) {
 	int code = atoi(request->getResponsCode().c_str());
 
 	std::cerr << "debug code : " << code << std::endl;
 	std::ostringstream oss;
 	oss << request->getResponseFileSize();
     std::string header = "HTTP/1.1 " + request->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
-    header += "Content-Type: " + getContentType(path) + "\r\n";
-	std::cerr << "Content type: " << getContentType(path) << std::endl;
+    header += "Content-Type: " + _getContentType(path) + "\r\n";
+	std::cerr << "Content type: " << _getContentType(path) << std::endl;
     header += "Content-Length: " + oss.str() + "\r\n";
     header += "\r\n";
 	return header;
@@ -312,10 +312,12 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 	if (clientRequest->getRequestType() is LOCATION)
 	{
 		Location *location = _data->checkLocation(clientRequest->path());
-		finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path();
+		printnl("location : " <<  location->location());
+		finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path().substr(location->location().size());
 	}
 	else if (clientRequest->getRequestType() is DEFAULT)
 		finalPath = _data->_root + clientRequest->path();
+	printnl("DEBUG FINAL_PATH : " << finalPath);
 	if (access((finalPath).c_str(), F_OK | R_OK) is -1)
 		clientRequest->setResponsCode("404");
 	else if (stat((finalPath).c_str(), &buf) is -1)
@@ -340,7 +342,7 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 			else
 				autoIndex = _data->_autoIndex;
 			if (autoIndex)
-				generateAutoIndex(client, finalPath);
+				_generateAutoIndex(client, finalPath);
 			else 
 				clientRequest->setResponsCode("403");				
 		}
@@ -349,7 +351,7 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 			finalPath += "/" + index;
 			clientRequest->openResponseFile(finalPath.c_str());
 			if (clientRequest->responseFileOpen() is false)
-				generateAutoIndex(client, finalPath.erase(finalPath.find_last_of('/')));
+				_generateAutoIndex(client, finalPath.erase(finalPath.find_last_of('/')));
 		}
 	}
 	else
@@ -373,7 +375,7 @@ std::string Server::_openResponseFile(Request *clientRequest, Client* client)
 	return finalPath;
 }
 
-void Server::sendResponse(int fd, Client *client) {
+void Server::_sendResponse(int fd, Client *client) {
 	Request *clientRequest = client->getRequest();
 	char	buffer[BUFFER_SIZE];
 	std::size_t	n = 0;
@@ -385,7 +387,7 @@ void Server::sendResponse(int fd, Client *client) {
 	if (clientRequest->responseFileOpen() is false)
 	{
 		finalPath = _openResponseFile(clientRequest, client);
-		std::string	header = getResponseHeader(clientRequest, finalPath);
+		std::string	header = _getResponseHeader(clientRequest, finalPath);
 		if (send(fd, header.c_str(), header.size(), MSG_NOSIGNAL) is -1) {
 			client->setResponse("500");
 			throw std::runtime_error("Can't send the message !");
@@ -407,7 +409,7 @@ void Server::sendResponse(int fd, Client *client) {
 	}
 }
 
-void Server::sendRedirect(std::string redirect, int fd, Client *client) {
+void Server::_sendRedirect(std::string redirect, int fd, Client *client) {
 	Request *clientRequest = client->getRequest();
 	int code = atoi(clientRequest->getResponsCode().c_str());
 
@@ -426,14 +428,14 @@ void Server::sendRedirect(std::string redirect, int fd, Client *client) {
 	}
 }
 
-void Server::giveClientResponseByLocation(int fd) {
-	Client* client = getClient(fd);
+void Server::_giveClientResponseByLocation(int fd) {
+	Client* client = _getClient(fd);
 	Location location = _data->_locations[client->getRequest()->path()];
 
 	if (!location.redirect().empty()) {
 		client->getRequest()->setResponsCode("302");
 		std::cerr << "redirected on : " + location.redirect() << std::endl;
-		sendRedirect(location.redirect(), fd, client);
+		_sendRedirect(location.redirect(), fd, client);
 	}
 	else {
 		std::cerr << "no redirect field" << _data->_root + client->getRequest()->path() << std::endl;
@@ -448,7 +450,7 @@ void setCookie(std::stringstream &response, std::string key, std::string value) 
 	<< "\r\n";
 }
 
-void Server::handleAuth(Client* client) {
+void Server::_handleAuth(Client* client) {
 	Request* request = client->getRequest();
 	std::stringstream response;
 
@@ -470,12 +472,12 @@ void Server::handleAuth(Client* client) {
 		std::string header = request->getHeader();
 		if (request->isKeyfindInHeader("Cookie") is true) {
 			if (request->find("Cookie").find("auth=true") is_found) 
-				sendRedirect(SECRET, client->getClientFd(), client);
+				_sendRedirect(SECRET, client->getClientFd(), client);
 			else 
-				sendRedirect(MYCEOC, client->getClientFd(), client);
+				_sendRedirect(MYCEOC, client->getClientFd(), client);
 		}
 		else
-			sendRedirect(MYCEOC, client->getClientFd(), client); 
+			_sendRedirect(MYCEOC, client->getClientFd(), client); 
 	}
 	client->afterResponse();
 }
@@ -484,15 +486,15 @@ void Server::giveClientResponse(int fd) {
 	Client *client;
 	std::ifstream file;
 
-	client = getClient(fd);
-	if (client->isReadyToResponse() is false)
+	client = _getClient(fd);
+	if (client->whatToDo() is_not RESPONSE)
 		return;
 	if (client->getRequest()->getRedirect()) 
-		giveClientResponseByLocation(fd);
+		_giveClientResponseByLocation(fd);
 	else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) is 0 && client->getRequest()->getResponsCode() is "200")
-		handleAuth(client);
+		_handleAuth(client);
 	else if (client->getRequest()->getRequestType() is CGI) 
-		responseCGI(client);
+		_responseCGI(client);
 	else 
-		sendResponse(fd, client); //this methode send response with appropriate code
+		_sendResponse(fd, client); //this methode send response with appropriate code
 }

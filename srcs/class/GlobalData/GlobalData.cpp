@@ -84,18 +84,6 @@ void GlobalData::_addNewClient(Server &server) {
 	}
 }
 
-Client *GlobalData::_searchClient(const int fd)  {
-	std::map<int, Server>::iterator it = _servMap.begin();
-	std::map<int, Server>::iterator end = _servMap.end();
-
-	while (it != end) {
-		if (it->second.ifClientInServer(fd) is true)
-			break;
-		++it;
-	}
-	return it->second.getClient(fd);
-}
-
 Server *GlobalData::_getServerWithClientFd(const int fd) {
 	std::map<int, Server>::iterator it = _servMap.begin();
 	std::map<int, Server>::iterator end = _servMap.end();
@@ -170,5 +158,11 @@ void GlobalData::runServers(std::vector<Server> &servVec) {
 }
 
 void GlobalData::closeServers(void) {
-	
+	std::map<int, Server>::iterator it = _servMap.begin();
+	std::map<int, Server>::iterator end = _servMap.end();
+
+	while (it is_not end) {
+		it->second.freeAll();
+		++it;
+	}
 }

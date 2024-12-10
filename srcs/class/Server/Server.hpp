@@ -3,26 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ibaby <ibaby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:16:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 15:34:27 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 18:309:40 by ibaby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
+
+#include "../RawBits/RawBits.hpp"
+#include "../Request/Request.hpp"
+#include "../GlobalData/GlobalData.hpp"
+#include "../Parser/Parser.hpp"
 #include "../../../includes/includes.hpp"
 #include "../Client/Client.hpp"
 #include "../Request/Request.hpp"
 #include "../Parser/Parser.hpp"
 #include "../Parser/Location.hpp"
-#include <exception>
-#include <map>
-#include <ostream>
-#include <fstream>
-#include <string>
-#include <vector>
 
 # define MAX_CLIENTS 1000
 
@@ -30,71 +29,79 @@ struct Data ;
 
 class Server {
 	private:
-		int _socket_fd;
-		std::string _host[2];
-		std::map<int, Client*> _clientMap;
-		char	**_env;
+		int						_socket_fd;
+		std::string				_host[2];
+		std::map<int, Client*>	_clientMap;
+		char					**_env;
 
 		// CGI
-		void	_responseCgiIfNoProblem(Client *client);
-		void	_responseCgiError(Client *client);
-		void	_childProcess(Client *client, int ParentToCGI[2], int CGIToParent[2]);
+		void					_responseCgiIfNoProblem(Client *client);
+		void					_responseCgiError(Client *client);
+		void					_childProcess(Client *client, int ParentToCGI[2], int CGIToParent[2]);
+		void					_responseCGI(Client *client);
+		void					_handleCGI( Client *client );
+		void					_writeBodyToCgi(Client *client, const char *buff, int n);
 
 		// Parsing header
-		void	_parseClientHeader(Client *client);
-		void	_addHeaderLine( std::string line, Request *clientRequest);
-		void	_addingHeader(Client *client, char *buff, int n);
-		void	_parseOtherLinesHeader(Client *client, const std::vector<std::string> &headerSplit);
-		void	_parseContentLengthAndBoundary(Request *clientRequest);
-		void	_parseFirstLineHeader(Client *client, const std::vector<std::string> &headerSplit);
+		void					_parseClientHeader(Client *client);
+		void					_addHeaderLine( std::string line, Request *clientRequest);
+		void					_addingHeader(Client *client, char *buff, int n);
+		void					_parseOtherLinesHeader(Client *client, const std::vector<std::string> &headerSplit);
+		void					_parseContentLengthAndBoundary(Request *clientRequest);
+		void					_parseFirstLineHeader(Client *client, const std::vector<std::string> &headerSplit);
+		void					_chooseParsing( Client *client );
+		void					_handleRequest( Client *client );
 		
 		// Response
-		std::string  generateAutoIndex(Client *client, const std::string &directoryPath);
-		int	sendToFd(const char *msg, std::size_t msgSize, int fd);
-		std::string _openResponseFile(Request *clientRequest, Client* client);
-		std::string _normalOpenFile(Request *clientRequest, Client* client);
+		std::string				_generateAutoIndex(Client *client, const std::string &directoryPath);
+		std::string				_openResponseFile(Request *clientRequest, Client* client);
+		std::string				_normalOpenFile(Request *clientRequest, Client* client);
+		std::string				_getContentType(const std::string& path);
+		std::string				_getResponseHeader(Request *request, const std::string& path);
+		int						_sendToFd(const char *msg, std::size_t msgSize, int fd);
+		void					_sendResponse(int fd, Client *client);
+		void					_sendRedirect(std::string redirect, int fd, Client *client);
+
+		// Location
+    	void					_giveClientResponseByLocation(int fd);
+		void					_handleLocation(Client *client);
+		bool					_checkLocationCgi(Location* location, std::string extension, Client* client);
+
+		// Getter
+		Client					*_getClient(int fd);
+
+		// Auth
+		void					_handleAuth(Client* client);
 		
-		std::string	getContentType(const std::string& path);
-		std::string	getResponseHeader(Request *request, const std::string& path);
+		// Delete
+		void					_handleDelete(Client* client);
+
+		void					_addingBody(Client *client, const char *buff, const int &n);
 	public:
 		Server();
 		
 		~Server();
 
-		void checkCgi( void );
+    	Data					*_data;
+		/*		SETTER		*/
+		void					setEnv(char **env);
+		bool					isCgi(const std::string& path);
+  		void					addData(Data* data);
+		
+		/*		GETTER		*/
+		char					**getEnv( void ) const;
+		int const				&getSocketFd() const;
+		bool					ifClientInServer(int fd) const;
+		bool					isServerHost(std::string const &str) const;
 
-		void	setEnv( char **env );
-		char	**	getEnv( void ) const;
-		void	init();
-		void checkBoundaries( void );
-		void addClientToMap(Client *client);
-		bool ifClientInServer(int fd) const;
-		Client *getClient(int fd);
-		void removeClientInMap(int fd);
-  		void addData(Data* data);
-		int getSocketFd() const;
-		bool isServerHost(std::string const &str) const;
-		void addClientRequest(int fd);
-		void responseCGI(Client *client);
-		void sendResponse(int fd, Client *client);
-		void sendRedirect(std::string redirect, int fd, Client *client);
-		void giveClientResponse(int fd);
-    	void giveClientResponseByLocation(int fd);
-    	void MergeLocationData(std::string path);
-		Location *findLocation(const std::string &uri);
-		void chooseParsing( Client *client );
-    	Data *_data;
-		bool	isCgi( const std::string& path );
-		void	handleCgi( Client *client );
-		void	handleLocation(Client *client);
-		void	handleRequest( Client *client );
-		void 	handleAuth(Client* client);
-		void	handleDELETE(Client* client);
-		void 	writeBodyToCgi(Client *client, char *buff, int n);
-		//CGI
-
-		//request Parsing
-		bool checkAllowMethodes(std::string methodes);
+		// Other 
+		void					init();
+		void					checkCgi(void);
+		void					addClientToMap(Client *client);
+		void					removeClientInMap(int fd);
+		void					addClientRequest(int fd);
+		void					giveClientResponse(int fd);
+		void					freeAll(void);
 };
 
 #endif
