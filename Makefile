@@ -6,7 +6,7 @@
 #    By: madamou <madamou@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/29 12:42:35 by madamou           #+#    #+#              #
-#    Updated: 2024/12/09 19:47:08 by madamou          ###   ########.fr        #
+#    Updated: 2024/12/11 00:03:08 by madamou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ CC = c++
 
 C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3
 
-REQUEST = $(addprefix Request/, Request.cpp GetterSetter.cpp)
+REQUEST = $(addprefix Request/, Request.cpp GetterSetterRequest.cpp ResponseFile.cpp RequestHeader.cpp RequestBody.cpp)
 
 FILE = $(addprefix File/, File.cpp)
 
@@ -36,13 +36,13 @@ CLIENT = $(addprefix Client/, Client.cpp)
 
 PARSING_HEADER = $(addprefix parsingHeader/, parsingHeader.cpp)
 
-SERVER = $(addprefix Server/, Server.cpp  Response.cpp Utils.cpp GetterSetter.cpp $(CGI) $(PARSING_HEADER))
+SERVER = $(addprefix Server/, Server.cpp  Response.cpp Utils.cpp GetterSetterServer.cpp $(CGI) $(PARSING_HEADER))
 
 PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp Location.cpp)
 
 UTILS = $(addprefix Utils/, utils.cpp)
 
-RAW_BITS = $(addprefix RawBits/, RawBits.cpp GetterSetter.cpp FileUpload.cpp)
+RAW_BITS = $(addprefix RawBits/, RawBits.cpp GetterSetterRawBits.cpp FileUpload.cpp)
 
 CLASS = $(addprefix class/, $(PARSER) $(GLOBALDATA) $(CLIENT) $(SERVER) $(REQUEST) $(RAW_BITS) $(FILE))
 

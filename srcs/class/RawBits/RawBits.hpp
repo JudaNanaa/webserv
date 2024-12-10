@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:55 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/10 19:11:32 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 23:56:20 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include "../../../includes/includes.hpp"
 #include "../../../includes/utils.hpp"
 #include "../File/File.hpp"
+#include <string>
 #include <vector>
 #include <map>
 #include <fstream>
@@ -47,27 +48,33 @@ class RawBits {
 		std::ofstream		_uploadFile;
 
 		void				checkFileHeader( File& file, std::string &header );
+		void 				_appendBody(const char *str, const int n);
+		long 				_findInRequest(const char *str) const;
+    	char*       		_substrBody(size_t pos, size_t n);
+		void				_flushBuffer( long pos, long n = 0 );
+
 	public:
 		RawBits(void);
 		~RawBits();
-
-		int 				uploadMultipart( void  );
-		const std::string&	getHeader(void) const; 
-		const char *		getBody(void) const;
-		void 				setBondary(const std::string &str);
-		void 				BuffToRaw(const char *buff, const int n);
-		void 				appendBody(const char *str, const int n);
-		void 				splitRequest(void);
-		long 				find(const char *str) const;
-    	long        		findInBody(const char *str, size_t n = 0) const;
-    	char*       		substrBody(size_t pos, size_t n);
+		
+		// Getter
+		const std::string	&getHeader(void) const; 
+		const char			*getBody(void) const;
 		const unsigned int	&getLenBody(void) const;
-		const long long&	getLenTotalBody(void) const;
+		const long long		&getLenTotalBody(void) const;
+		const std::string	&getBondary(void) const;
+		
+		// Setter
+		void 				setBondary(const std::string &str);
+		
+		
+		int 				uploadMultipart( void );
+		void 				BuffToRequest(const char *buff, const int n);
+		void 				splitRequest(void);
+    	long        		findInBody(const char *str, size_t n = 0) const;
     	void        		eraseInBody(size_t pos, size_t n);
 		int					handleFileHeader();
-		void				flushBuffer( long pos, long n = 0 );
 		int					handleFileBody();
-		const std::string	&getBondary(void) const;		
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 01:51:03 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 22:41:08 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/11 00:18:53 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ void Server::_parseFirstLineHeader(Client *client, const std::vector<std::string
 	std::vector<std::string> lineSplit;
 
 	if (std::count(headerSplit[0].begin(), headerSplit[0].end(), ' ') is_not 2) {
-		// La premiere ligne est pas bonne donc faire une reponse en fonction
 		client->setResponse("400");
 		throw std::invalid_argument("Error header 1: " + headerSplit[0]);
 	}
@@ -72,6 +71,66 @@ void Server::_parseContentLengthAndBoundary(Request *clientRequest)
 			}
 		}
 	}
+}
+
+void	Server::_handleLocation(Client *client) {
+  	Request* request = client->getRequest();
+  	Location* location = _data->getLocation(request->path());
+	std::size_t	extension;
+
+	std::cerr << "LOCATION" << std::endl;
+	request->setRequestType(LOCATION);
+	extension = request->path().find_last_of('.');
+	printnl("debug requests path : " << request->path());
+	if (extension != std::string::npos) {
+		// if (!_checkLocationCgi(location, request->path().substr(extension), client)) // je pense que c'est pas la bonne condition
+		if (_checkLocationCgi(location, request->path().substr(extension), client) is true)
+			return ;
+	}
+
+	if (!location->redirect().empty())
+		request->setRedirect(true);
+
+	if ((location->allowedMethods() & request->method()) is 0) {
+		client->setResponse("405");
+		return ;
+	}
+
+	long long client_max_body_size  = location->maxBodySize() < 0 ? _data->_clientMaxBodySize : location->maxBodySize();
+
+	if (client_max_body_size >= 0) {
+		if (client_max_body_size < request->getContentLenght()) {
+    		client->setResponse("413");
+    		return ;
+		}
+	}
+	if (request->getContentLenght() is -1) // no body
+    	client->setResponse();
+}
+
+void	Server::_handleRequest( Client *client ) {
+	Request *request = client->getRequest();
+
+	std::cerr << "DEFAULT" << std::endl;
+	request->setRequestType(DEFAULT);
+	if (isCgi(request->path()) is true) {
+		_handleCGI(client);
+		return;
+	}
+
+	if ((_data->_allowedMethods & request->method()) is 0) {
+		client->setResponse("405");
+		return ;
+	}
+	//check de la body Size
+	if (_data->_clientMaxBodySize >= 0) {
+		if (_data->_clientMaxBodySize < request->getContentLenght()) {
+			client->setResponse("413");
+			return ;
+		}
+	}
+	if (request->getContentLenght() is -1)
+		client->setResponse();
 }
 
 void	Server::_chooseParsing( Client *client ) {

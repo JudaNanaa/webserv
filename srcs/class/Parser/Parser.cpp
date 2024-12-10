@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/10 18:52:32 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/11 00:28:38 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,9 +214,8 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath, char **env
 	parseConfigPath(configFilePath);
 	std::ifstream configFile(configFilePath.c_str());
 
-	if (configFile.fail()) {
+	if (configFile.fail())
 	  throw std::invalid_argument("Can't open the config file");
-	}
 	for (int lineNumber = 0; std::getline(configFile, line); lineNumber++) {
 	  if (line.empty() || trim(line).empty())
 		continue;
@@ -229,9 +228,8 @@ std::vector<Server> Pars::parseConfigFile(std::string configFilePath, char **env
 	    servVec.push_back(newServ);
 	  }
 	}
+	if (servVec.empty())
+		throw std::runtime_error("no server found");
+	std::cerr << "PARSING OK!" << std::endl;
 	return servVec;
-}
-
-std::vector<Server> Pars::parse(std::string path, char **env) {
-	return parseConfigFile(path, env);
 }

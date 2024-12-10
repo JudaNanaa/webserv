@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/10 22:50:42 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/11 00:26:15 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,14 +44,13 @@ struct Data {
 
 class Pars {
   private:
-    static std::vector<Server>			parseConfigFile(std::string configFilePath, char **env);
     static void							parseConfigPath(std::string path);
     static void							handleLine(std::string &line, std::ifstream& configFile, Data *data, int &lineNumber);
     static void							parseServer(Server &serv, std::ifstream& configFile, int &lineNumber);
     static void							checkNecessary(Server& serv);
 
   public:
-    static std::vector<Server>			parse(std::string path, char **env);
+    static std::vector<Server>			parseConfigFile(std::string configFilePath, char **env);
 
     void								addPort(Data* data, std::string port);
     void								addServName(Data* data, std::string name);

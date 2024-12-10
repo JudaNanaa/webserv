@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:42:11 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/06 15:52:04 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 23:57:29 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 #include "../Parser/Parser.hpp"
 
 void	RawBits::checkFileHeader(File& file, std::string &header) {
-	// for the "\r\n"
-	std::cerr << "----HEADER----" << std::endl << header << std::endl;
 	std::vector<std::string> fileHeaderSplit = split(header, "\r\n");
 
 	for (std::vector<std::string>::iterator it = fileHeaderSplit.begin(); it != fileHeaderSplit.end(); it++) {
@@ -24,15 +22,17 @@ void	RawBits::checkFileHeader(File& file, std::string &header) {
 			std::vector<std::string> info;
 			std::string sep = (it2 == elements.begin()) ? ":" : "=";
 			info = split(*it2, sep);
-			if (info.size() != 2) {
-				std::cerr << "bad info: " << *it2 << std::endl; continue ;
+			if (info.size() != 2)
+			{
+				std::cerr << "bad info: " << *it2 << std::endl;
+				continue ;
 			}
 			file.set(trim(info[0]), trim(info[1]));
 		}
 	}
 }
 
-void	RawBits::flushBuffer( long pos, long n ) {
+void	RawBits::_flushBuffer( long pos, long n ) {
 	_uploadFile.write(&_body[pos], n);
 }
 
@@ -43,11 +43,10 @@ int	RawBits::handleFileHeader(void) {
 
 	fileStart = findInBody(("--" + _boundary).c_str()) + _boundary.size() + 4; // +4 pour sauter /r/n/r/nz
 	headerEnd = findInBody("\r\n\r\n", fileStart);
-	if (headerEnd == -1) {	/* header incomplete */
+	if (headerEnd == -1)	/* header incomplete */
 		return STOP;
-	}
 
-	header = substrBody(fileStart, headerEnd - fileStart);
+	header = _substrBody(fileStart, headerEnd - fileStart);
 	
 	_currentFile.clean();
 	checkFileHeader(_currentFile, header);
@@ -74,19 +73,19 @@ int    RawBits::handleFileBody(void) {
     long boundaryPos = findInBody(("--" + _boundary).c_str());
 
     if (boundaryPos == -1) { // On a pas encore trouve la bondary qui dit que le fichier est fini
-        flushBuffer(0, _lenBody - (_boundary.size() + 2));        // in case a part of bondary is at the end
+        _flushBuffer(0, _lenBody - (_boundary.size() + 2));        // in case a part of bondary is at the end
         eraseInBody(0, _lenBody - (_boundary.size() + 2));
         return (NOT_FINISHED);
     }
 	_fileState = ON_HEADER;
 	if (std::memcmp(&_body[boundaryPos], ("--" + _boundary + "--").c_str(), _boundary.size() + 4) == 0) {    // end bondary
-        flushBuffer(0, boundaryPos - 2);
+        _flushBuffer(0, boundaryPos - 2);
 		delete [] _body;
 		(_body = NULL, _uploadFile.close());
         return (FINISHED);
     }
-	// on a trouve la nbondary de fin de fichier mais il ya d'autres fichiers
-	flushBuffer(0,boundaryPos - 2); // on veut tout mettre dans le fichier jusqu'a boundaryPos - 2 (\r\n)
+	// on a trouve la boundary de fin de fichier mais il ya d'autres fichiers
+	_flushBuffer(0,boundaryPos - 2); // on veut tout mettre dans le fichier jusqu'a boundaryPos - 2 (\r\n)
 	eraseInBody(0, boundaryPos);  // on veut tout enlever jusqu'a boundarypos
 	_uploadFile.close();
 	return (CONTINUE);
@@ -107,7 +106,6 @@ int    RawBits::uploadMultipart( void  ) {
             int state = handleFileBody();
             if (state != CONTINUE)
                 return state;
-            continue ;
         }
     }
     return (-1);

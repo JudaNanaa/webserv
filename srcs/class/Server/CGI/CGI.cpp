@@ -15,20 +15,24 @@
 void Server::_writeBodyToCgi(Client *client, const char *buff, int n)
 {
 	Request *clientRequest = client->getRequest();
-	int result;
 
 	if (client->getUseBuffer() is true)
 	{
-		result = write(client->getParentToCGI(), buff, n);
+		write(client->getParentToCGI(), buff, n);
 		clientRequest->incrementSizeBody(n);
 	}
 	else
-		result = write(client->getParentToCGI(), clientRequest->getBody(), clientRequest->getLenBody());
-	(void)result;
-	if (clientRequest->getLenTotalBody() is clientRequest->getContentLenght() || clientRequest->getContentLenght() is -1)
+		write(client->getParentToCGI(), clientRequest->getBody(), clientRequest->getLenBody());
+	if (clientRequest->getLenTotalBody() is clientRequest->getContentLenght())
 	{
 		close(client->getParentToCGI());
 		client->setParentToCGI(-1);
+	}
+	else if (clientRequest->getLenTotalBody() > clientRequest->getContentLenght())
+	{
+		close(client->getParentToCGI());
+		client->setParentToCGI(-1);
+		client->setResponse("413");
 	}
 }
 
@@ -143,7 +147,10 @@ void	Server::_handleCGI( Client *client ) {
     if (pid == 0)
         _childProcess(client, ParentToCGI, CGIToParent);
     close(ParentToCGI[0]), close(CGIToParent[1]);
-	client->setParentToCGI(ParentToCGI[1]);
+	if (client->getRequest()->getContentLenght() == -1)
+		close(ParentToCGI[1]);
+	else
+		client->setParentToCGI(ParentToCGI[1]);
     client->setCGIFD(CGIToParent[0]);
     client->setPid(pid);
 }

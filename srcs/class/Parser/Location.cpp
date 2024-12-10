@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/10 20:31:20 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/10 23:30:24 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,6 @@ Location::~Location() {
 
 /*	GETTER	*/
 
-void Location::printMap()
-{
-    std::map<std::string, std::string>::iterator it = _cgi.begin();
-    std::map<std::string, std::string>::iterator end = _cgi.end();
-
-	printnl("yes je test");
-    while (it != end)
-    {
-        printnl("key == " + it->first << " value == " + it->second);
-        it++;
-    }
-}
-
-
 const std::string&	Location::location( void ) const {
 	return _location;
 } // LOCATION
@@ -48,17 +34,16 @@ const std::string&	Location::root( void ) const {
 	return _root;
 } // string
 
-
 const std::map<std::string, std::string>& Location::cgi( void ) const {
 	return _cgi;
 } // string
 const std::string&	Location::redirect( void ) const {
 	return _redirect;
 } // string
-int Location::allowedMethods( void ) const {
+const int &Location::allowedMethods( void ) const {
 	return _allowedMethods;
 } // allowedMethods
-long long	Location::maxBodySize( void ) const {
+const long long	&Location::maxBodySize( void ) const {
 	return _client_max_body_size;
 } // maxBodySize
 
@@ -91,7 +76,6 @@ void	Location::allowedMethods( int newAllowedMethods ) {
 } // allowedMethods
 void	Location::maxBodySize( long long newMaxBodySize ) {
 	_client_max_body_size = newMaxBodySize;
-	// printnl("je passe ici == location == " << _location);
 } // maxBodySize
 
 void	Location::index( std::string newIndex ) {
@@ -104,10 +88,6 @@ void	Location::autoIndex( const int &newAutoIndex ) {
 void	Location::uploadFolder( std::string newUploadFolder ) {
 	_uploadFolder = newUploadFolder;
 } // uploadFolder
-
-std::string	isDefault(const std::string& var) {
-	return (var.empty()? "default":var);
-}
 
 std::string	printMethods(int methods) {
 	std::string	result;
