@@ -61,41 +61,28 @@ void	Pars::parseConfigPath(std::string path) {
 }
 
 void Location::assignKeyValue(std::string &key, std::string &value) {
-  if (key == "index") {	//			INDEX
-      index(value);
-    } else if (key == "root") {	//			ROOT
-      root(value);
-    } else if (key == "cgi") {	//			CGI
-      addCgi(value);
-    } else if (key == "redirect") {	//			REDIRECT
-      redirect(value);
-    } else if (key == "allowed_methods") {	//			ALLOWED METHODS
-      int methods = 0;
-      if (value.find("GET") is_found) {
-        methods = methods | GET_;
-      } if (value.find("POST") is_found) {
-        methods = methods | POST_;
-      } if (value.find("DELETE") is_found) {
-        methods = methods | DELETE_;
-      }
-      if (methods == 0) {	// no methods found
-        throw std::invalid_argument("GET, DELETE or POST expected");
-      } else {
-        allowedMethods(methods);
-      }
-    } else if (key == "uploads_folder") {	//			UPLOADS_FOLDER
-      uploadFolder(value);
-    } else if (key == "client_max_body_size") {	//			CLIENT_MAX_BODY_SIZE
-      long long	int_value = std::atoll(value.c_str());
-      if (int_value <= 0 || value.find_first_not_of("0123456789") is_found)
-        throw std::invalid_argument("invalid value");
-      maxBodySize(int_value);
-    } else if (key == "auto_index") {	//			AUTO_INDEX
-      value == "on" ? autoIndex(true) : value == "off" ? autoIndex(false) :
-        throw std::invalid_argument("invalid value: expected 'on' or 'off'");
-    } else {
-      throw std::invalid_argument("unknow assignement `" + key + "'");
-    }
+  static std::map<std::string, void (Location::*)(std::string&)> actions;
+  if (actions.empty())
+  {
+    actions["index"] = &Location::index ;
+    actions["root"] = &Location::root ;
+    actions["cgi"] = &Location::addCgi ;
+    actions["redirect"] = &Location::redirect;
+    actions["uploads_folder"] = &Location::uploadFolder;
+    actions["redirect"] = &Location::redirect;
+    actions["client_max_body_size"] = &Location::redirect;
+    actions["auto_index"] = &Location::handleAutoIndex;
+    actions["allowed_methods"] = &Location::handleAllowedMethods;
+  };
+
+  std::map<std::string, void (Location::*)(std::string&)>::iterator it = actions.find(key);
+  std::map<std::string, void (Location::*)(std::string&)>::iterator end = actions.end();
+  if (it != end) {
+    void (Location::*func)(std::string&) = it->second;
+    (this->*func)(value);
+  } else {
+     throw std::invalid_argument("unknown assignment `" + key + "'");
+  }
 }
 
 void	Location::addLocationLine(std::string &line) {
@@ -141,31 +128,28 @@ void	_handleLocation(std::string &line, std::ifstream &configFile, Data& data, i
 			break;
 		}
 		data._locations[location_path].addLocationLine(line);
-		// location.addLocationLine(line);
 	}
 	data._locations[location_path].location(location_path);
-	// std::cout << location << std::endl;
-	// data._locations[location_path] = location;
 }
 
 // for each lines apply the associated function
 void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, int &lineNumber) {
-	std::map<std::string, void (Pars::*)(Data*, std::string)> functionMap;
-
-  	(void)lineNumber;
-
-	functionMap["listen"] = &Pars::addPort;
-	functionMap["server_names"] = &Pars::addServName;
-	functionMap["root"] = &Pars::addRootDir;
-	functionMap["uploads_folder"] = &Pars::addUpFoldDir;
-	functionMap["allowed_methods"] = &Pars::addAllowedMethodes;
-	functionMap["auto_index"] = &Pars::addAutoIndex;
-	functionMap["error_pages"] = &Pars::addErrPage;
-	functionMap["cgi"] = &Pars::addCgi;
-	functionMap["client_max_body_size"] = &Pars::addClientMBodyS;
-	functionMap["index"] = &Pars::addIndex;
-
+	static std::map<std::string, void (Pars::*)(Data*, std::string)> functionMap;
 	std::string	type;
+
+  (void)lineNumber;
+  if (functionMap.empty()) {
+    functionMap["listen"] = &Pars::addPort;
+    functionMap["server_names"] = &Pars::addServName;
+    functionMap["root"] = &Pars::addRootDir;
+    functionMap["uploads_folder"] = &Pars::addUpFoldDir;
+    functionMap["allowed_methods"] = &Pars::addAllowedMethodes;
+    functionMap["auto_index"] = &Pars::addAutoIndex;
+    functionMap["error_pages"] = &Pars::addErrPage;
+    functionMap["cgi"] = &Pars::addCgi;
+    functionMap["client_max_body_size"] = &Pars::addClientMBodyS;
+    functionMap["index"] = &Pars::addIndex;
+  }
 
 	normalizeLine(line);
 	type = line.substr(0, line.find(' '));

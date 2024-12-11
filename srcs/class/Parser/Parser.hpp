@@ -27,7 +27,7 @@ struct Data {
     Data();
     ~Data();
     bool								checkLocation(const std::string &path) const;
-	Location 							*getLocation(const std::string &path);
+	  Location 							*getLocation(const std::string &path);
     int									_port;
 
     std::string							_serverName;
@@ -38,7 +38,7 @@ struct Data {
     bool								_autoIndex;
     std::map<std::string, std::string> 	_cgi;
     long								_clientMaxBodySize;
-	std::map<std::string, Location>		_locations;
+    std::map<std::string, Location>		_locations;
     std::string							_index;
 };
 

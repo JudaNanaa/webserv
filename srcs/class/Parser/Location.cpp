@@ -57,15 +57,15 @@ const std::string&	Location::uploadFolder( void ) const {
 
 /*	SETTER	*/
 
-void	Location::location( std::string newLocation ) {
+void	Location::location( std::string &newLocation ) {
 	_location = newLocation;
 } // location
 
-void	Location::root( std::string newRoot ) {
+void	Location::root( std::string &newRoot ) {
 	_root = newRoot;
 } // root
 
-void	Location::redirect( std::string newRedirect ) {
+void	Location::redirect( std::string &newRedirect ) {
 	_redirect = newRedirect;
 } // redirect
 void	Location::allowedMethods( int newAllowedMethods ) {
@@ -75,14 +75,14 @@ void	Location::maxBodySize( long long newMaxBodySize ) {
 	_client_max_body_size = newMaxBodySize;
 } // maxBodySize
 
-void	Location::index( std::string newIndex ) {
+void	Location::index( std::string &newIndex ) {
 	_index = newIndex;
 } // index
 void	Location::autoIndex( const int &newAutoIndex ) {
 	_autoIndex = newAutoIndex;
 } // autoIndex
 
-void	Location::uploadFolder( std::string newUploadFolder ) {
+void	Location::uploadFolder( std::string &newUploadFolder ) {
 	_uploadFolder = newUploadFolder;
 } // uploadFolder
 
@@ -103,9 +103,37 @@ std::string	printMethods(int methods) {
 	return (result);
 }
 
-void Location::addCgi(std::string cgi) {
+void Location::addCgi(std::string &cgi) {
   //TODO: add cgi logic
   if (cgi.find(" ") is_found) {
     _cgi[cgi.substr(0, cgi.find(' '))] = trim(cgi.substr(cgi.find(' ')));
+  }
+}
+
+void Location::handleAutoIndex(std::string &value) {
+    value == "on" ? autoIndex(true) : value == "off" ? autoIndex(false) :
+      throw std::invalid_argument("invalid value: expected 'on' or 'off'");
+}
+
+void Location::handleMaxBodySize(std::string &value) {
+    long long	int_value = std::atoll(value.c_str());
+    if (int_value <= 0 || value.find_first_not_of("0123456789") is_found)
+      throw std::invalid_argument("invalid value");
+    maxBodySize(int_value);
+}
+
+void Location::handleAllowedMethods(std::string &value) {
+  int methods = 0;
+  if (value.find("GET") is_found) {
+    methods = methods | GET_;
+  } if (value.find("POST") is_found) {
+    methods = methods | POST_;
+  } if (value.find("DELETE") is_found) {
+    methods = methods | DELETE_;
+  }
+  if (methods == 0) {	// no methods found
+    throw std::invalid_argument("GET, DELETE or POST expected");
+  } else {
+    allowedMethods(methods);
   }
 }

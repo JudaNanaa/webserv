@@ -51,16 +51,19 @@ struct	Location {
 		const std::string							&uploadFolder( void ) const;
 
 		/*	SETTER	*/
-		void										location( std::string newLocation );
-		void										root( std::string newRoot );
-		void										cgi( std::string newCgi );
-		void										redirect( std::string newRedirect );
+		void										location( std::string &newLocation );
+		void										root( std::string &newRoot );
+		void										cgi( std::string &newCgi );
+		void										redirect( std::string &newRedirect );
+		void										handleAllowedMethods( std::string &value );
 		void										allowedMethods( int newAllowedMethods );
+		void										handleMaxBodySize( std::string &value );
 		void										maxBodySize( long long newMaxBodySize );
-		void										index( std::string newIndex );
+		void										index( std::string &newIndex );
+		void										handleAutoIndex( std::string &value );
 		void										autoIndex( const int & newAutoIndex );
-		void										uploadFolder( std::string newUploadFolder );
-		void 										addCgi(std::string cgi);
+		void										uploadFolder( std::string &newUploadFolder );
+		void 										addCgi(std::string &cgi);
 		void										addLocationLine(std::string &line);
 };
 
