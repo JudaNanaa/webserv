@@ -69,7 +69,6 @@ void Location::assignKeyValue(std::string &key, std::string &value) {
     actions["cgi"] = &Location::addCgi ;
     actions["redirect"] = &Location::redirect;
     actions["uploads_folder"] = &Location::uploadFolder;
-    actions["redirect"] = &Location::redirect;
     actions["client_max_body_size"] = &Location::redirect;
     actions["auto_index"] = &Location::handleAutoIndex;
     actions["allowed_methods"] = &Location::handleAllowedMethods;
