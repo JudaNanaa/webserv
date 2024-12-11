@@ -31,7 +31,9 @@ struct	Location {
 		long long									_client_max_body_size;
 		std::string									_index;
 		int											_autoIndex;
-  		std::string									_uploadFolder;
+  	std::string									_uploadFolder;
+
+    void  assignKeyValue(std::string &key, std::string &value);
 
 	public:
 		Location();

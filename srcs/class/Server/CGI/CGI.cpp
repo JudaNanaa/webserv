@@ -30,9 +30,10 @@ void Server::_writeBodyToCgi(Client *client, const char *buff, int n)
 	}
 	else if (clientRequest->getLenTotalBody() > clientRequest->getContentLenght())
 	{
+    printnl("HGOHOHOHOHO GOTAGA");
 		close(client->getParentToCGI());
 		client->setParentToCGI(-1);
-		client->setResponse("413");
+		// client->setResponse("413"); <== la ligne fait full probleme
 	}
 }
 
@@ -72,7 +73,11 @@ void Server::_childProcess(Client *client , int ParentToCGI[2], int CGIToParent[
         Location *location = _data->getLocation(request->path());
         std::map<std::string, std::string> cgi_map = location->cgi();
         interpreter_path = cgi_map.find(request->path().substr(extension))->second.c_str();
-        script_path = location->root() + request->path();
+        if (location->root().empty())
+          script_path = _data->_root + request->path();
+        else 
+          script_path =  location->root() + request->path().substr(location->location().size());
+        // script_path = (location->root().empty() ? _data->_root : location->root()) + request->path();
     }
     else
     {

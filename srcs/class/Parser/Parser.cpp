@@ -60,6 +60,44 @@ void	Pars::parseConfigPath(std::string path) {
 	}
 }
 
+void Location::assignKeyValue(std::string &key, std::string &value) {
+  if (key == "index") {	//			INDEX
+      index(value);
+    } else if (key == "root") {	//			ROOT
+      root(value);
+    } else if (key == "cgi") {	//			CGI
+      addCgi(value);
+    } else if (key == "redirect") {	//			REDIRECT
+      redirect(value);
+    } else if (key == "allowed_methods") {	//			ALLOWED METHODS
+      int methods = 0;
+      if (value.find("GET") is_found) {
+        methods = methods | GET_;
+      } if (value.find("POST") is_found) {
+        methods = methods | POST_;
+      } if (value.find("DELETE") is_found) {
+        methods = methods | DELETE_;
+      }
+      if (methods == 0) {	// no methods found
+        throw std::invalid_argument("GET, DELETE or POST expected");
+      } else {
+        allowedMethods(methods);
+      }
+    } else if (key == "uploads_folder") {	//			UPLOADS_FOLDER
+      uploadFolder(value);
+    } else if (key == "client_max_body_size") {	//			CLIENT_MAX_BODY_SIZE
+      long long	int_value = std::atoll(value.c_str());
+      if (int_value <= 0 || value.find_first_not_of("0123456789") is_found)
+        throw std::invalid_argument("invalid value");
+      maxBodySize(int_value);
+    } else if (key == "auto_index") {	//			AUTO_INDEX
+      value == "on" ? autoIndex(true) : value == "off" ? autoIndex(false) :
+        throw std::invalid_argument("invalid value: expected 'on' or 'off'");
+    } else {
+      throw std::invalid_argument("unknow assignement `" + key + "'");
+    }
+}
+
 void	Location::addLocationLine(std::string &line) {
 
 	if (trim(line).empty())
@@ -80,42 +118,7 @@ void	Location::addLocationLine(std::string &line) {
 	else if (value.empty()) {
 		throw std::invalid_argument("missing value");
 	}
-
-	if (key == "index") {	//			INDEX
-		index(value);
-	} else if (key == "root") {	//			ROOT
-		root(value);
-	} else if (key == "cgi") {	//			CGI
-		addCgi(value);
-	} else if (key == "redirect") {	//			REDIRECT
-		redirect(value);
-	} else if (key == "allowed_methods") {	//			ALLOWED METHODS
-		int methods = 0;
-		if (value.find("GET") is_found) {
-			methods = methods | GET_;
-		} if (value.find("POST") is_found) {
-			methods = methods | POST_;
-		} if (value.find("DELETE") is_found) {
-			methods = methods | DELETE_;
-		}
-		if (methods == 0) {	// no methods found
-			throw std::invalid_argument("GET, DELETE or POST expected");
-		} else {
-			allowedMethods(methods);
-		}
-	} else if (key == "uploads_folder") {	//			UPLOADS_FOLDER
-		uploadFolder(value);
-	} else if (key == "client_max_body_size") {	//			CLIENT_MAX_BODY_SIZE
-		long long	int_value = std::atoll(value.c_str());
-		if (int_value <= 0 || value.find_first_not_of("0123456789") is_found)
-			throw std::invalid_argument("invalid value");
-		maxBodySize(int_value);
-	} else if (key == "auto_index") {	//			AUTO_INDEX
-		value == "on" ? autoIndex(true) : value == "off" ? autoIndex(false) :
-			 throw std::invalid_argument("invalid value: expected 'on' or 'off'");
-	} else {
-		throw std::invalid_argument("unknow assignement `" + key + "'");
-	}
+  assignKeyValue(key, value);
 }
 
 void	_handleLocation(std::string &line, std::ifstream &configFile, Data& data, int &lineNumber) {
@@ -175,7 +178,7 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 	if (functionMap.find(trim(type)) == functionMap.end()) {	// type not in the map
 		throw std::invalid_argument("unknow keyword: " + trim(type));
 	}
-	Pars parsInstance; //for now is the only method to do what i want i will change this soon
+	Pars parsInstance;
 	(parsInstance.*functionMap[trim(type)])(data, trim(line.substr(line.find(" "))));
 	std::cout << trim(type) << ": " << line.substr(line.find(" ")) << std::endl;
 }
@@ -185,8 +188,7 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	std::string	line;
 	Data *data = new Data();
 
-	std::getline(configFile, line);
-	trimn(line);
+	std::getline(configFile, line), trimn(line);
 	if (line != "{") {
 		throw std::invalid_argument("invalid line 1");
 	}
@@ -197,6 +199,7 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	  if (!trim(line).empty())
 		  handleLine(line, configFile, data, lineNumber);
 	}
+  std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
 	serv.addData(data);
 }
 
@@ -207,29 +210,33 @@ void	Pars::checkNecessary(Server& serv) {
 		throw std::invalid_argument("invalid port");
 }
 
-std::vector<Server> Pars::parseConfigFile(std::string configFilePath, char **env) {
+std::vector<Server> Pars::parseConfigFile(std::ifstream &configFile, char **env) {
 	std::vector<Server> servVec;
 	std::string	line;
 
-	parseConfigPath(configFilePath);
-	std::ifstream configFile(configFilePath.c_str());
-
-	if (configFile.fail())
-	  throw std::invalid_argument("Can't open the config file");
-	for (int lineNumber = 0; std::getline(configFile, line); lineNumber++) {
+	for (int ln = 0; std::getline(configFile, line); ln++) {
 	  if (line.empty() || trim(line).empty())
-		continue;
+      continue;
 	  if (trim(line) == "server") {
-	    std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
 	    Server	newServ;
-		parseServer(newServ, configFile, lineNumber);
-		newServ.setEnv(env);
-		checkNecessary(newServ);
+      parseServer(newServ, configFile, ln);
+      newServ.setEnv(env), checkNecessary(newServ);
 	    servVec.push_back(newServ);
 	  }
 	}
+
 	if (servVec.empty())
 		throw std::runtime_error("no server found");
-	std::cerr << "PARSING OK!" << std::endl;
-	return servVec;
+  printnl("PARSING OK!");
+  return servVec;
+}
+
+std::vector<Server> Pars::parse(std::string path, char **env) {
+  parseConfigPath(path);
+	std::ifstream configFile(path.c_str());
+
+	if (configFile.fail())
+	  throw std::invalid_argument("Can't open the config file");
+
+	return parseConfigFile(configFile, env);
 }

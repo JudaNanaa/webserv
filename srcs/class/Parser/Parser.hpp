@@ -48,9 +48,10 @@ class Pars {
     static void							handleLine(std::string &line, std::ifstream& configFile, Data *data, int &lineNumber);
     static void							parseServer(Server &serv, std::ifstream& configFile, int &lineNumber);
     static void							checkNecessary(Server& serv);
+    static std::vector<Server>			parseConfigFile(std::ifstream &configFile, char **env);
 
   public:
-    static std::vector<Server>			parseConfigFile(std::string configFilePath, char **env);
+    static std::vector<Server> parse(std::string path, char **env);
 
     void								addPort(Data* data, std::string port);
     void								addServName(Data* data, std::string name);

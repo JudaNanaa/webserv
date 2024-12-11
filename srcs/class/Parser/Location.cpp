@@ -16,13 +16,10 @@
 Location::Location() {
 	_allowedMethods = 0;
 	_client_max_body_size = -1; // no limit (?)
-
 	_autoIndex = -1;
-
 }
 
-Location::~Location() {
-}
+Location::~Location() {}
 
 /*	GETTER	*/
 

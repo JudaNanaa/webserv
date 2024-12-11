@@ -319,8 +319,13 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 	if (clientRequest->getRequestType() is LOCATION)
 	{
 		Location *location = _data->getLocation(clientRequest->path());
-		printnl("location : " <<  location->location());
-		finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path().substr(location->location().size());
+    printnl("data root : " << _data->_root);
+    printnl("request path : " << clientRequest->path());
+    if (location->root().empty())
+      finalPath = _data->_root + clientRequest->path();
+    else 
+      finalPath =  location->root() + clientRequest->path().substr(location->location().size());
+		// finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path().substr(location->location().size());
 	}
 	else if (clientRequest->getRequestType() is DEFAULT)
 		finalPath = _data->_root + clientRequest->path();

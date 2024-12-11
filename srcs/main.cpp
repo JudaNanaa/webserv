@@ -41,7 +41,7 @@ int main(int argc, char **argv, char **env) {
 		return 1;
 	}
 	try {
-    	servVec = Pars::parseConfigFile(argv[1], env);
+    	servVec = Pars::parse(argv[1], env);
 	} catch (std::exception &e) {
 		std::cerr << "Error : " << e.what() << std::endl;
 		return 1;
