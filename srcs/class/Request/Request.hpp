@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/10 19:00:12 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/12 17:20:18 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "../../../includes/includes.hpp"
 #include "../RawBits/RawBits.hpp"
+#include "../Parser/Location.hpp"
 #include <cstddef>
 #include <fstream>
 #include <map>
@@ -45,6 +46,7 @@ class Request : public RawBits {
 		Client								*_client;
 		bool								_isRedirect;
 		t_responseFile						_responseFile;
+		Location							*_location;
 
 		// Parsing Header
 		void								_parseRequest(void);
@@ -70,6 +72,7 @@ class Request : public RawBits {
 		const int							&getRequestType(void) const;
 		bool								isKeyfindInHeader(std::string const &key) const;
 		bool								getRedirect(void) const;
+		Location							*getLocation(void) const;
 		
 		/*	SETTER	*/
 		void								setRequestType(const int &type);
@@ -82,7 +85,7 @@ class Request : public RawBits {
 		void								setResponsCode(const std::string &code);
 		void								setRedirect(const bool &b);
 		void								incrementSizeBody(const unsigned long long &n);
-		
+		void								setLocation(Location *location);
 		// Parsing Header
 		void								addHeaderLineToMap(const std::string &key, const std::string &value);
 		void								addHeaderRequest(const char *buff, const int &n);

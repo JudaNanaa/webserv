@@ -58,7 +58,7 @@ void GlobalData::_initServers(std::vector<Server> &servVec) {
 }
 
 int GlobalData::_waitFdsToBeReady(void) {
-	return epoll_wait(_epoll_fd, _events, MAX_EVENTS, 100);
+	return epoll_wait(_epoll_fd, _events, MAX_EVENTS, -1);
 }
 
 void GlobalData::_addNewClient(Server &server) {
@@ -106,7 +106,7 @@ void GlobalData::_handleClientIn(int fd) {
 
 	try {
 		if (server->addClientRequest(fd) == RESPONSE)
-			_modifyClientEvent(fd, EPOLLOUT | EPOLLRDHUP | EPOLLHUP);
+			_modifyClientEvent(fd, EPOLLOUT | EPOLLRDHUP | EPOLLHUP); // Set event for epoll so now we wait for OUT events
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 	}
@@ -119,7 +119,7 @@ void GlobalData::_handleClientOut(int fd) {
 	server = _getServerWithClientFd(fd);
 	try {
 		if (server->giveClientResponse(fd) == SEND)
-			_modifyClientEvent(fd, EPOLLIN | EPOLLRDHUP | EPOLLHUP);
+			_modifyClientEvent(fd, EPOLLIN | EPOLLRDHUP | EPOLLHUP); // restore event for epoll so now we wait for IN events
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		_removeClient(fd);

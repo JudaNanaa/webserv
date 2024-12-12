@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/12 06:45:25 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/12 17:30:28 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,122 +36,130 @@
 
 
 const std::string getMessageCode(int code) {
-	std::map<int, std::string> codes_responses;
+	static std::map<int, std::string> codes_responses;
 
-	codes_responses[100] = "Continue";
-	codes_responses[101] = "Switching Protocols";
-	codes_responses[102] = "Processing";
-	codes_responses[103] = "Early Hints";
-	codes_responses[200] = "OK";
-	codes_responses[201] = "Created";
-	codes_responses[202] = "Accepted";
-	codes_responses[203] = "Non-Authoritative Information";
-	codes_responses[204] = "No Content";
-	codes_responses[205] = "Reset Content";
-	codes_responses[206] = "Partial Content";
-	codes_responses[207] = "Multi-Status";
-	codes_responses[208] = "Already Reported";
-	codes_responses[210] = "Content Different";
-	codes_responses[226] = "IM Used";
-	codes_responses[300] = "Multiple Choices";
-	codes_responses[301] = "Moved Permanently";
-	codes_responses[302] = "Found";
-	codes_responses[303] = "See Other";
-	codes_responses[304] = "Not Modified";
-	codes_responses[305] = "Use Proxy";
-	codes_responses[307] = "Temporary Redirect";
-	codes_responses[308] = "Permanent Redirect";
-	codes_responses[310] = "Too many Redirects";
-	codes_responses[400] = "Bad Request";
-	codes_responses[401] = "Unauthorized";
-	codes_responses[402] = "Payment Required";
-	codes_responses[403] = "Forbidden";
-	codes_responses[404] = "Not Found";
-	codes_responses[405] = "Method Not Allowed";
-	codes_responses[406] = "Not Acceptable";
-	codes_responses[407] = "Proxy Authentication Required";
-	codes_responses[408] = "Request Time-out";
-	codes_responses[409] = "Conflict";
-	codes_responses[410] = "Gone";
-	codes_responses[411] = "Length Required";
-	codes_responses[412] = "Precondition Failed";
-	codes_responses[413] = "Request Entity Too Large";
-	codes_responses[414] = "Request-URI Too Long";
-	codes_responses[415] = "Unsupported Media Type";
-	codes_responses[416] = "Requested range unsatisfiable";
-	codes_responses[417] = "Expectation failed";
-	codes_responses[418] = "I'm a teapot";
-	codes_responses[419] = "Page expired";
-	codes_responses[421] = "Bad mapping / Misdirected Request";
-	codes_responses[422] = "Unprocessable entity";
-	codes_responses[423] = "Locked";
-	codes_responses[424] = "Method failure";
-	codes_responses[425] = "Too Early";
-	codes_responses[426] = "Upgrade Required";
-	codes_responses[427] = "Invalid digital signature";
-	codes_responses[428] = "Precondition Required";
-	codes_responses[429] = "Too Many Requests";
-	codes_responses[431] = "Request Header Fields Too Large";
-	codes_responses[449] = "Retry With";
-	codes_responses[450] = "Blocked by Windows Parental Controls";
-	codes_responses[451] = "Unavailable For Legal Reasons";
-	codes_responses[456] = "Unrecoverable Erstatus()";
-	codes_responses[505] = "HTTP Version not supported";
-	codes_responses[506] = "Variant Also Negotiates";
-	codes_responses[507] = "Insufficient storage";
-	codes_responses[508] = "Loop detected";
-	codes_responses[509] = "Bandwidth Limit Exceeded";
-	codes_responses[510] = "Not extended";
-	codes_responses[511] = "Network authentication required";
-	codes_responses[520] = "Unknown Error";
-	codes_responses[521] = "Web Server Is Down";
-	codes_responses[522] = "Connection Timed Out";
-	codes_responses[523] = "Origin Is Unreachable";
-	codes_responses[524] = "A Timeout Occurred";
-	codes_responses[525] = "SSL Handshake Failed";
-	codes_responses[526] = "Invalid SSL Certificate";
-	codes_responses[527] = "Railgun Error";
+	if (codes_responses.empty())
+	{
+		
+		codes_responses[100] = "Continue";
+		codes_responses[101] = "Switching Protocols";
+		codes_responses[102] = "Processing";
+		codes_responses[103] = "Early Hints";
+		codes_responses[200] = "OK";
+		codes_responses[201] = "Created";
+		codes_responses[202] = "Accepted";
+		codes_responses[203] = "Non-Authoritative Information";
+		codes_responses[204] = "No Content";
+		codes_responses[205] = "Reset Content";
+		codes_responses[206] = "Partial Content";
+		codes_responses[207] = "Multi-Status";
+		codes_responses[208] = "Already Reported";
+		codes_responses[210] = "Content Different";
+		codes_responses[226] = "IM Used";
+		codes_responses[300] = "Multiple Choices";
+		codes_responses[301] = "Moved Permanently";
+		codes_responses[302] = "Found";
+		codes_responses[303] = "See Other";
+		codes_responses[304] = "Not Modified";
+		codes_responses[305] = "Use Proxy";
+		codes_responses[307] = "Temporary Redirect";
+		codes_responses[308] = "Permanent Redirect";
+		codes_responses[310] = "Too many Redirects";
+		codes_responses[400] = "Bad Request";
+		codes_responses[401] = "Unauthorized";
+		codes_responses[402] = "Payment Required";
+		codes_responses[403] = "Forbidden";
+		codes_responses[404] = "Not Found";
+		codes_responses[405] = "Method Not Allowed";
+		codes_responses[406] = "Not Acceptable";
+		codes_responses[407] = "Proxy Authentication Required";
+		codes_responses[408] = "Request Time-out";
+		codes_responses[409] = "Conflict";
+		codes_responses[410] = "Gone";
+		codes_responses[411] = "Length Required";
+		codes_responses[412] = "Precondition Failed";
+		codes_responses[413] = "Request Entity Too Large";
+		codes_responses[414] = "Request-URI Too Long";
+		codes_responses[415] = "Unsupported Media Type";
+		codes_responses[416] = "Requested range unsatisfiable";
+		codes_responses[417] = "Expectation failed";
+		codes_responses[418] = "I'm a teapot";
+		codes_responses[419] = "Page expired";
+		codes_responses[421] = "Bad mapping / Misdirected Request";
+		codes_responses[422] = "Unprocessable entity";
+		codes_responses[423] = "Locked";
+		codes_responses[424] = "Method failure";
+		codes_responses[425] = "Too Early";
+		codes_responses[426] = "Upgrade Required";
+		codes_responses[427] = "Invalid digital signature";
+		codes_responses[428] = "Precondition Required";
+		codes_responses[429] = "Too Many Requests";
+		codes_responses[431] = "Request Header Fields Too Large";
+		codes_responses[449] = "Retry With";
+		codes_responses[450] = "Blocked by Windows Parental Controls";
+		codes_responses[451] = "Unavailable For Legal Reasons";
+		codes_responses[456] = "Unrecoverable Erstatus()";
+		codes_responses[505] = "HTTP Version not supported";
+		codes_responses[506] = "Variant Also Negotiates";
+		codes_responses[507] = "Insufficient storage";
+		codes_responses[508] = "Loop detected";
+		codes_responses[509] = "Bandwidth Limit Exceeded";
+		codes_responses[510] = "Not extended";
+		codes_responses[511] = "Network authentication required";
+		codes_responses[520] = "Unknown Error";
+		codes_responses[521] = "Web Server Is Down";
+		codes_responses[522] = "Connection Timed Out";
+		codes_responses[523] = "Origin Is Unreachable";
+		codes_responses[524] = "A Timeout Occurred";
+		codes_responses[525] = "SSL Handshake Failed";
+		codes_responses[526] = "Invalid SSL Certificate";
+		codes_responses[527] = "Railgun Error";
+	}
 	return codes_responses[code];
 }
 
 std::string ContentType(const std::string& extension) {
-    std::map<std::string, std::string> contentTypes;
-	contentTypes[".txt"] = "text/plain";
-	contentTypes[".html"] = "text/html";
-	contentTypes[".htm"] = "text/html";
-	contentTypes[".css"] = "text/css";
-	contentTypes[".js"] = "application/javascript";
-	contentTypes[".json"] = "application/json";
-	contentTypes[".xml"] = "application/xml";
-	contentTypes[".pdf"] = "application/pdf";
-	contentTypes[".zip"] = "application/zip";
-	contentTypes[".gz"] = "application/gzip";
-	contentTypes[".doc"] = "application/msword";
-	contentTypes[".docx"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-	contentTypes[".xls"] = "application/vnd.ms-excel";
-	contentTypes[".xlsx"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-	contentTypes[".ppt"] = "application/vnd.ms-powerpoint";
-	contentTypes[".pptx"] = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-	contentTypes[".jpg"] = "image/jpeg";
-	contentTypes[".jpeg"] = "image/jpeg";
-	contentTypes[".png"] = "image/png";
-	contentTypes[".gif"] = "image/gif";
-	contentTypes[".webp"] = "image/webp";
-	contentTypes[".svg"] = "image/svg+xml";
-	contentTypes[".mp3"] = "audio/mpeg";
-	contentTypes[".ogg"] = "audio/ogg";
-	contentTypes[".wav"] = "audio/wav";
-	contentTypes[".mp4"] = "video/mp4";
-	contentTypes[".webm"] = "video/webm";
-	contentTypes[".ogv"] = "video/ogg";
-	contentTypes[".tar"] = "application/x-tar";
-	contentTypes[".7z"] = "application/x-7z-compressed";
-	contentTypes[".rar"] = "application/x-rar-compressed";
-	contentTypes[".md"] = "text/markdown";
-	contentTypes[".rtf"] = "application/rtf";
-	contentTypes[".sh"] = "application/x-sh";
-	contentTypes[".py"] = "application/x-python";
-	contentTypes[".jar"] = "application/x-java-archive";
+    static std::map<std::string, std::string> contentTypes;
+
+	if (contentTypes.empty())
+	{
+		contentTypes[".txt"] = "text/plain";
+		contentTypes[".html"] = "text/html";
+		contentTypes[".htm"] = "text/html";
+		contentTypes[".css"] = "text/css";
+		contentTypes[".js"] = "application/javascript";
+		contentTypes[".json"] = "application/json";
+		contentTypes[".xml"] = "application/xml";
+		contentTypes[".pdf"] = "application/pdf";
+		contentTypes[".zip"] = "application/zip";
+		contentTypes[".gz"] = "application/gzip";
+		contentTypes[".doc"] = "application/msword";
+		contentTypes[".docx"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+		contentTypes[".xls"] = "application/vnd.ms-excel";
+		contentTypes[".xlsx"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+		contentTypes[".ppt"] = "application/vnd.ms-powerpoint";
+		contentTypes[".pptx"] = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+		contentTypes[".jpg"] = "image/jpeg";
+		contentTypes[".jpeg"] = "image/jpeg";
+		contentTypes[".png"] = "image/png";
+		contentTypes[".gif"] = "image/gif";
+		contentTypes[".webp"] = "image/webp";
+		contentTypes[".svg"] = "image/svg+xml";
+		contentTypes[".mp3"] = "audio/mpeg";
+		contentTypes[".ogg"] = "audio/ogg";
+		contentTypes[".wav"] = "audio/wav";
+		contentTypes[".mp4"] = "video/mp4";
+		contentTypes[".webm"] = "video/webm";
+		contentTypes[".ogv"] = "video/ogg";
+		contentTypes[".tar"] = "application/x-tar";
+		contentTypes[".7z"] = "application/x-7z-compressed";
+		contentTypes[".rar"] = "application/x-rar-compressed";
+		contentTypes[".md"] = "text/markdown";
+		contentTypes[".rtf"] = "application/rtf";
+		contentTypes[".sh"] = "application/x-sh";
+		contentTypes[".py"] = "application/x-python";
+		contentTypes[".jar"] = "application/x-java-archive";
+	}
 
     std::map<std::string, std::string>::const_iterator it = contentTypes.find(extension);
     if (it != contentTypes.end())
@@ -259,8 +267,6 @@ std::string Server::_generateAutoIndex(Client *client, const std::string &direct
     closedir(currentDir);
 
     html += "    </div>\r\n";
-
-    // Add a "Go Back" button styled like other buttons but positioned slightly lower
     html += "    <div style=\"margin-top: 20px; text-align: center;\">\r\n";
     html += "        <button class=\"color-1\" onclick=\"window.history.back()\">Go Back</button>\r\n";
     html += "    </div>\r\n";
@@ -272,7 +278,7 @@ std::string Server::_generateAutoIndex(Client *client, const std::string &direct
 	Request *clientRequest = client->getRequest();
 	int code = atoi(clientRequest->getResponsCode().c_str());
 
-	std::cerr << "debug code : " << code << std::endl;
+	std::cerr << "AUTO INDEX" << std::endl;
 	std::ostringstream oss;
 	oss << html.length();
     std::string header = "HTTP/1.1 " + clientRequest->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
@@ -280,12 +286,9 @@ std::string Server::_generateAutoIndex(Client *client, const std::string &direct
     header += "Content-Length: " + oss.str() + "\r\n";
     header += "\r\n";
 
-	if (send(client->getClientFd(), header.c_str(), header.size(), MSG_NOSIGNAL) == -1)
+	if (send(client->getClientFd(), (header + html).c_str(), header.size() + html.size(), MSG_NOSIGNAL) == -1)
 		throw std::runtime_error("Can't send the message !");
-	if (send(client->getClientFd(), html.c_str(), html.size(), MSG_NOSIGNAL) == -1)
-		throw std::runtime_error("Can't send the message !");
-	client->afterResponse(); // TODO: changer ca c'est pas possible
-	throw std::exception();
+	clientRequest->setState(SEND);
     return html;
 }
 
@@ -319,14 +322,14 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 
 	if (clientRequest->getRequestType() is LOCATION)
 	{
-		Location *location = _data->getLocation(clientRequest->path());
-    printnl("data root : " << _data->_root);
-    printnl("request path : " << clientRequest->path());
-    if (location->root().empty())
-      finalPath = _data->_root + clientRequest->path();
-    else 
-      finalPath =  location->root() + clientRequest->path().substr(location->location().size());
-		// finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path().substr(location->location().size());
+		Location *location = clientRequest->getLocation();
+		printnl("data root : " << _data->_root);
+		printnl("request path : " << clientRequest->path());
+		if (location->root().empty())
+			finalPath = _data->_root + clientRequest->path();
+		else 
+			finalPath =  location->root() + clientRequest->path().substr(location->location().size());
+			// finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path().substr(location->location().size());
 	}
 	else if (clientRequest->getRequestType() is DEFAULT)
 		finalPath = _data->_root + clientRequest->path();
@@ -339,7 +342,7 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 	{
 		std::string index;
 		if (clientRequest->getRequestType() is LOCATION) {
-			Location *location = _data->getLocation(clientRequest->path());
+			Location *location = clientRequest->getLocation();
 			index = location->index().empty() ? _data->_index : location->index();
 		}
 		else if (clientRequest->getRequestType() is DEFAULT)
@@ -349,13 +352,13 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 			bool autoIndex;
 			if (clientRequest->getRequestType() is LOCATION)
 			{
-				Location *location = _data->getLocation(clientRequest->path());
+				Location *location = clientRequest->getLocation();
 				autoIndex = location->autoIndex() < 0 ? _data->_autoIndex : location->autoIndex();
 			}
 			else
 				autoIndex = _data->_autoIndex;
 			if (autoIndex)
-				_generateAutoIndex(client, finalPath);
+				return _generateAutoIndex(client, finalPath);
 			else 
 				clientRequest->setResponsCode("403");				
 		}
@@ -364,7 +367,7 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 			finalPath += "/" + index;
 			clientRequest->openResponseFile(finalPath.c_str());
 			if (clientRequest->responseFileOpen() is false)
-				_generateAutoIndex(client, finalPath.erase(finalPath.find_last_of('/')));
+				return _generateAutoIndex(client, finalPath.erase(finalPath.find_last_of('/')));
 		}
 	}
 	else
@@ -400,6 +403,8 @@ void Server::_sendResponse(int fd, Client *client) {
 	if (clientRequest->responseFileOpen() is false)
 	{
 		finalPath = _openResponseFile(clientRequest, client);
+		if (clientRequest->getState() is SEND)
+			return;
 		std::string	header = _getResponseHeader(clientRequest, finalPath);
 		if (send(fd, header.c_str(), header.size(), MSG_NOSIGNAL) is -1) {
 			client->setResponse("500");
@@ -439,21 +444,7 @@ void Server::_sendRedirect(std::string redirect, int fd, Client *client) {
 		client->setResponse("500");
 		throw std::runtime_error("Can't send the message !");
 	}
-}
-
-void Server::_giveClientResponseByLocation(int fd) {
-	Client* client = _getClient(fd);
-	Location location = _data->_locations[client->getRequest()->path()];
-
-	if (!location.redirect().empty()) {
-		client->getRequest()->setResponsCode("302");
-		std::cerr << "redirected on : " + location.redirect() << std::endl;
-		_sendRedirect(location.redirect(), fd, client);
-	}
-	else {
-		std::cerr << "no redirect field" << _data->_root + client->getRequest()->path() << std::endl;
-	}
-	client->getRequest()->setState(SEND);
+	clientRequest->setState(SEND);
 }
 
 void setCookie(std::stringstream &response, std::string key, std::string value) {
@@ -495,22 +486,47 @@ void Server::_handleAuth(Client* client) {
 	request->setState(SEND);
 }
 
+void Server::_sendResponseLocation(Client *client)
+{
+	Request *clientRequest;
+	Location *location;
+
+	clientRequest = client->getRequest();
+	location = clientRequest->getLocation();
+	if (clientRequest->getRedirect())
+	{
+		clientRequest->setResponsCode("302");
+		std::cerr << "redirected on : " + location->redirect() << std::endl;
+		_sendRedirect(location->redirect(), client->getClientFd(), client);
+	}
+	else if (clientRequest->getRequestType() is CGI && _checkCgi(client) is FINISHED)
+			_responseCGI(client);
+	else
+	 	_sendResponse(client->getClientFd(), client);
+}
+
+void Server::_sendResponseDefault(Client *client)
+{
+	Request *clientRequest;
+
+	clientRequest = client->getRequest();
+	if (clientRequest->getRequestType() is CGI && _checkCgi(client) is FINISHED)
+			_responseCGI(client);
+	else
+	 	_sendResponse(client->getClientFd(), client);
+}
+
 t_state Server::giveClientResponse(int fd) {
 	Client *client;
 	std::ifstream file;
 
 	client = _getClient(fd);
-	if (client->getRequest()->getRedirect()) 
-		_giveClientResponseByLocation(fd);
-	else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) is 0 && client->getRequest()->getResponsCode() is "200")
+	if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) is 0 && client->getRequest()->getResponsCode() is "200")
 		_handleAuth(client);
-	else if (client->getRequest()->getRequestType() is CGI)
-	{
-		if (_checkCgi(client) == FINISHED)
-			_responseCGI(client);
-	}
+	if (client->getRequest()->getRequestType() is LOCATION)
+		_sendResponseLocation(client);
 	else 
-		_sendResponse(fd, client); //this methode send response with appropriate code
+		_sendResponseDefault(client); //this methode send response with appropriate code
 	if (client->getRequest()->getState() == SEND)
 	{
 		client->afterResponse();

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   GetterSetter.cpp                                   :+:      :+:    :+:   */
+/*   GetterSetterRequest.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 23:37:46 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/12 17:20:13 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,4 +108,12 @@ std::size_t Request::getResponseFileTotalSend(void) const {
 		
 void	Request::addResponseFileTotalSend(std::size_t nbSend) {
 	_responseFile.totalSend += nbSend;
+}
+
+void	Request::setLocation(Location *location) {
+	_location = location;
+}
+
+Location	*Request::getLocation(void) const {
+	return _location;
 }

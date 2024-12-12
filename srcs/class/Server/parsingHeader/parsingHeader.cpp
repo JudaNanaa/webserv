@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 01:51:03 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/11 00:18:53 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/12 17:19:36 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ void	Server::_handleLocation(Client *client) {
 
 	std::cerr << "LOCATION" << std::endl;
 	request->setRequestType(LOCATION);
+	request->setLocation(location);
 	extension = request->path().find_last_of('.');
 	printnl("debug requests path : " << request->path());
 	if (extension != std::string::npos) {

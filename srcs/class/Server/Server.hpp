@@ -62,9 +62,9 @@ class Server {
 		int						_sendToFd(const char *msg, std::size_t msgSize, int fd);
 		void					_sendResponse(int fd, Client *client);
 		void					_sendRedirect(std::string redirect, int fd, Client *client);
-
+		void					_sendResponseDefault(Client *client);
 		// Location
-    	void					_giveClientResponseByLocation(int fd);
+		void					_sendResponseLocation(Client *client);
 		void					_handleLocation(Client *client);
 		bool					_checkLocationCgi(Location* location, std::string extension, Client* client);
 		bool					_isLocation(const std::string &path);
