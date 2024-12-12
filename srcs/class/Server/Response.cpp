@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/12 17:30:28 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/12 20:25:03 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -329,7 +329,7 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 			finalPath = _data->_root + clientRequest->path();
 		else 
 			finalPath =  location->root() + clientRequest->path().substr(location->location().size());
-			// finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path().substr(location->location().size());
+		// finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path().substr(location->location().size());
 	}
 	else if (clientRequest->getRequestType() is DEFAULT)
 		finalPath = _data->_root + clientRequest->path();
@@ -499,8 +499,11 @@ void Server::_sendResponseLocation(Client *client)
 		std::cerr << "redirected on : " + location->redirect() << std::endl;
 		_sendRedirect(location->redirect(), client->getClientFd(), client);
 	}
-	else if (clientRequest->getRequestType() is CGI && _checkCgi(client) is FINISHED)
+	else if (clientRequest->getRequestType() is CGI)
+	{
+		if (_checkCgi(client) is FINISHED)
 			_responseCGI(client);
+	}
 	else
 	 	_sendResponse(client->getClientFd(), client);
 }
@@ -510,8 +513,11 @@ void Server::_sendResponseDefault(Client *client)
 	Request *clientRequest;
 
 	clientRequest = client->getRequest();
-	if (clientRequest->getRequestType() is CGI && _checkCgi(client) is FINISHED)
+	if (clientRequest->getRequestType() is CGI)
+	{
+		if (_checkCgi(client) is FINISHED)
 			_responseCGI(client);
+	}
 	else
 	 	_sendResponse(client->getClientFd(), client);
 }
