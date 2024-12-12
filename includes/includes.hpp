@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 18:36:31 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/12 06:05:39 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ typedef enum s_state
 	READY_PARSE_HEADER,
 	ON_BODY,
 	RESPONSE,
+	SEND,
 }t_state;
 
 # define BUFFER_SIZE 1000000

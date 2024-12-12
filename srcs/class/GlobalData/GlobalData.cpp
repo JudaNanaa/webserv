@@ -58,15 +58,7 @@ void GlobalData::_initServers(std::vector<Server> &servVec) {
 }
 
 int GlobalData::_waitFdsToBeReady(void) {
-	std::map<int, Server>::iterator it = _servMap.begin();
-	std::map<int, Server>::iterator end = _servMap.end();
-	
-	while (it != end)
-	{
-		it->second.checkCgi();
-		++it;
-	}
-	return epoll_wait(_epoll_fd, _events, MAX_EVENTS, 1);
+	return epoll_wait(_epoll_fd, _events, MAX_EVENTS, 100);
 }
 
 void GlobalData::_addNewClient(Server &server) {
@@ -79,7 +71,7 @@ void GlobalData::_addNewClient(Server &server) {
 		clientFd = accept(server.getSocketFd(),  (struct sockaddr *)&client_addr, &socklen);
 		if (clientFd is -1)
 			throw std::runtime_error("Can't accept the connexion with the client");
-		_addToEpoll(clientFd, EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLHUP);
+		_addToEpoll(clientFd, EPOLLIN | EPOLLRDHUP | EPOLLHUP);
 		client = new Client(clientFd, &server);
 		server.addClientToMap(client);
 	} catch (const std::exception &e) {
@@ -99,11 +91,22 @@ Server *GlobalData::_getServerWithClientFd(const int fd) {
 	return &it->second;
 }
 
+void GlobalData::_modifyClientEvent(int fd, uint32_t events)
+{
+	struct epoll_event ev;
+
+	ev.events = events;
+	ev.data.fd = fd;	
+	if (epoll_ctl(_epoll_fd, EPOLL_CTL_MOD, fd, &ev) is -1)
+		throw std::runtime_error("Epoll add error");
+}
+
 void GlobalData::_handleClientIn(int fd) {
 	Server *server = _getServerWithClientFd(fd);
 
 	try {
-		server->addClientRequest(fd);
+		if (server->addClientRequest(fd) == RESPONSE)
+			_modifyClientEvent(fd, EPOLLOUT | EPOLLRDHUP | EPOLLHUP);
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 	}
@@ -115,13 +118,13 @@ void GlobalData::_handleClientOut(int fd) {
 
 	server = _getServerWithClientFd(fd);
 	try {
-		server->giveClientResponse(fd);
+		if (server->giveClientResponse(fd) == SEND)
+			_modifyClientEvent(fd, EPOLLIN | EPOLLRDHUP | EPOLLHUP);
 	} catch (const std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		_removeClient(fd);
 	}
 }
-
 
 void GlobalData::_removeClient(int fd) {
 	Server *server = _getServerWithClientFd(fd);

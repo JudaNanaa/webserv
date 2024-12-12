@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 22:50:07 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/12 06:45:25 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <dirent.h>
 
@@ -283,7 +284,7 @@ std::string Server::_generateAutoIndex(Client *client, const std::string &direct
 		throw std::runtime_error("Can't send the message !");
 	if (send(client->getClientFd(), html.c_str(), html.size(), MSG_NOSIGNAL) == -1)
 		throw std::runtime_error("Can't send the message !");
-	client->afterResponse();
+	client->afterResponse(); // TODO: changer ca c'est pas possible
 	throw std::exception();
     return html;
 }
@@ -417,7 +418,7 @@ void Server::_sendResponse(int fd, Client *client) {
 	if (clientRequest->getResponseFileTotalSend() is clientRequest->getResponseFileSize())
 	{
 		clientRequest->closeResponseFile();
-		client->afterResponse();
+		clientRequest->setState(SEND);
 	}
 }
 
@@ -452,7 +453,7 @@ void Server::_giveClientResponseByLocation(int fd) {
 	else {
 		std::cerr << "no redirect field" << _data->_root + client->getRequest()->path() << std::endl;
 	}
-	client->afterResponse();
+	client->getRequest()->setState(SEND);
 }
 
 void setCookie(std::stringstream &response, std::string key, std::string value) {
@@ -491,22 +492,29 @@ void Server::_handleAuth(Client* client) {
 		else
 			_sendRedirect(MYCEOC, client->getClientFd(), client); 
 	}
-	client->afterResponse();
+	request->setState(SEND);
 }
 
-void Server::giveClientResponse(int fd) {
+t_state Server::giveClientResponse(int fd) {
 	Client *client;
 	std::ifstream file;
 
 	client = _getClient(fd);
-	if (client->whatToDo() is_not RESPONSE)
-		return;
 	if (client->getRequest()->getRedirect()) 
 		_giveClientResponseByLocation(fd);
 	else if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) is 0 && client->getRequest()->getResponsCode() is "200")
 		_handleAuth(client);
-	else if (client->getRequest()->getRequestType() is CGI) 
-		_responseCGI(client);
+	else if (client->getRequest()->getRequestType() is CGI)
+	{
+		if (_checkCgi(client) == FINISHED)
+			_responseCGI(client);
+	}
 	else 
 		_sendResponse(fd, client); //this methode send response with appropriate code
+	if (client->getRequest()->getState() == SEND)
+	{
+		client->afterResponse();
+		return SEND;
+	}
+	return RESPONSE;
 }

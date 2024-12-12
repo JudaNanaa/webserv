@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 00:01:58 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/11 00:02:31 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/12 06:46:09 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void Request::addBodyRequest(const char *buff, const int &n, const bool &add) {
 			_defaultFile.close();
 		_client->setResponse();
 	}
-	else if (getLenTotalBody() > _contentLenght && _contentLenght != -1) {
+	else if (getLenTotalBody() > _contentLenght) {
 		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;
 		std::cerr << "diff: " << getLenTotalBody() - _contentLenght << std::endl;
 		_client->setResponse("413");

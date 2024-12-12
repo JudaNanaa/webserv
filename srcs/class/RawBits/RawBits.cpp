@@ -85,10 +85,27 @@ long RawBits::findInBody(const char *str, unsigned long pos) const {
 
 	if (_lenBody < lenStr)
 		return -1;
-	for (size_t lenStr = strlen(str); pos <= _lenBody - lenStr; pos++) {
-		if (std::memcmp(&_body[pos], str, lenStr) == 0)
-			return pos;
+	std::vector<int> index_table(lenStr, 0);
+	
+	for (std::size_t i = 1; i < lenStr; i++) {
+		for (std::size_t j = 0; str[i] == str[j]; j++, i++)
+			index_table[i] = j + 1;
 	}
+
+	std::size_t j = 0;
+	while (pos < _lenBody)
+	{
+		if (_body[pos] == str[j])
+			j++;
+		else if (_body[pos] != str[j] && j > 0) {
+			j = index_table[j - 1];
+			pos--;
+		}
+		pos++;
+		if (j == lenStr)
+			return pos - j;
+	}
+
 	return -1;
 }
 

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/11 00:28:38 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/12 01:38:56 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,27 +61,27 @@ void	Pars::parseConfigPath(std::string path) {
 }
 
 void Location::assignKeyValue(std::string &key, std::string &value) {
-  static std::map<std::string, void (Location::*)(std::string&)> actions;
-  if (actions.empty())
-  {
-    actions["index"] = &Location::index ;
-    actions["root"] = &Location::root ;
-    actions["cgi"] = &Location::addCgi ;
-    actions["redirect"] = &Location::redirect;
-    actions["uploads_folder"] = &Location::uploadFolder;
-    actions["client_max_body_size"] = &Location::redirect;
-    actions["auto_index"] = &Location::handleAutoIndex;
-    actions["allowed_methods"] = &Location::handleAllowedMethods;
-  };
+	static std::map<std::string, void (Location::*)(std::string&)> actions;
+	if (actions.empty())
+	{
+		actions["index"] = &Location::index ;
+		actions["root"] = &Location::root ;
+		actions["cgi"] = &Location::addCgi ;
+		actions["redirect"] = &Location::redirect;
+		actions["uploads_folder"] = &Location::uploadFolder;
+		actions["client_max_body_size"] = &Location::redirect;
+		actions["auto_index"] = &Location::handleAutoIndex;
+		actions["allowed_methods"] = &Location::handleAllowedMethods;
+	};
 
-  std::map<std::string, void (Location::*)(std::string&)>::iterator it = actions.find(key);
-  std::map<std::string, void (Location::*)(std::string&)>::iterator end = actions.end();
-  if (it != end) {
-    void (Location::*func)(std::string&) = it->second;
-    (this->*func)(value);
-  } else {
-     throw std::invalid_argument("unknown assignment `" + key + "'");
-  }
+	std::map<std::string, void (Location::*)(std::string&)>::iterator it = actions.find(key);
+	std::map<std::string, void (Location::*)(std::string&)>::iterator end = actions.end();
+	if (it != end) {
+		void (Location::*func)(std::string&) = it->second;
+		(this->*func)(value);
+	} else {
+		throw std::invalid_argument("unknown assignment `" + key + "'");
+	}
 }
 
 void	Location::addLocationLine(std::string &line) {

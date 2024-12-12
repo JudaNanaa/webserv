@@ -27,6 +27,7 @@ class GlobalData {
 		bool					_isServerFd(const int &fd);
 		Server 					*_getServerWithClientFd(const int fd);
 		void					_handleEvent( struct epoll_event& fdsReady );
+		void					_modifyClientEvent(int fd, uint32_t events);
 	public:
 		GlobalData();
 

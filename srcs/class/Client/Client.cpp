@@ -31,10 +31,13 @@ void Client::setCGIStatus(const int &status) {
 	} else if (WIFSTOPPED(status)) {
 		_CGIStatus = 128 + WSTOPSIG(status);
 	}
-	if (_CGIStatus == 1)
-		_request->setResponsCode("500");
+	if (_CGIStatus == 0)
+		_request->setResponsCode("200");
 	else if (_CGIStatus == 128 + SIGALRM)
 		_request->setResponsCode("504");
+	else
+		_request->setResponsCode("500");
+
 }
 
 const int &Client::getCGIStatus(void) const {

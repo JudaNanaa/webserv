@@ -42,6 +42,7 @@ class Server {
 		void					_handleCGI( Client *client );
 		void					_writeBodyToCgi(Client *client, const char *buff, int n);
 		void					_execChildProcess(char **cgi, int ParentToCGI[2], int CGIToParent[2]);
+		int						_checkCgi(Client *client);
 		// Parsing header
 		void					_parseClientHeader(Client *client);
 		void					_addHeaderLine( std::string line, Request *clientRequest);
@@ -96,11 +97,10 @@ class Server {
 
 		// Other 
 		void					init();
-		void					checkCgi(void);
 		void					addClientToMap(Client *client);
 		void					removeClientInMap(int fd);
-		void					addClientRequest(int fd);
-		void					giveClientResponse(int fd);
+		t_state					addClientRequest(int fd);
+		t_state					giveClientResponse(int fd);
 		void					freeAll(void);
 };
 

@@ -27,13 +27,13 @@ void Server::_writeBodyToCgi(Client *client, const char *buff, int n)
 	{
 		close(client->getParentToCGI());
 		client->setParentToCGI(-1);
+		client->setResponse("200");
 	}
 	else if (clientRequest->getLenTotalBody() > clientRequest->getContentLenght())
 	{
-    printnl("HGOHOHOHOHO GOTAGA");
 		close(client->getParentToCGI());
 		client->setParentToCGI(-1);
-		// client->setResponse("413"); <== la ligne fait full probleme
+		client->setResponse("413");
 	}
 }
 
@@ -102,30 +102,25 @@ void closePipePanic(int pipe[2])
         close(pipe[1]);
 }
 
-void Server::checkCgi( void ) {
-	std::map<int, Client*>::iterator it, ite;
-
-	it = _clientMap.begin();
-	ite = _clientMap.end();
-
-	for (;it != ite; it++) {
-		Client	*client = it->second;
-		int		pid = client->getPid();
-
-		if (pid is -1)	// no 
-			continue ;
-		else {
-			int	status;
-			switch (waitpid(pid, &status, WNOHANG)) {
-				case -1: { std::cerr << "waitpid failed" << std::endl ; continue; } // error 
-				case 0: { continue; } // not finished
-				default:
-					printnl("CGI FINISHED !");
-					client->setResponse();
-					client->setCGIStatus(status);
-			}
-		}
+int Server::_checkCgi(Client *client) {
+	int	status;
+	int returnValue;
+	int pid = client->getPid();
+	
+	returnValue = waitpid(pid, &status, WNOHANG);
+	if (returnValue == -1)
+	{
+		std::cerr << "waitpid failed (pid == " << pid << ")" << std::endl;
+		client->setResponse("500");
 	}
+	else if (returnValue == 0)
+		return NOT_FINISHED;
+	else
+	{
+		printnl("CGI FINISHED !");
+		client->setCGIStatus(status);
+	}
+	return FINISHED;
 }
 
 void	Server::_handleCGI( Client *client ) {
@@ -153,7 +148,10 @@ void	Server::_handleCGI( Client *client ) {
         _childProcess(client, ParentToCGI, CGIToParent);
     close(ParentToCGI[0]), close(CGIToParent[1]);
 	if (client->getRequest()->getContentLenght() == -1)
+	{
 		close(ParentToCGI[1]);
+		client->getRequest()->setState(RESPONSE);
+	}
 	else
 		client->setParentToCGI(ParentToCGI[1]);
     client->setCGIFD(CGIToParent[0]);

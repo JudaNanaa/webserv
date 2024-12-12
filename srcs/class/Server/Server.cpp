@@ -111,7 +111,7 @@ void Server::_handleDelete(Client* client) {
 	client->setResponse("200");
 }
 
-void Server::addClientRequest(int fd) {
+t_state Server::addClientRequest(int fd) {
 	char buff[BUFFER_SIZE];
 	int n;
 	Client *client = _getClient(fd);
@@ -134,4 +134,5 @@ void Server::addClientRequest(int fd) {
 		_addingBody(client, buff, n);
 	if (clientRequest->method() is DELETE_ && clientRequest->getResponsCode() is "200")
 		_handleDelete(client);
+	return clientRequest->getState();
 }
