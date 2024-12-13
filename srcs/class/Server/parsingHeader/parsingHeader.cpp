@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 01:51:03 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 10:22:12 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 11:34:55 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,11 @@ void	Server::_handleLocation(Client *client) {
 	extension = request->path().find_last_of('.');
 	printnl("debug requests path : " << request->path());
 	if (extension != std::string::npos) {
-		// if (!_checkLocationCgi(location, request->path().substr(extension), client)) // je pense que c'est pas la bonne condition
-		if (_checkLocationCgi(location, request->path().substr(extension), client) is true)
+		if (_checkLocationCgi(location, request->path().substr(extension)) is true)
+		{
+			_handleCGI(client);
 			return ;
+		}
 	}
 
 	if (!location->redirect().empty())

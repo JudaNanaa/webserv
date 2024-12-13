@@ -44,6 +44,8 @@ class Server {
 		void					_writeBodyToCgi(Client *client, const char *buff, const std::size_t &n);
 		void					_execChildProcess(char **cgi, const int ParentToCGI[2], const int CGIToParent[2]);
 		int						_checkCgi(Client *client);
+		int						_setCgiArgs(Request *request, char **cgi);
+		int						_checkCgiArgsPath(Request *request, const std::string &interpreter_path, const std::string &script_path);
 		// Parsing header
 		void					_parseClientHeader(Client *client);
 		void					_addHeaderLine(const std::string &line, Request *clientRequest);
@@ -66,7 +68,7 @@ class Server {
 		// Location
 		void					_sendResponseLocation(Client *client);
 		void					_handleLocation(Client *client);
-		bool					_checkLocationCgi(Location* location, const std::string &extension, Client* client);
+		bool					_checkLocationCgi(Location* location, const std::string &extension);
 		bool					_isLocation(const std::string &path);
 		// Getter
 		Client					*_getClient(const int &fd);

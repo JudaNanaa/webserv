@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 23:09:46 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 09:53:24 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 11:34:25 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,8 @@ bool	Server::_isLocation(const std::string &path)
 	return _data->checkLocation(path);
 }
 
-bool Server::_checkLocationCgi(Location* location, const std::string &extension, Client* client) {
-	if (location->cgi().empty() || location->cgi().find(extension) == location->cgi().end()) {
-		//check si le fichier existe, si il existe 403 sinon 404
-		// client->setResponse(); // chelou donc je commente
+bool Server::_checkLocationCgi(Location* location, const std::string &extension) {
+	if (location->cgi().empty() || location->cgi().find(extension) == location->cgi().end())
 		return false;
-	}
-	_handleCGI(client);
 	return true;
 }

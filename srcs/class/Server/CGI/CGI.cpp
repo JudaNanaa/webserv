@@ -12,6 +12,8 @@
 
 #include "../Server.hpp"
 #include <cstddef>
+#include <cstring>
+#include <unistd.h>
 
 void Server::_writeBodyToCgi(Client *client, const char *buff, const std::size_t &n)
 {
@@ -62,10 +64,31 @@ void	Server::_execChildProcess(char **cgi, const int ParentToCGI[2], const int C
     exit(1);
 }
 
-void Server::_childProcess(Client *client , const int ParentToCGI[2], const int CGIToParent[2])
+int Server::_checkCgiArgsPath(Request *request, const std::string &interpreter_path, const std::string &script_path)
 {
-    char *cgi[3];
-    Request* request = client->getRequest();
+	if (access(interpreter_path.c_str(), F_OK | X_OK) == -1)
+	{
+		printnl("Executable not found: 502 Error");
+		request->setResponsCode("502");
+		return -1;
+	}
+	else if (access(script_path.c_str(), F_OK) == -1)
+	{
+		printnl("CGI file not found: 404 Error");
+		request->setResponsCode("404");
+		return -1;
+	}
+	else if (access(script_path.c_str(), R_OK) == -1)
+	{
+		printnl("CGI file not found: 404 Error");
+		request->setResponsCode("403");
+		return -1;
+	}
+	return 0;
+}
+
+int Server::_setCgiArgs(Request *request, char **cgi)
+{
     std::size_t extension = request->path().find_last_of('.');
     std::string script_path;
     std::string interpreter_path;
@@ -73,26 +96,25 @@ void Server::_childProcess(Client *client , const int ParentToCGI[2], const int 
     if (_isLocation(request->path())) {
         Location *location = _data->getLocation(request->path());
         std::map<std::string, std::string> cgi_map = location->cgi();
-        interpreter_path = cgi_map.find(request->path().substr(extension))->second.c_str();
+        interpreter_path = cgi_map.find(&request->path()[extension])->second;
         if (location->root().empty())
-          script_path = _data->_root + request->path();
+        	script_path = _data->_root + request->path();
         else 
-          script_path =  location->root() + request->path().substr(location->location().size());
-        // script_path = (location->root().empty() ? _data->_root : location->root()) + request->path();
+        	script_path =  location->root() + &request->path()[location->location().size()];
     }
     else
     {
         script_path = _data->_root + request->path();
-        interpreter_path = _data->_cgi[request->path().substr(extension)].c_str();
+        interpreter_path = _data->_cgi[&request->path()[extension]];
     }
-    std::cerr << "executable: " << _data->_cgi[request->path().substr(extension)] << " | path: " << (char *)const_cast<char*>((_data->_root + request->path()).c_str()) << std::endl;
-    cgi[0] = const_cast<char*>(interpreter_path.c_str());
-    cgi[1] =  const_cast<char*>(script_path.c_str());
+	if (_checkCgiArgsPath(request, interpreter_path, script_path) == -1)
+		return -1;
+	cgi[0] = new char[interpreter_path.length() + 1];
+	std::memcpy(cgi[0], interpreter_path.data(), interpreter_path.length() + 1);
+	cgi[1] = new char[script_path.length() + 1];
+	std::memcpy(cgi[1], script_path.data(), script_path.length() + 1);
     cgi[2] = NULL;
-    std::cerr << "cgi[0] : " << cgi[0] << std::endl;
-    std::cerr << "cgi[1] : " << cgi[1] << std::endl;
-
-	_execChildProcess(cgi, ParentToCGI, CGIToParent);
+	return 0;
 }
 
 void closePipePanic(const int pipe[2])
@@ -103,33 +125,15 @@ void closePipePanic(const int pipe[2])
         close(pipe[1]);
 }
 
-int Server::_checkCgi(Client *client) {
-	int	status;
-	int returnValue;
-	int pid = client->getPid();
-	
-	returnValue = waitpid(pid, &status, WNOHANG);
-	if (returnValue == -1)
-	{
-		std::cerr << "waitpid failed (pid == " << pid << ")" << std::endl;
-		client->setResponse("500");
-	}
-	else if (returnValue == 0)
-		return NOT_FINISHED;
-	else
-	{
-		printnl("CGI FINISHED !");
-		client->setCGIStatus(status);
-	}
-	return FINISHED;
-}
-
 void	Server::_handleCGI( Client *client ) {
+	char *cgi[3];
     int ParentToCGI[2] = {-1, -1};
     int CGIToParent[2] = {-1, -1};
 
 	std::cerr << "CGI" << std::endl;
 	client->getRequest()->setRequestType(CGI);
+	if (_setCgiArgs(client->getRequest(), cgi) == -1)
+		return;
     if (pipe(ParentToCGI) == -1 || pipe(CGIToParent) == -1)
     {
         closePipePanic(ParentToCGI), closePipePanic(CGIToParent);
@@ -146,8 +150,9 @@ void	Server::_handleCGI( Client *client ) {
         return;
     }
     if (pid == 0)
-        _childProcess(client, ParentToCGI, CGIToParent);
+		_execChildProcess(cgi, ParentToCGI, CGIToParent);
     close(ParentToCGI[0]), close(CGIToParent[1]);
+	delete [] cgi[0], delete [] cgi[1];
 	if (client->getRequest()->getContentLenght() == -1)
 	{
 		close(ParentToCGI[1]);
@@ -157,4 +162,27 @@ void	Server::_handleCGI( Client *client ) {
 		client->setParentToCGI(ParentToCGI[1]);
     client->setCGIFD(CGIToParent[0]);
     client->setPid(pid);
+}
+
+int Server::_checkCgi(Client *client) {
+	int	status;
+	int returnValue;
+	int pid = client->getPid();
+	
+	if (pid == -1)
+		return FINISHED;
+	returnValue = waitpid(pid, &status, WNOHANG);
+	if (returnValue == -1)
+	{
+		std::cerr << "waitpid failed (pid == " << pid << ")" << std::endl;
+		client->setResponse("500");
+	}
+	else if (returnValue == 0)
+		return NOT_FINISHED;
+	else
+	{
+		printnl("CGI FINISHED !");
+		client->setCGIStatus(status);
+	}
+	return FINISHED;
 }
