@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/12 16:14:18 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 13:43:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef enum s_state
 	ERROR,
 }t_state;
 
-# define BUFFER_SIZE 1000000
+# define BUFFER_SIZE 8192
 
 # define DEFAULT_UPLOAD_FILE "URIs/uploads/default"
 

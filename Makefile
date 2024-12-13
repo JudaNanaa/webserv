@@ -6,7 +6,7 @@
 #    By: madamou <madamou@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/29 12:42:35 by madamou           #+#    #+#              #
-#    Updated: 2024/12/12 06:51:21 by madamou          ###   ########.fr        #
+#    Updated: 2024/12/13 12:44:45 by madamou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ END= 	$(shell tput -Txterm sgr0)
 
 CC = c++
 
-C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3
+C_FLAGS = -Wall -Werror -Wextra -std=c++98 -Wshadow -Wno-shadow -g3 -pg
 
 REQUEST = $(addprefix Request/, Request.cpp GetterSetterRequest.cpp ResponseFile.cpp RequestHeader.cpp RequestBody.cpp)
 

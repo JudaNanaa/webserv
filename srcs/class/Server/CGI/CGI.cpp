@@ -169,7 +169,7 @@ int Server::_checkCgi(Client *client) {
 	int returnValue;
 	int pid = client->getPid();
 	
-	if (pid == -1)
+	if (client->getRequest()->getResponsCode() != "200")
 		return FINISHED;
 	returnValue = waitpid(pid, &status, WNOHANG);
 	if (returnValue == -1)
