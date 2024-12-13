@@ -65,6 +65,12 @@ class Server {
 		void					_sendResponse(const int &fd, Client *client);
 		void					_sendRedirect(const std::string &redirect, const int &fd, Client *client);
 		void					_sendResponseDefault(Client *client);
+		std::string				_getFinalPath(Request *clientRequest);
+		std::string				_getIndex(Request *clientRequest);
+		void					_manageIfDirectory(Client *client, Request *clientRequest, std::string &finalPath);
+		bool					_ifAutoIndex(Request *clientRequest);
+
+
 		// Location
 		void					_sendResponseLocation(Client *client);
 		void					_handleLocation(Client *client);

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 10:26:41 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 19:09:35 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,61 +314,84 @@ std::string	Server::_getResponseHeader(Request *request, const std::string& path
 	return header;
 }
 
+std::string Server::_getFinalPath(Request *clientRequest)
+{
+	std::string finalPath;
+
+	if (clientRequest->getRequestType() is LOCATION)
+	{
+		Location *location = clientRequest->getLocation();
+		if (location->root().empty())
+			finalPath = _data->_root + clientRequest->path();
+		else 
+			finalPath =  location->root() + &clientRequest->path()[location->location().size()];
+	}
+	else if (clientRequest->getRequestType() is DEFAULT)
+		finalPath = _data->_root + clientRequest->path();
+	return finalPath;
+}
+
+std::string Server::_getIndex(Request *clientRequest)
+{
+	std::string index;
+
+	if (clientRequest->getRequestType() is LOCATION) {
+		Location *location = clientRequest->getLocation();
+		index = location->index().empty() ? _data->_index : location->index();
+	}
+	else if (clientRequest->getRequestType() is DEFAULT)
+		index = _data->_index;
+	return index;
+}
+
+bool Server::_ifAutoIndex(Request *clientRequest)
+{
+	bool autoIndex;
+	
+	if (clientRequest->getRequestType() is LOCATION)
+	{
+		Location *location = clientRequest->getLocation();
+		autoIndex = location->autoIndex() < 0 ? _data->_autoIndex : location->autoIndex();
+	}
+	else
+		autoIndex = _data->_autoIndex;
+	return autoIndex;
+}
+
+void Server::_manageIfDirectory(Client *client, Request *clientRequest, std::string &finalPath)
+{
+	std::string index;
+
+	index = _getIndex(clientRequest);
+	if (index.empty() is true)
+	{
+		
+		if (_ifAutoIndex(clientRequest))
+			_generateAutoIndex(client, finalPath);
+		else 
+			clientRequest->setResponsCode("403");				
+	}
+	else 
+	{
+		finalPath += "/" + index;
+		clientRequest->openResponseFile(finalPath.c_str());
+		if (clientRequest->responseFileOpen() is false)
+			_generateAutoIndex(client, finalPath.erase(finalPath.find_last_of('/')));
+	}
+}
+
 std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 {
 	std::string finalPath;
 	struct stat buf;
 
-	if (clientRequest->getRequestType() is LOCATION)
-	{
-		Location *location = clientRequest->getLocation();
-		printnl("data root : " << _data->_root);
-		printnl("request path : " << clientRequest->path());
-		if (location->root().empty())
-			finalPath = _data->_root + clientRequest->path();
-		else 
-			finalPath =  location->root() + clientRequest->path().substr(location->location().size());
-		// finalPath = (location->root().empty() ? _data->_root : location->root()) + clientRequest->path().substr(location->location().size());
-	}
-	else if (clientRequest->getRequestType() is DEFAULT)
-		finalPath = _data->_root + clientRequest->path();
-	printnl("DEBUG FINAL_PATH : " << finalPath);
-	if (access((finalPath).c_str(), F_OK | R_OK) is -1)
+	finalPath = _getFinalPath(clientRequest);
+	if (access(finalPath.data(), F_OK | R_OK) is -1)
 		clientRequest->setResponsCode("404");
-	else if (stat((finalPath).c_str(), &buf) is -1)
+	else if (stat(finalPath.data(), &buf) is -1)
 		clientRequest->setResponsCode("500");
 	else if (S_ISDIR(buf.st_mode))
-	{
-		std::string index;
-		if (clientRequest->getRequestType() is LOCATION) {
-			Location *location = clientRequest->getLocation();
-			index = location->index().empty() ? _data->_index : location->index();
-		}
-		else if (clientRequest->getRequestType() is DEFAULT)
-			index = _data->_index;
-		if (index.empty() is true)
-		{
-			bool autoIndex;
-			if (clientRequest->getRequestType() is LOCATION)
-			{
-				Location *location = clientRequest->getLocation();
-				autoIndex = location->autoIndex() < 0 ? _data->_autoIndex : location->autoIndex();
-			}
-			else
-				autoIndex = _data->_autoIndex;
-			if (autoIndex)
-				return _generateAutoIndex(client, finalPath);
-			else 
-				clientRequest->setResponsCode("403");				
-		}
-		else 
-		{
-			finalPath += "/" + index;
-			clientRequest->openResponseFile(finalPath.c_str());
-			if (clientRequest->responseFileOpen() is false)
-				return _generateAutoIndex(client, finalPath.erase(finalPath.find_last_of('/')));
-		}
-	}
+		_manageIfDirectory(client, clientRequest, finalPath);
 	else
 		clientRequest->openResponseFile((finalPath).c_str());
 	if (clientRequest->getResponsCode() is "200" && clientRequest->responseFileOpen() is false)
