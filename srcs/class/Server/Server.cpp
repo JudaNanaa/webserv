@@ -43,6 +43,14 @@ Server::~Server(void) {
 }
 
 void Server::freeAll(void) {
+	std::map<int, Client *>::iterator it = _clientMap.begin();
+	std::map<int, Client *>::iterator end = _clientMap.end();
+
+	while (it != end)
+	{
+		delete it->second;
+		it++;
+	}
 	delete _data;
 }
 

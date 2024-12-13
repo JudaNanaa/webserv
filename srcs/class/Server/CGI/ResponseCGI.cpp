@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/12 06:07:40 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 18:34:12 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,11 @@ void Server::_responseCgiIfNoProblem(Client *client)
 	}
 	close(client->getCGIFD());
 	if (send(client->getClientFd(), toSend, total, MSG_NOSIGNAL) == -1)
+	{
+		delete [] toSend;
 		throw std::runtime_error("Can't send the message !");
+	}
+	delete [] toSend;
 }
 
 void Server::_responseCgiError(Client *client)
