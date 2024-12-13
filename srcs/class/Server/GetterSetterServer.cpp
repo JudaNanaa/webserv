@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   GetterSetter.cpp                                   :+:      :+:    :+:   */
+/*   GetterSetterServer.cpp                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 23:06:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 18:44:34 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 10:22:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Client *Server::_getClient(int fd) {
+Client *Server::_getClient(const int &fd) {
 	return this->_clientMap[fd];
 }
 
@@ -28,7 +28,7 @@ void Server::addClientToMap(Client *client) {
 	this->_clientMap[client->getClientFd()] = client;
 }
 
-void	Server::setEnv( char **env ) {
+void	Server::setEnv(char **env) {
 	_env = env;
 }
 

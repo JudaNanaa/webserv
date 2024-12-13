@@ -6,14 +6,14 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:42:11 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 23:57:29 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 10:03:25 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RawBits.hpp"
 #include "../Parser/Parser.hpp"
 
-void	RawBits::checkFileHeader(File& file, std::string &header) {
+void	RawBits::checkFileHeader(File& file, const std::string &header) {
 	std::vector<std::string> fileHeaderSplit = split(header, "\r\n");
 
 	for (std::vector<std::string>::iterator it = fileHeaderSplit.begin(); it != fileHeaderSplit.end(); it++) {
@@ -32,7 +32,7 @@ void	RawBits::checkFileHeader(File& file, std::string &header) {
 	}
 }
 
-void	RawBits::_flushBuffer( long pos, long n ) {
+void	RawBits::_flushBuffer(const long &pos, const long &n) {
 	_uploadFile.write(&_body[pos], n);
 }
 
@@ -91,7 +91,7 @@ int    RawBits::handleFileBody(void) {
 	return (CONTINUE);
 }
 
-int    RawBits::uploadMultipart( void  ) {
+int    RawBits::uploadMultipart(void) {
 
     if (_boundary.empty()) {        /* no bondary */
         std::cerr << "ERROR: no bondary" << std::endl;

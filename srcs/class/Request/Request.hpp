@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/12 17:20:18 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 10:13:54 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ class Request : public RawBits {
 
 		// Parsing Header
 		void								_parseRequest(void);
-		void								_parseRequestLine( std::string line );
 
 		// Upload
 		void								_uploadBody(void);
@@ -62,7 +61,7 @@ class Request : public RawBits {
 		/*	GETTER	*/
 		const int							&method( void ) const;
 		const std::string					&path( void ) const;
-		const std::string					&find( std::string key ) const;
+		const std::string					&find(const std::string &key) const;
 		const t_state						&getState(void) const;
 		const long long						&getContentLenght(void) const;
 		const std::string					&getResponsCode(void) const;
@@ -70,21 +69,21 @@ class Request : public RawBits {
 		std::size_t							getResponseFileSize(void) const;
 		std::size_t							getResponseFileTotalSend(void) const;
 		const int							&getRequestType(void) const;
-		bool								isKeyfindInHeader(std::string const &key) const;
+		bool								isKeyfindInHeader(const std::string &key) const;
 		bool								getRedirect(void) const;
 		Location							*getLocation(void) const;
 		
 		/*	SETTER	*/
 		void								setRequestType(const int &type);
-		void								addResponseFileTotalSend(std::size_t nbSend);
+		void								addResponseFileTotalSend(const std::size_t &nbSend);
 		void								method( const int& newMethod );
-		void								setState( t_state newStatus );
-		void								path( std::string newPath );
-		void								setSizeBody(long long nb);
+		void								setState(const t_state &newStatus);
+		void								path( const std::string &newPath );
+		void								setSizeBody(const std::size_t &nb);
 		void								setMethode(const std::string &methode);
 		void								setResponsCode(const std::string &code);
 		void								setRedirect(const bool &b);
-		void								incrementSizeBody(const unsigned long long &n);
+		void								incrementSizeBody(const std::size_t &n);
 		void								setLocation(Location *location);
 		// Parsing Header
 		void								addHeaderLineToMap(const std::string &key, const std::string &value);
@@ -94,10 +93,10 @@ class Request : public RawBits {
 		// Body
 		void								openResponseFile(const char *fileName);
 		/*	Response file	*/
-		std::size_t							readResponseFile(char *buffer, std::size_t n);
+		std::size_t							readResponseFile(char *buffer, const std::size_t &n);
 		void								closeResponseFile(void);
 		
-		friend std::ostream& operator<<(std::ostream& os, const Request& request );
+		friend std::ostream& operator<<(std::ostream& os, const Request& request);
 };
 
 #endif

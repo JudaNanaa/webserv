@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 00:00:58 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/11 00:01:33 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 10:15:26 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void Request::addHeaderLineToMap(const std::string &key, const std::string &valu
 	_others[key] = value;
 }
 
-bool Request::isKeyfindInHeader(std::string const &key) const {
+bool Request::isKeyfindInHeader(const std::string &key) const {
 	return _others.find(key) != _others.end();
 }
 

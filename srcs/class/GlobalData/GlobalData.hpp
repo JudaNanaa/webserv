@@ -17,17 +17,17 @@ class GlobalData {
 		int						_epoll_fd;
 		struct epoll_event		_events[MAX_EVENTS];
 
-		void					_addToEpoll(int fd, uint32_t events);
+		void					_addToEpoll(const int &fd, const uint32_t &events);
 		int						_waitFdsToBeReady(void);
 		void					_addNewClient(Server &server);
 		void					_initServers(std::vector<Server> &servVec);
-		void					_handleClientIn(int fd);
-		void					_handleClientOut(int fd);
-		void					_removeClient(int fd);
+		void					_handleClientIn(const int &fd);
+		void					_handleClientOut(const int &fd);
+		void					_removeClient(const int &fd);
 		bool					_isServerFd(const int &fd);
-		Server 					*_getServerWithClientFd(const int fd);
-		void					_handleEvent( struct epoll_event& fdsReady );
-		void					_modifyClientEvent(int fd, uint32_t events);
+		Server 					*_getServerWithClientFd(const int &fd);
+		void					_handleEvent(const struct epoll_event& event);
+		void					_modifyClientEvent(const int &fd, const uint32_t &events);
 	public:
 		GlobalData();
 

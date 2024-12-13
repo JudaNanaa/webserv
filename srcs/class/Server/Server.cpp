@@ -111,7 +111,7 @@ void Server::_handleDelete(Client* client) {
 	client->setResponse("200");
 }
 
-t_state Server::addClientRequest(int fd) {
+t_state Server::addClientRequest(const int &fd) {
 	char buff[BUFFER_SIZE];
 	int n;
 	Client *client = _getClient(fd);

@@ -6,11 +6,12 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 01:51:03 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/12 17:19:36 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 10:22:12 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Server.hpp"
+#include <cstddef>
 
 void Server::_parseFirstLineHeader(Client *client, const std::vector<std::string> &headerSplit)
 {
@@ -35,13 +36,13 @@ void Server::_parseFirstLineHeader(Client *client, const std::vector<std::string
 	}
 }
 
-void	Server::_addHeaderLine( std::string line, Request *clientRequest) {
+void	Server::_addHeaderLine(const std::string &line, Request *clientRequest) {
 
 	if (line.find(": ") not_found)
 		throw std::invalid_argument("invalid line: " + line);
 
 	std::string	value = line.substr(line.find(": ") + 2);
-	std::string key = line.erase(line.find(": "));	// erase the value (keep the key)
+	std::string key = line.substr(0, line.find(": "));	// erase the value (keep the key)
 	clientRequest->addHeaderLineToMap(key, value);
 }
 
@@ -160,7 +161,7 @@ void Server::_parseClientHeader(Client *client) {
   	_chooseParsing(client); // apre avoir recuperer les infos, on choisie le parsing approprier grace aux informations recuperer
 }
 
-void Server::_addingHeader(Client *client, const char *buff, const int &n)
+void Server::_addingHeader(Client *client, const char *buff, const std::size_t &n)
 {
 	try {
 		client->pushHeaderRequest(buff, n);

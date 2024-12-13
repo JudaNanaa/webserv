@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/12 17:20:13 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 10:14:42 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ const std::string&	Request::path( void	) const {
 	return (_path);
 }
 
-const std::string&	Request::find( std::string key ) const {
+const std::string&	Request::find( const std::string &key ) const {
 	if (_others.find(key) == _others.end())
 		throw std::invalid_argument(key + ": key not found");
 
@@ -46,15 +46,15 @@ void	Request::method( const int &newMethod ) {
 	_method = newMethod;
 }
 
-void	Request::setState( t_state newState ) {
+void	Request::setState(const t_state &newState) {
 	_state = newState;
 }
 
-void	Request::path( std::string newPath ) {
+void	Request::path(const std::string &newPath) {
 	_path = newPath;
 }
 
-void	Request::setSizeBody(long long nb) {
+void	Request::setSizeBody(const std::size_t &nb) {
 	_contentLenght = nb;
 }
 
@@ -88,7 +88,7 @@ bool Request::getRedirect(void) const{
 	return _isRedirect;
 }
 
-void	Request::incrementSizeBody(const unsigned long long &n)
+void	Request::incrementSizeBody(const std::size_t &n)
 {
 	RawBits::_lenBody += n;
 	RawBits::_lenTotalBody += n;
@@ -106,7 +106,7 @@ std::size_t Request::getResponseFileTotalSend(void) const {
 	return _responseFile.totalSend;
 }
 		
-void	Request::addResponseFileTotalSend(std::size_t nbSend) {
+void	Request::addResponseFileTotalSend(const std::size_t &nbSend) {
 	_responseFile.totalSend += nbSend;
 }
 

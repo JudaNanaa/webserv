@@ -20,8 +20,8 @@
 
 bool g_running = true;
 
-GlobalData::GlobalData() { 
-	_epoll_fd = -1;
+GlobalData::GlobalData()
+	: _epoll_fd(-1) { 
 }
 
 GlobalData::~GlobalData() { 
@@ -29,7 +29,7 @@ GlobalData::~GlobalData() {
 		close(_epoll_fd);
 }
 
-void GlobalData::_addToEpoll(int fd, uint32_t events)
+void GlobalData::_addToEpoll(const int &fd, const uint32_t &events)
 {
 	struct epoll_event ev;
 
@@ -79,7 +79,7 @@ void GlobalData::_addNewClient(Server &server) {
 	}
 }
 
-Server *GlobalData::_getServerWithClientFd(const int fd) {
+Server *GlobalData::_getServerWithClientFd(const int &fd) {
 	std::map<int, Server>::iterator it = _servMap.begin();
 	std::map<int, Server>::iterator end = _servMap.end();
 
@@ -91,19 +91,20 @@ Server *GlobalData::_getServerWithClientFd(const int fd) {
 	return &it->second;
 }
 
-void GlobalData::_modifyClientEvent(int fd, uint32_t events)
+void GlobalData::_modifyClientEvent(const int &fd, const uint32_t &events)
 {
 	struct epoll_event ev;
 
 	ev.events = events;
 	ev.data.fd = fd;	
 	if (epoll_ctl(_epoll_fd, EPOLL_CTL_MOD, fd, &ev) is -1)
-		throw std::runtime_error("Epoll add error");
+		throw std::runtime_error("Epoll mod error");
 }
 
-void GlobalData::_handleClientIn(int fd) {
-	Server *server = _getServerWithClientFd(fd);
+void GlobalData::_handleClientIn(const int &fd) {
+	Server *server;
 
+	server = _getServerWithClientFd(fd);
 	try {
 		if (server->addClientRequest(fd) == RESPONSE)
 			_modifyClientEvent(fd, EPOLLOUT | EPOLLRDHUP | EPOLLHUP); // Set event for epoll so now we wait for OUT events
@@ -112,7 +113,7 @@ void GlobalData::_handleClientIn(int fd) {
 	}
 }
 
-void GlobalData::_handleClientOut(int fd) {
+void GlobalData::_handleClientOut(const int &fd) {
 	Server *server;
 	std::ifstream file;
 
@@ -126,9 +127,10 @@ void GlobalData::_handleClientOut(int fd) {
 	}
 }
 
-void GlobalData::_removeClient(int fd) {
-	Server *server = _getServerWithClientFd(fd);
+void GlobalData::_removeClient(const int &fd) {
+	Server *server;
 
+	server = _getServerWithClientFd(fd);
 	server->removeClientInMap(fd);
 	epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 	close(fd);
@@ -138,7 +140,7 @@ bool GlobalData::_isServerFd(const int &fd) {
 	return _servMap.find(fd) is_not _servMap.end();
 }
 
-void	GlobalData::_handleEvent( struct epoll_event& event ) {
+void	GlobalData::_handleEvent(const struct epoll_event& event) {
 	int	fd = event.data.fd;
 
 	if (_isServerFd(fd) is true)

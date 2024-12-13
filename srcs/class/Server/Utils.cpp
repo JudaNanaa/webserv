@@ -6,17 +6,17 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 23:09:46 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/11 00:15:33 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 09:53:24 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-bool Server::ifClientInServer(int fd) const {
+bool Server::ifClientInServer(const int &fd) const {
 	return this->_clientMap.find(fd) is_not this->_clientMap.end();
 }
 
-void Server::removeClientInMap(int fd) {
+void Server::removeClientInMap(const int &fd) {
 	Client *client;
 
 	client = _getClient(fd);
@@ -47,7 +47,7 @@ bool	Server::_isLocation(const std::string &path)
 	return _data->checkLocation(path);
 }
 
-bool Server::_checkLocationCgi(Location* location, std::string extension, Client* client) {
+bool Server::_checkLocationCgi(Location* location, const std::string &extension, Client* client) {
 	if (location->cgi().empty() || location->cgi().find(extension) == location->cgi().end()) {
 		//check si le fichier existe, si il existe 403 sinon 404
 		// client->setResponse(); // chelou donc je commente

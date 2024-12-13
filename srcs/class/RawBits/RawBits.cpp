@@ -45,7 +45,7 @@ RawBits::~RawBits(void) {
 		delete [] _request;
 }
 
-void RawBits::_appendBody(const char *str, const int n) {
+void RawBits::_appendBody(const char *str, const int &n) {
 	char *dest = new char[_lenBody + n];
 
 	if (_body) {
@@ -58,7 +58,7 @@ void RawBits::_appendBody(const char *str, const int n) {
 	_lenTotalBody += n;
 }
 
-void RawBits::BuffToRequest(const char *buff, const int n) {
+void RawBits::BuffToRequest(const char *buff, const size_t &n) {
 	char *dest = new char[_lenRequest + n];
 
 	if (_request) {
@@ -80,7 +80,7 @@ long RawBits::_findInRequest(const char *str) const {
     return -1;
 }
 
-long RawBits::findInBody(const char *str, unsigned long pos) const {
+long RawBits::findInBody(const char *str, const std::size_t &start) const {
 	size_t lenStr = strlen(str);
 
 	if (_lenBody < lenStr)
@@ -93,6 +93,7 @@ long RawBits::findInBody(const char *str, unsigned long pos) const {
 	}
 
 	std::size_t j = 0;
+	std::size_t pos = start;
 	while (pos < _lenBody)
 	{
 		if (_body[pos] == str[j])
@@ -121,7 +122,7 @@ void RawBits::splitRequest(void) {
 	_request = NULL;
 }
 
-char* RawBits::_substrBody(size_t pos, size_t n) {
+char* RawBits::_substrBody(const size_t &pos, const size_t &n) {
 	char *result = new char[n + 1];
 
 	std::memmove(result, &_body[pos], n);
@@ -129,12 +130,12 @@ char* RawBits::_substrBody(size_t pos, size_t n) {
 	return result;
 }
 
-void RawBits::eraseInBody(size_t pos, size_t n) {
+void RawBits::eraseInBody(const size_t &pos, const size_t &n) {
 	char *newBody = new char[_lenBody - n];
 
 	std::memmove(newBody, _body, pos);
 	std::memmove(&newBody[pos], &_body[pos + n], _lenBody - (pos + n));
-    delete[] _body;
+    delete [] _body;
     _body = newBody;
     _lenBody -= n;
 }

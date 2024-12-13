@@ -11,8 +11,9 @@
 /* ************************************************************************** */
 
 #include "../Server.hpp"
+#include <cstddef>
 
-void Server::_writeBodyToCgi(Client *client, const char *buff, int n)
+void Server::_writeBodyToCgi(Client *client, const char *buff, const std::size_t &n)
 {
 	Request *clientRequest = client->getRequest();
 
@@ -37,7 +38,7 @@ void Server::_writeBodyToCgi(Client *client, const char *buff, int n)
 	}
 }
 
-void	Server::_execChildProcess(char **cgi, int ParentToCGI[2], int CGIToParent[2])
+void	Server::_execChildProcess(char **cgi, const int ParentToCGI[2], const int CGIToParent[2])
 {
     close(ParentToCGI[1]);
     close(CGIToParent[0]);
@@ -61,7 +62,7 @@ void	Server::_execChildProcess(char **cgi, int ParentToCGI[2], int CGIToParent[2
     exit(1);
 }
 
-void Server::_childProcess(Client *client , int ParentToCGI[2], int CGIToParent[2])
+void Server::_childProcess(Client *client , const int ParentToCGI[2], const int CGIToParent[2])
 {
     char *cgi[3];
     Request* request = client->getRequest();
@@ -94,7 +95,7 @@ void Server::_childProcess(Client *client , int ParentToCGI[2], int CGIToParent[
 	_execChildProcess(cgi, ParentToCGI, CGIToParent);
 }
 
-void closePipePanic(int pipe[2])
+void closePipePanic(const int pipe[2])
 {
     if (pipe[0] != -1)
         close(pipe[0]);

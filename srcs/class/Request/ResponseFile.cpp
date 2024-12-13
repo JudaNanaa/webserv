@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 23:58:32 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/10 23:59:09 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 10:15:04 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	Request::openResponseFile(const char *fileName) {
 	}
 }
 
-std::size_t	Request::readResponseFile(char *buffer, std::size_t n) {
+std::size_t	Request::readResponseFile(char *buffer, const std::size_t &n) {
 	_responseFile.file.read(buffer, n);
 	return _responseFile.file.gcount();
 }

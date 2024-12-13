@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 18:46:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/10 19:09:22 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 09:59:53 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ File::~File() {
 
 }
 
-const std::string	&File::get( std::string key ) {
+const std::string	&File::get(const std::string &key) {
 	try {
 		return (_infos.at(key));
 	} catch (std::exception &e) {
@@ -33,7 +33,7 @@ const std::string	&File::get( std::string key ) {
 	}
 }
 
-void	File::set( std::string key, std::string value ) {
+void	File::set(const std::string &key, const std::string &value) {
 	_infos[key] = value;
 }
 

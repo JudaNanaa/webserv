@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/12 20:25:03 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/13 10:26:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,11 @@
 #define MYCEOC "https://pbs.twimg.com/media/EaoNYXkXkAMHJJK.jpg"
 
 
-const std::string getMessageCode(int code) {
+const std::string &getMessageCode(const int &code) {
 	static std::map<int, std::string> codes_responses;
 
 	if (codes_responses.empty())
 	{
-		
 		codes_responses[100] = "Continue";
 		codes_responses[101] = "Switching Protocols";
 		codes_responses[102] = "Processing";
@@ -118,7 +117,7 @@ const std::string getMessageCode(int code) {
 	return codes_responses[code];
 }
 
-std::string ContentType(const std::string& extension) {
+const std::string ContentType(const std::string& extension) {
     static std::map<std::string, std::string> contentTypes;
 
 	if (contentTypes.empty())
@@ -391,7 +390,7 @@ std::string Server::_openResponseFile(Request *clientRequest, Client* client)
 	return finalPath;
 }
 
-void Server::_sendResponse(int fd, Client *client) {
+void Server::_sendResponse(const int &fd, Client *client) {
 	Request *clientRequest = client->getRequest();
 	char	buffer[BUFFER_SIZE];
 	std::size_t	n = 0;
@@ -427,7 +426,7 @@ void Server::_sendResponse(int fd, Client *client) {
 	}
 }
 
-void Server::_sendRedirect(std::string redirect, int fd, Client *client) {
+void Server::_sendRedirect(const std::string &redirect, const int &fd, Client *client) {
 	Request *clientRequest = client->getRequest();
 	int code = atoi(clientRequest->getResponsCode().c_str());
 
@@ -522,7 +521,7 @@ void Server::_sendResponseDefault(Client *client)
 	 	_sendResponse(client->getClientFd(), client);
 }
 
-t_state Server::giveClientResponse(int fd) {
+t_state Server::giveClientResponse(const int &fd) {
 	Client *client;
 	std::ifstream file;
 

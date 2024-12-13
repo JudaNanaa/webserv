@@ -22,6 +22,7 @@
 #include "../Request/Request.hpp"
 #include "../Parser/Parser.hpp"
 #include "../Parser/Location.hpp"
+#include <cstddef>
 
 # define MAX_CLIENTS 1000
 
@@ -37,16 +38,16 @@ class Server {
 		// CGI
 		void					_responseCgiIfNoProblem(Client *client);
 		void					_responseCgiError(Client *client);
-		void					_childProcess(Client *client, int ParentToCGI[2], int CGIToParent[2]);
+		void					_childProcess(Client *client, const int ParentToCGI[2], const int CGIToParent[2]);
 		void					_responseCGI(Client *client);
-		void					_handleCGI( Client *client );
-		void					_writeBodyToCgi(Client *client, const char *buff, int n);
-		void					_execChildProcess(char **cgi, int ParentToCGI[2], int CGIToParent[2]);
+		void					_handleCGI(Client *client);
+		void					_writeBodyToCgi(Client *client, const char *buff, const std::size_t &n);
+		void					_execChildProcess(char **cgi, const int ParentToCGI[2], const int CGIToParent[2]);
 		int						_checkCgi(Client *client);
 		// Parsing header
 		void					_parseClientHeader(Client *client);
-		void					_addHeaderLine( std::string line, Request *clientRequest);
-		void					_addingHeader(Client *client, const char *buff, const int &n);
+		void					_addHeaderLine(const std::string &line, Request *clientRequest);
+		void					_addingHeader(Client *client, const char *buff, const std::size_t &n);
 		void					_parseOtherLinesHeader(Client *client, const std::vector<std::string> &headerSplit);
 		void					_parseContentLengthAndBoundary(Request *clientRequest);
 		void					_parseFirstLineHeader(Client *client, const std::vector<std::string> &headerSplit);
@@ -59,17 +60,16 @@ class Server {
 		std::string				_normalOpenFile(Request *clientRequest, Client* client);
 		std::string				_getContentType(const std::string& path);
 		std::string				_getResponseHeader(Request *request, const std::string& path);
-		int						_sendToFd(const char *msg, std::size_t msgSize, int fd);
-		void					_sendResponse(int fd, Client *client);
-		void					_sendRedirect(std::string redirect, int fd, Client *client);
+		void					_sendResponse(const int &fd, Client *client);
+		void					_sendRedirect(const std::string &redirect, const int &fd, Client *client);
 		void					_sendResponseDefault(Client *client);
 		// Location
 		void					_sendResponseLocation(Client *client);
 		void					_handleLocation(Client *client);
-		bool					_checkLocationCgi(Location* location, std::string extension, Client* client);
+		bool					_checkLocationCgi(Location* location, const std::string &extension, Client* client);
 		bool					_isLocation(const std::string &path);
 		// Getter
-		Client					*_getClient(int fd);
+		Client					*_getClient(const int &fd);
 
 		// Auth
 		void					_handleAuth(Client* client);
@@ -92,15 +92,15 @@ class Server {
 		/*		GETTER		*/
 		char					**getEnv( void ) const;
 		int const				&getSocketFd() const;
-		bool					ifClientInServer(int fd) const;
+		bool					ifClientInServer(const int &fd) const;
 		bool					isServerHost(std::string const &str) const;
 
 		// Other 
 		void					init();
 		void					addClientToMap(Client *client);
-		void					removeClientInMap(int fd);
-		t_state					addClientRequest(int fd);
-		t_state					giveClientResponse(int fd);
+		void					removeClientInMap(const int &fd);
+		t_state					giveClientResponse(const int &fd);
+		t_state					addClientRequest(const int &fd);
 		void					freeAll(void);
 };
 
