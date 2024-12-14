@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 19:35:41 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 23:06:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ void Pars::addRootDir(Data* data, const std::string &path) {
 }
 
 void Pars::addUpFoldDir(Data* data, const std::string &path) {
-  if (!path.empty())
-    data->_uploadFolder = path;
+	if (!path.empty())
+		data->_uploadFolder = path;
 }
 
 void Pars::addAllowedMethodes(Data* data, const std::string &str) {

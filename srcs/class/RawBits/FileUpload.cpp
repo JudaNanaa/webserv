@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:42:11 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 10:03:25 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 23:56:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,9 @@ int	RawBits::handleFileHeader(void) {
 	std::string file;
 
 	try {
-		file = "URIs/uploads/" + _currentFile.get("filename");
+		file = _uploadFolder + '/' + _currentFile.get("filename");
 	} catch (...) {
-		file = DEFAULT_UPLOAD_FILE;
+		file = _uploadFolder + '/' + DEFAULT_UPLOAD_FILE;
 	}
 
 	_uploadFile.open(file.c_str());

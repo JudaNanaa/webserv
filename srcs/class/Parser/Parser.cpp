@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 21:04:24 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 23:03:20 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,11 @@ void Location::assignKeyValue(std::string &key, std::string &value) {
 		actions["root"] = &Location::root ;
 		actions["cgi"] = &Location::addCgi ;
 		actions["redirect"] = &Location::redirect;
-		actions["uploads_folder"] = &Location::uploadFolder;
+		actions["upload_folder"] = &Location::uploadFolder;
 		actions["client_max_body_size"] = &Location::redirect;
 		actions["auto_index"] = &Location::handleAutoIndex;
 		actions["allowed_methods"] = &Location::handleAllowedMethods;
-		actions["error_pages"] = &Location::setErrorPage;
+		actions["error_page"] = &Location::setErrorPage;
 	};
 
 	std::map<std::string, void (Location::*)(std::string&)>::iterator it = actions.find(key);
@@ -151,10 +151,10 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 		functionMap["listen"] = &Pars::addPort;
 		functionMap["server_names"] = &Pars::addServName;
 		functionMap["root"] = &Pars::addRootDir;
-		functionMap["uploads_folder"] = &Pars::addUpFoldDir;
+		functionMap["upload_folder"] = &Pars::addUpFoldDir;
 		functionMap["allowed_methods"] = &Pars::addAllowedMethodes;
 		functionMap["auto_index"] = &Pars::addAutoIndex;
-		functionMap["error_pages"] = &Pars::addErrPage;
+		functionMap["error_page"] = &Pars::addErrPage;
 		functionMap["cgi"] = &Pars::addCgi;
 		functionMap["client_max_body_size"] = &Pars::addClientMBodyS;
 		functionMap["index"] = &Pars::addIndex;

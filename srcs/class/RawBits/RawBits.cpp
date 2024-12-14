@@ -131,6 +131,13 @@ char* RawBits::_substrBody(const size_t &pos, const size_t &n) {
 }
 
 void RawBits::eraseInBody(const size_t &pos, const size_t &n) {
+	if (n > _lenBody - pos)
+	{
+		delete [] _body;
+		_body = NULL;
+		_lenBody = 0;
+		return;
+	}
 	char *newBody = new char[_lenBody - n];
 
 	std::memmove(newBody, _body, pos);

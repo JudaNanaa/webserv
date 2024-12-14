@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 10:00:50 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 10:08:04 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 23:54:45 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class RawBits {
 		long long			_lenTotalBody;
 		unsigned int		_lenRequest;
 		std::ofstream		_uploadFile;
+		std::string			_uploadFolder;
 
 		void				checkFileHeader( File& file, const std::string &header );
 		void 				_appendBody(const char *str, const int &n);
@@ -61,7 +62,7 @@ class RawBits {
 		void 				setBondary(const std::string &str);
 		
 		
-		int 				uploadMultipart( void );
+		int 				uploadMultipart( );
 		void 				BuffToRequest(const char *buff, const size_t &n);
 		void 				splitRequest(void);
     	long        		findInBody(const char *str, const size_t &start = 0) const;

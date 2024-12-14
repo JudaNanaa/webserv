@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 18:33:18 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 23:56:30 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef enum s_state
 
 # define BUFFER_SIZE 8192
 
-# define DEFAULT_UPLOAD_FILE "URIs/uploads/default"
+# define DEFAULT_UPLOAD_FILE "default"
 
 # define DEFAULT 1
 # define LOCATION 3

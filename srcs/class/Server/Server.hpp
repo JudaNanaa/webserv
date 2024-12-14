@@ -104,7 +104,8 @@ class Server {
 		int const					&getSocketFd() const;
 		bool						ifClientInServer(const int &fd) const;
 		bool						isServerHost(std::string const &str) const;
-
+		bool						uploadFolderIsSet(Request *request) const;
+		const std::string			getUploadFolder(Request *request) const;
 		// Other 
 		void						init();
 		void						addClientToMap(Client *client);

@@ -6,11 +6,14 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 23:09:46 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 18:32:19 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 00:08:30 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 bool Server::ifClientInServer(const int &fd) const {
 	return this->_clientMap.find(fd) is_not this->_clientMap.end();
@@ -51,4 +54,62 @@ bool Server::_checkLocationCgi(Location* location, const std::string &extension)
 	if (location->cgi().empty() || location->cgi().find(extension) == location->cgi().end())
 		return false;
 	return true;
+}
+
+bool Server::uploadFolderIsSet(Request *request) const 
+{
+	std::string uploadFolder;
+
+	if (request->getRequestType() is LOCATION)
+	{
+		Location *location = _data->getLocation(request->path());
+		uploadFolder = location->uploadFolder();
+	}
+	if (uploadFolder.empty())
+		uploadFolder = _data->_uploadFolder;
+	return uploadFolder.empty() is false;
+}
+
+
+const std::string Server::getUploadFolder(Request *request) const 
+{
+	std::string uploadFolder;
+	std::string root;
+	struct stat buf;
+
+	if (request->getRequestType() is LOCATION)
+	{
+		Location *location = _data->getLocation(request->path());
+		if (location->uploadFolder().empty())
+		{
+			if (location->root().empty())
+				root = _data->_root;
+			else
+				root = location->root();
+			uploadFolder = root + '/' + _data->_uploadFolder;
+		}
+		else
+		{
+			if (location->root().empty())
+				root = _data->_root;
+			else
+				root = location->root();
+			uploadFolder = root + '/' + location->uploadFolder();
+		}
+		if (access(uploadFolder.data(), F_OK | W_OK) == -1)
+			return "";
+		if (stat(uploadFolder.data(), &buf) == -1)
+			return "";
+		if (S_ISDIR(buf.st_mode) is false)
+			return "";
+		return uploadFolder;
+	}
+	uploadFolder = _data->_root + '/' + _data->_uploadFolder;
+	if (access(uploadFolder.data(), F_OK | W_OK) == -1)
+		return "";
+	if (stat(uploadFolder.data(), &buf) == -1)
+		return "";
+	if (S_ISDIR(buf.st_mode) is false)
+		return "";
+	return uploadFolder;
 }
