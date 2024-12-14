@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 17:25:09 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 19:35:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,4 +103,3 @@ void Pars::addClientMBodyS(Data* data, const std::string &size) {
 void Pars::addIndex(Data* data, const std::string &index) {
     data->_index = split(index, " ");
 }
-

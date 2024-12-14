@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/14 17:24:08 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 19:42:07 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,16 @@ Location::Location() {
 	_allowedMethods = 0;
 	_client_max_body_size = -1; // no limit (?)
 	_autoIndex = -1;
+	_internal = false;
 }
 
 Location::~Location() {}
 
 /*	GETTER	*/
+
+bool	Location::internal( void ) const {
+	return _internal;
+}
 
 const std::string&	Location::location( void ) const {
 	return _location;

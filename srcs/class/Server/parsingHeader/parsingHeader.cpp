@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 01:51:03 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 11:34:55 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 19:47:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,11 @@ void	Server::_handleLocation(Client *client) {
 	std::size_t	extension;
 
 	std::cerr << "LOCATION" << std::endl;
+	if (location->internal() is true)
+	{
+		client->setResponse("403");
+		return ;		
+	}
 	request->setRequestType(LOCATION);
 	request->setLocation(location);
 	extension = request->path().find_last_of('.');
@@ -116,6 +121,11 @@ void	Server::_handleRequest( Client *client ) {
 	Request *request = client->getRequest();
 
 	std::cerr << "DEFAULT" << std::endl;
+	if (_data->internal() is true)
+	{
+		client->setResponse("403");
+		return ;		
+	}
 	request->setRequestType(DEFAULT);
 	if (isCgi(request->path()) is true) {
 		_handleCGI(client);

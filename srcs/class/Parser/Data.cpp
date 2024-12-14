@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:35:03 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 17:22:54 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 19:42:19 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ Data::Data() {
   _port = 0;
   _autoIndex = false;
   _clientMaxBodySize = -1;
+  _internal = false;
 }
 
 Data::~Data() {
@@ -72,4 +73,8 @@ const std::string &Data::getErrorPage(const std::string	&code) const
 bool Data::errorPageIsSet(const std::string &code) const
 {
 	return _errorPages.find(code) != _errorPages.end();
+}
+
+bool	Data::internal( void ) const {
+	return _internal;
 }

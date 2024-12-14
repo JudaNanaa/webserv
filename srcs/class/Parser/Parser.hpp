@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 17:22:55 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 19:41:19 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,10 @@ struct Data {
 	Location 							*getLocation(const std::string &path);
 	const std::string					&getErrorPage(const std::string	&code) const;
 	bool								errorPageIsSet(const std::string &code) const;
+	bool								internal(void) const;
 
     int									_port;
-
+	bool								_internal;
     std::string							_serverName;
     std::string							_root;
     std::string							_uploadFolder;

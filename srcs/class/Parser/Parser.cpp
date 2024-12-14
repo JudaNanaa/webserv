@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 17:23:08 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 21:04:24 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <cstring>
 #include <exception>
 #include <fstream>
 #include <sstream>
@@ -80,22 +81,33 @@ void Location::assignKeyValue(std::string &key, std::string &value) {
 	if (it != actions.end()) {
 		void (Location::*func)(std::string&) = it->second;
 		(this->*func)(value);
-	} else
+	}
+	else
 		throw std::invalid_argument("unknown assignment `" + key + "'");
 }
 
 void	Location::addLocationLine(std::string &line) {
+	std::string value;
 
 	if (trim(line).empty())
 		return ;
+	else if (std::strncmp(trim(line).data(), "internal", 8) == 0) {
+		if (line.find(";") not_found)
+			throw std::invalid_argument("`;' expected");
+		value = &trim(line)[8];
+		value.erase(value.find(";"));
+		if (trim(value).empty() is false)
+			throw std::invalid_argument("no need argument for: internal");
+		this->_internal = true;
+		return;
+	}
 	else if (line.find(' ') not_found)
 		throw std::invalid_argument("invalid line 2: " + line);
 	else if (line.find(";") not_found)
 		throw std::invalid_argument("`;' expected");
-
-	std::string value = trim(line.substr(line.find(' ')));
-	value.erase(value.find(";"));
 	
+	value = trim(line.substr(line.find(' ')));
+	value.erase(value.find(";"));
 	std::string key = trim(line.substr(0, line.find(' ')));
 
 	if (key.empty())
@@ -157,13 +169,23 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 		return ;
 	}
 
-	if (functionMap.find(trim(type)) == functionMap.end())	// type not in the map
+	if (functionMap.find(trim(type)) == functionMap.end() && type != "internal")	// type not in the map
 		throw std::invalid_argument("unknow keyword: " + trim(type) + " at line " + oss.str());
-	if (trim(&line[type.length()]).empty())
+	if (trim(&line[type.length()]).empty() && type != "internal")
 		throw std::invalid_argument("empty value for the key: " + type + " at line " + oss.str());
 	Pars parsInstance;
-	(parsInstance.*functionMap[trim(type)])(data, trim(&line[type.length()]));
-	std::cout << trim(type) << ": " << &line[type.length()] << std::endl;
+	if (type == "internal")
+	{
+		if (trim(&line[type.length()]).empty() is false)
+			throw std::invalid_argument("no need argument for: " + type + " at line " + oss.str());
+		data->_internal = true;
+		std::cout << trim(type) << std::endl;
+	}
+	else
+	{
+		(parsInstance.*functionMap[trim(type)])(data, trim(&line[type.length()]));
+		std::cout << trim(type) << ": " << &line[type.length()] << std::endl;
+	}
 }
 
 //for each server configuration check synthax and give each line to handleLine()

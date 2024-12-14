@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 13:55:03 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/14 17:23:27 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 19:42:01 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ struct Data;
 struct	Location {
 	private:
 		std::string									_location;
+		bool										_internal;
 		std::string									_root;
 		std::map<std::string, std::string>			_cgi;
 		std::string									_redirect;
@@ -43,6 +44,7 @@ struct	Location {
 
 		/*	GETTER	*/
 		const std::string	 						&location( void ) const;
+		bool				 						internal( void ) const;
 		const std::string 							&root( void ) const;
 		const std::map<std::string, std::string>	&cgi( void ) const;
 		const std::string							&redirect( void ) const;
