@@ -6,12 +6,13 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/10 20:27:59 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 14:26:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../class/RawBits/RawBits.hpp"
 #include "../../includes/includes.hpp"
+#include <cstddef>
 #include <cstring>
 #include <exception>
 #include <stdexcept>
@@ -64,4 +65,17 @@ void trimn(std::string& str) {
     size_t end = str.find_last_not_of(" \t\n\r\f\v");
     str.erase(end + 1);
     str.erase(0, start);
+}
+
+void formatSlash(std::string &str)
+{
+	std::size_t found;
+	
+	while (true)
+	{
+		found = str.find("//");
+		if (found == std::string::npos)
+			break;
+		str.erase(found,1);
+	}
 }

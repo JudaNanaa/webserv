@@ -11,5 +11,6 @@ std::string					generateFilename(std::string baseName);
 const std::string			&getMessageCode(const int &code);
 std::string					trim(const std::string& str);
 void						trimn(std::string& str);
+void						formatSlash(std::string &str);
 
 #endif

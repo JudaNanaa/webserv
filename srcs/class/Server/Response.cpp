@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 13:53:56 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 14:32:45 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,6 +246,7 @@ void Server::_generateAutoIndex(Client *client, const std::string &directoryPath
     if (currentDir == NULL) {
         std::cerr << "Error: Could not open directory " << directoryPath << std::endl;
         client->setResponse("500");
+		return;
     }
 
     struct dirent *elem;
@@ -260,8 +261,9 @@ void Server::_generateAutoIndex(Client *client, const std::string &directoryPath
         oss << colorIndex;
         std::string colorClass = "color-" + oss.str();
         colorIndex = (colorIndex % 5) + 1;
-
-        html += "        <button class=\"" + colorClass + "\" onclick=\"window.location.href='" + client->getRequest()->path() + "/" + name + "'\">" + name + "</button>\r\n";
+		std::string path = client->getRequest()->path() + "/" + name;
+		formatSlash(path);
+		html += "        <button class=\"" + colorClass + "\" onclick=\"window.location.href='" + path + "'\">" + name + "</button>\r\n";
     }
     closedir(currentDir);
 
@@ -291,9 +293,8 @@ void Server::_generateAutoIndex(Client *client, const std::string &directoryPath
 }
 
 std::string	Server::_getContentType(const std::string& path) {
-	if (path.find('.') not_found) {
+	if (path.find('.') not_found)
 		return ("text/plain");
-	}
 
 	std::string extension = path.substr(path.find_last_of('.'));
 	return ContentType(extension);
@@ -327,6 +328,7 @@ std::string Server::_getFinalPath(Request *clientRequest)
 	}
 	else if (clientRequest->getRequestType() is DEFAULT)
 		finalPath = _data->_root + clientRequest->path();
+	formatSlash(finalPath);
 	return finalPath;
 }
 
