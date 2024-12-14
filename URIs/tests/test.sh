@@ -1,8 +1,7 @@
-#!/usr/bin/python3
+#!/bin/bash
 
 # Génération du contenu HTML amélioré
-body = """\
-<!DOCTYPE html>
+body='<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +9,7 @@ body = """\
     <title>Test CGI Amélioré</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: "Arial", sans-serif;
             text-align: center;
             background: linear-gradient(to bottom right, #8ec5fc, #e0c3fc);
             color: #333;
@@ -60,18 +59,18 @@ body = """\
 </head>
 <body>
     <div class="container">
-        <h2>I guess I'm the output of a CGI, huh?</h2>
+        <h2>I guess I'\''m the output of a CGI, huh?</h2>
         <a id="goBackButton" href="javascript:history.back()">Retour</a>
     </div>
 </body>
-</html>
-"""
+</html>'
 
 # Calcul de la longueur du contenu
-content_length = len(body)
+content_length=${#body}
 
-# Impression des en-têtes HTTP et du contenu
-print(f"Content-Type: text/html\r")
-print(f"Content-Length: {content_length}\r")
-print("\r")  # Ligne vide pour séparer les en-têtes du corps
-print(body)
+# Impression des en-têtes HTTP
+echo "Content-Type: text/html"
+echo "Content-Length: $content_length"
+echo
+# Impression du contenu HTML
+echo "$body"

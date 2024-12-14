@@ -6,7 +6,7 @@
 #    By: madamou <madamou@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/29 12:42:35 by madamou           #+#    #+#              #
-#    Updated: 2024/12/13 18:27:50 by madamou          ###   ########.fr        #
+#    Updated: 2024/12/14 16:29:35 by madamou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ REQUEST = $(addprefix Request/, Request.cpp GetterSetterRequest.cpp ResponseFile
 
 FILE = $(addprefix File/, File.cpp)
 
-CGI = $(addprefix CGI/, CGI.cpp ResponseCGI.cpp)
+CGI = $(addprefix CGI/, CGI.cpp)
 
 GLOBALDATA = $(addprefix GlobalData/, GlobalData.cpp)
 
@@ -36,7 +36,9 @@ CLIENT = $(addprefix Client/, Client.cpp)
 
 PARSING_HEADER = $(addprefix parsingHeader/, parsingHeader.cpp)
 
-SERVER = $(addprefix Server/, Server.cpp  Response.cpp Utils.cpp GetterSetterServer.cpp $(CGI) $(PARSING_HEADER))
+RESPONSE = $(addprefix Response/, autoIndex.cpp cookie.cpp Response.cpp ResponseCGI.cpp ResponseFile.cpp ResponseGetter.cpp)
+
+SERVER = $(addprefix Server/, Server.cpp Utils.cpp GetterSetterServer.cpp $(CGI) $(PARSING_HEADER) $(RESPONSE))
 
 PARSER = $(addprefix Parser/, Parser.cpp ParserUtils.cpp Data.cpp Location.cpp)
 

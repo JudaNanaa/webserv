@@ -12,5 +12,6 @@ const std::string			&getMessageCode(const int &code);
 std::string					trim(const std::string& str);
 void						trimn(std::string& str);
 void						formatSlash(std::string &str);
+const std::string			ContentType(const std::string& extension);
 
 #endif
