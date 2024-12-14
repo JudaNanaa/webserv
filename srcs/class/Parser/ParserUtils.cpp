@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/10 20:27:47 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 13:21:20 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,71 +22,69 @@
 #include <cstddef>
 
 
-void Pars::addPort(Data* data, std::string port) {
+void Pars::addPort(Data* data, const std::string &port) {
   if (!port.empty())
     data->_port = std::atoi(port.c_str());
 }
 
-void Pars::addServName(Data* data, std::string name) {
+void Pars::addServName(Data* data, const std::string &name) {
   if (!name.empty())
     data->_serverName = name;
 }
 
 
-void Pars::addRootDir(Data* data, std::string path) {
-  if (path.find("/") != path.length() - 1)
-    path.push_back('/');
-  if (!path.empty())
-    data->_root = path;
+void Pars::addRootDir(Data* data, const std::string &path) {
+	data->_root = path;
+	if (path.find("/") != path.length() - 1)
+		data->_root.push_back('/');
 }
 
 
-void Pars::addUpFoldDir(Data* data, std::string path) {
+void Pars::addUpFoldDir(Data* data, const std::string &path) {
   if (!path.empty())
     data->_uploadFolder = path;
 }
 
 
-void Pars::addAllowedMethodes(Data* data, std::string str) {
+void Pars::addAllowedMethodes(Data* data, const std::string &str) {
 	int	methods = 0;
+	std::string tmp;
 
-	if (str.find(";") is_found) {
-		str.erase(str.find(';'), 1);
-	}
-
-	if (str.find("GET") is_found) {
+	tmp = str;
+	if (tmp.find(";") is_found)
+		tmp.erase(tmp.find(';'), 1);
+	if (tmp.find("GET") is_found) {
 		methods = methods | GET_;
-		str.erase(str.find("GET"), 3);
-	} if (str.find("POST") is_found) {
+		tmp.erase(tmp.find("GET"), 3);
+	}
+	if (tmp.find("POST") is_found) {
 		methods = methods | POST_;
-		str.erase(str.find("POST"), 4);
-	} if (str.find("DELETE") is_found) {
+		tmp.erase(tmp.find("POST"), 4);
+	}
+	if (tmp.find("DELETE") is_found) {
 		methods = methods | DELETE_;
-		str.erase(str.find("DELETE"), 6);
-	} if (str.find("OPTIONS") is_found) {
-		methods = methods | OPTIONS_;
-		str.erase(str.find("OPTIONS"), 7);
+		tmp.erase(tmp.find("DELETE"), 6);
 	}
 
-	if (trim(str).empty() == false) // still words after deleting valids methods 
+	if (trim(tmp).empty() == false) // still words after deleting valids methods 
 		throw std::invalid_argument("invalid methods");
 	data->_allowedMethods = methods;
 }
 
 
-void Pars::addErrPage(Data* data, std::string path) {
+void Pars::addErrPage(Data* data, const std::string &path) {
   if (!path.empty())
     data->_errorPage = path;
 }
 
 
-void Pars::addAutoIndex(Data* data, std::string w) {
+void Pars::addAutoIndex(Data* data, const std::string &w) {
   if (w == "on")
     data->_autoIndex = true;
 }
 
 
-void Pars::addCgi(Data* data, std::string cgi) {
+void Pars::addCgi(Data* data, const std::string &cgi) {
   //TODO: add cgi logic
   if (cgi.find(" ") is_found) {
     data->_cgi[cgi.substr(0, cgi.find(' '))] = trim(cgi.substr(cgi.find(' ')));
@@ -94,13 +92,12 @@ void Pars::addCgi(Data* data, std::string cgi) {
 }
 
 
-void Pars::addClientMBodyS(Data* data, std::string size) {
+void Pars::addClientMBodyS(Data* data, const std::string &size) {
   if (!size.empty())
     data->_clientMaxBodySize = std::atoi(size.c_str());
 }
 
-void Pars::addIndex(Data* data, std::string index) {
-  if (!index.empty())
-    data->_index = index;
+void Pars::addIndex(Data* data, const std::string &index) {
+    data->_index = split(index, " ");
 }
 

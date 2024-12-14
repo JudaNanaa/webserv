@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/12 01:38:56 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 13:31:27 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ void normalizeLine(std::string &line) {
 	size_t pos = 0;
 
 	while ((pos = line.find('\t', pos)) is_found) {
-	  line.replace(pos, 1, tabReplacement);
-	  pos += tabReplacement.length();
+		line.replace(pos, 1, tabReplacement);
+		pos += tabReplacement.length();
 	}
-  if (line.find(";") is_found)
-    line.erase(line.find(';'), 1);
+	if (line.find(";") is_found)
+		line.erase(line.find(';'), 1);
 	trimn(line);
 }
 
@@ -75,13 +75,11 @@ void Location::assignKeyValue(std::string &key, std::string &value) {
 	};
 
 	std::map<std::string, void (Location::*)(std::string&)>::iterator it = actions.find(key);
-	std::map<std::string, void (Location::*)(std::string&)>::iterator end = actions.end();
-	if (it != end) {
+	if (it != actions.end()) {
 		void (Location::*func)(std::string&) = it->second;
 		(this->*func)(value);
-	} else {
+	} else
 		throw std::invalid_argument("unknown assignment `" + key + "'");
-	}
 }
 
 void	Location::addLocationLine(std::string &line) {
@@ -96,36 +94,33 @@ void	Location::addLocationLine(std::string &line) {
 	std::string value = trim(line.substr(line.find(' ')));
 	value.erase(value.find(";"));
 	
-	std::string key = trim(
-		line.substr(0, line.find(' ')));
+	std::string key = trim(line.substr(0, line.find(' ')));
 
 	if (key.empty())
 		throw std::invalid_argument("missing key");
-	else if (value.empty()) {
+	else if (value.empty())
 		throw std::invalid_argument("missing value");
-	}
-  assignKeyValue(key, value);
+	assignKeyValue(key, value);
 }
 
 void	_handleLocation(std::string &line, std::ifstream &configFile, Data& data, int &lineNumber) {
 	Location	location;
-	if (line.find(" ") not_found) {
+
+	if (line.find(" ") not_found)
 		throw std::invalid_argument("format: location <path>");
-	}
 
 	std::string	location_path = trim(line.substr(line.find_first_of(" ")));
 	location.location(location_path);
 		
 	std::getline(configFile, line);
 	trimn(line);
-	if (line.find("{") not_found) {
+	if (line.find("{") not_found)
 		throw std::invalid_argument("`{' expected");
-	} ++lineNumber;
+	++lineNumber;
 
 	for (;std::getline(configFile, line); lineNumber++) {
-		if (line.find("}") is_found) {
+		if (line.find("}") is_found)
 			break;
-		}
 		data._locations[location_path].addLocationLine(line);
 	}
 	data._locations[location_path].location(location_path);
@@ -133,7 +128,7 @@ void	_handleLocation(std::string &line, std::ifstream &configFile, Data& data, i
 
 // for each lines apply the associated function
 void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, int &lineNumber) {
-	static std::map<std::string, void (Pars::*)(Data*, std::string)> functionMap;
+	static std::map<std::string, void (Pars::*)(Data*, const std::string&)> functionMap;
 	std::string	type;
 
   (void)lineNumber;
@@ -151,6 +146,7 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
   }
 
 	normalizeLine(line);
+	printnl("line before == [" << line << "]");
 	type = line.substr(0, line.find(' '));
 
 	if (type == "location") {
@@ -158,12 +154,13 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 		return ;
 	}
 
-	if (functionMap.find(trim(type)) == functionMap.end()) {	// type not in the map
+	if (functionMap.find(trim(type)) == functionMap.end())	// type not in the map
 		throw std::invalid_argument("unknow keyword: " + trim(type));
-	}
+	if (trim(&line[type.length()]).empty())
+		throw std::invalid_argument("empty value");
 	Pars parsInstance;
-	(parsInstance.*functionMap[trim(type)])(data, trim(line.substr(line.find(" "))));
-	std::cout << trim(type) << ": " << line.substr(line.find(" ")) << std::endl;
+	(parsInstance.*functionMap[trim(type)])(data, trim(&line[type.length()]));
+	std::cout << trim(type) << ": " << &line[type.length()] << std::endl;
 }
 
 //for each server configuration check synthax and give each line to handleLine()
@@ -172,17 +169,16 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 	Data *data = new Data();
 
 	std::getline(configFile, line), trimn(line);
-	if (line != "{") {
+	if (line != "{")
 		throw std::invalid_argument("invalid line 1");
-	}
 	++lineNumber;
 	for (;std::getline(configFile, line); lineNumber++) {
-	  if (line.find('}') is_found)
-	    break;
-	  if (!trim(line).empty())
-		  handleLine(line, configFile, data, lineNumber);
+		if (line.find('}') is_found)
+			break;
+		if (!trim(line).empty())
+			handleLine(line, configFile, data, lineNumber);
 	}
-  std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
+	std::cout << "---------------------[NEW SERVER ADDED]---------------------" << std::endl;
 	serv.addData(data);
 }
 
@@ -198,16 +194,15 @@ std::vector<Server> Pars::parseConfigFile(std::ifstream &configFile, char **env)
 	std::string	line;
 
 	for (int ln = 0; std::getline(configFile, line); ln++) {
-	  if (line.empty() || trim(line).empty())
-      continue;
-	  if (trim(line) == "server") {
-	    Server	newServ;
-      parseServer(newServ, configFile, ln);
-      newServ.setEnv(env), checkNecessary(newServ);
-	    servVec.push_back(newServ);
-	  }
+		if (line.empty() || trim(line).empty())
+			continue;
+		if (trim(line) == "server") {
+			Server	newServ;
+			parseServer(newServ, configFile, ln);
+			newServ.setEnv(env), checkNecessary(newServ);
+			servVec.push_back(newServ);
+		}
 	}
-
 	if (servVec.empty())
 		throw std::runtime_error("no server found");
   printnl("PARSING OK!");

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 19:09:35 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 13:53:56 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <vector>
 
 #define SECRET "https://www.cat29.fr/riche-et-independant/"
 #define SINGE "https://media.tenor.com/_uIJwdpxI8UAAAAM/mono-serio.gif"
@@ -166,7 +167,7 @@ const std::string ContentType(const std::string& extension) {
 	return "application/octet-stream";  // Retourne ce type par défaut si l'extension est inconnue
 }
 
-std::string Server::_generateAutoIndex(Client *client, const std::string &directoryPath) {
+void Server::_generateAutoIndex(Client *client, const std::string &directoryPath) {
 	std::string html;
 
 	html += "<!DOCTYPE html>\r\n";
@@ -245,7 +246,6 @@ std::string Server::_generateAutoIndex(Client *client, const std::string &direct
     if (currentDir == NULL) {
         std::cerr << "Error: Could not open directory " << directoryPath << std::endl;
         client->setResponse("500");
-        return "";
     }
 
     struct dirent *elem;
@@ -288,7 +288,6 @@ std::string Server::_generateAutoIndex(Client *client, const std::string &direct
 	if (send(client->getClientFd(), (header + html).c_str(), header.size() + html.size(), MSG_NOSIGNAL) == -1)
 		throw std::runtime_error("Can't send the message !");
 	clientRequest->setState(SEND);
-    return html;
 }
 
 std::string	Server::_getContentType(const std::string& path) {
@@ -331,9 +330,9 @@ std::string Server::_getFinalPath(Request *clientRequest)
 	return finalPath;
 }
 
-std::string Server::_getIndex(Request *clientRequest)
+std::vector<std::string> Server::_getIndex(Request *clientRequest)
 {
-	std::string index;
+	std::vector<std::string> index;
 
 	if (clientRequest->getRequestType() is LOCATION) {
 		Location *location = clientRequest->getLocation();
@@ -358,26 +357,43 @@ bool Server::_ifAutoIndex(Request *clientRequest)
 	return autoIndex;
 }
 
-void Server::_manageIfDirectory(Client *client, Request *clientRequest, std::string &finalPath)
+std::string Server::_checkIndex(const std::vector<std::string> &indexVec, const std::string &directoryPath)
 {
-	std::string index;
-
-	index = _getIndex(clientRequest);
-	if (index.empty() is true)
+	for (int i = 0, len = indexVec.size(); i < len; i++)
 	{
-		
+		if (access((directoryPath + '/' + indexVec[i]).data(), F_OK | R_OK) == 0)
+			return directoryPath + '/' + indexVec[i];
+	}
+	return "";
+}
+
+std::string Server::_manageIfDirectory(Client *client, Request *clientRequest, std::string &directoryPath)
+{
+	std::vector<std::string> indexVec;
+	std::string finalPath;
+
+	indexVec = _getIndex(clientRequest);
+	if (indexVec.empty() is true)
+	{
 		if (_ifAutoIndex(clientRequest))
-			_generateAutoIndex(client, finalPath);
+			_generateAutoIndex(client, directoryPath);
 		else 
-			clientRequest->setResponsCode("403");				
+			clientRequest->setResponsCode("403");
 	}
 	else 
 	{
-		finalPath += "/" + index;
-		clientRequest->openResponseFile(finalPath.c_str());
-		if (clientRequest->responseFileOpen() is false)
-			_generateAutoIndex(client, finalPath.erase(finalPath.find_last_of('/')));
+		finalPath = _checkIndex(indexVec, directoryPath);
+		if (finalPath.empty())
+		{
+			if (_ifAutoIndex(clientRequest))
+				_generateAutoIndex(client, directoryPath);
+			else 
+				clientRequest->setResponsCode("404");
+		}
+		else
+			clientRequest->openResponseFile(finalPath.c_str());
 	}
+	return finalPath;
 }
 
 std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
@@ -391,9 +407,11 @@ std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 	else if (stat(finalPath.data(), &buf) is -1)
 		clientRequest->setResponsCode("500");
 	else if (S_ISDIR(buf.st_mode))
-		_manageIfDirectory(client, clientRequest, finalPath);
+		finalPath = _manageIfDirectory(client, clientRequest, finalPath);
 	else
 		clientRequest->openResponseFile((finalPath).c_str());
+	if (clientRequest->getState() == SEND)
+		return finalPath;
 	if (clientRequest->getResponsCode() is "200" && clientRequest->responseFileOpen() is false)
 		clientRequest->setResponsCode("404");
 	return finalPath;
@@ -405,6 +423,8 @@ std::string Server::_openResponseFile(Request *clientRequest, Client* client)
 
 	if (clientRequest->getResponsCode() is "200")
 		finalPath = _normalOpenFile(clientRequest, client);
+	if (clientRequest->getState() == SEND)
+		return finalPath;
 	if (clientRequest->getResponsCode() != "200")
 	{
 		finalPath = "URIs/errors/" + clientRequest->getResponsCode() + ".html";

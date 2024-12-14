@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/11 00:26:15 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 13:17:16 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "../../../includes/includes.hpp"
 #include <fstream>
+#include <string>
 #include <vector>
 #include <map>
 
@@ -39,7 +40,7 @@ struct Data {
     std::map<std::string, std::string> 	_cgi;
     long								_clientMaxBodySize;
     std::map<std::string, Location>		_locations;
-    std::string							_index;
+    std::vector<std::string>			_index;
 };
 
 class Pars {
@@ -53,17 +54,17 @@ class Pars {
   public:
     static std::vector<Server> parse(std::string path, char **env);
 
-    void								addPort(Data* data, std::string port);
-    void								addServName(Data* data, std::string name);
-    void								addRootDir(Data* data, std::string path);
-    void								addUpFoldDir(Data* data, std::string path);
-    void								addAllowedMethodes(Data* data, std::string w);
-    void								addErrPage(Data* data, std::string path);
-    void								addAutoIndex(Data* data, std::string w);
-    void								addCgi(Data* data, std::string cgi);
-    void								addClientMBodyS(Data* data, std::string size);
-    void								addLocationDir(Data* data, std::string loc);
-    void								addIndex(Data* data, std::string index);
+    void								addPort(Data* data, const std::string &port);
+    void								addServName(Data* data, const std::string &name);
+    void								addRootDir(Data* data, const std::string &path);
+    void								addUpFoldDir(Data* data, const std::string &path);
+    void								addAllowedMethodes(Data* data, const std::string &w);
+    void								addErrPage(Data* data, const std::string &path);
+    void								addAutoIndex(Data* data, const std::string &w);
+    void								addCgi(Data* data, const std::string &cgi);
+    void								addClientMBodyS(Data* data, const std::string &size);
+    void								addLocationDir(Data* data, const std::string &loc);
+    void								addIndex(Data* data, const std::string &index);
 };
 
 

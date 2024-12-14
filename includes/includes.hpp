@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 13:43:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 12:49:07 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ typedef enum s_state
 #include <unistd.h>
 #include <cstddef>
 
-# define printnl(arg) (std::cerr << arg << std::endl)
+# define printnl(arg) std::cerr << arg << std::endl
 # define is ==
 # define is_not !=
 # define not_found == std::string::npos

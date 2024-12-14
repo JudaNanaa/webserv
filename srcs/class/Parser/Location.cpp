@@ -6,12 +6,13 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/10 23:30:24 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 13:39:37 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Location.hpp"
 #include "Parser.hpp"
+#include <vector>
 
 Location::Location() {
 	_allowedMethods = 0;
@@ -44,7 +45,7 @@ const long long	&Location::maxBodySize( void ) const {
 	return _client_max_body_size;
 } // maxBodySize
 
-const std::string&	Location::index( void ) const {
+const std::vector<std::string>&	Location::index( void ) const {
 	return _index;
 } // string
 const int &Location::autoIndex( void ) const {
@@ -76,7 +77,7 @@ void	Location::maxBodySize( long long newMaxBodySize ) {
 } // maxBodySize
 
 void	Location::index( std::string &newIndex ) {
-	_index = newIndex;
+	_index = split(newIndex, " ");
 } // index
 void	Location::autoIndex( const int &newAutoIndex ) {
 	_autoIndex = newAutoIndex;

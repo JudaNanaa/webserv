@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 13:55:03 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/10 23:30:49 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 13:39:20 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "Parser.hpp"
 #include <ostream>
 #include <string>
+#include <vector>
 
 struct Data;
 
@@ -29,11 +30,11 @@ struct	Location {
 		std::string									_redirect;
 		int											_allowedMethods;
 		long long									_client_max_body_size;
-		std::string									_index;
+		std::vector<std::string>									_index;
 		int											_autoIndex;
-  	std::string									_uploadFolder;
+		std::string									_uploadFolder;
 
-    void  assignKeyValue(std::string &key, std::string &value);
+    	void										assignKeyValue(std::string &key, std::string &value);
 
 	public:
 		Location();
@@ -46,7 +47,7 @@ struct	Location {
 		const std::string							&redirect( void ) const;
 		const int									&allowedMethods( void ) const;
 		const long long								&maxBodySize( void ) const;
-		const std::string							&index( void ) const;
+		const std::vector<std::string>				&index( void ) const;
 		const int									&autoIndex( void ) const;
 		const std::string							&uploadFolder( void ) const;
 
