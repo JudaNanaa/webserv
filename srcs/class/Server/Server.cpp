@@ -90,7 +90,7 @@ void Server::_addingBody(Client *client, const char *buff, const int &n)
 {
 	Request *clientRequest = client->getRequest();
 
-	if (clientRequest->getRequestType() is CGI)
+	if (clientRequest->responseCgi() is true)
 		_writeBodyToCgi(client, buff, n);
 	else
 		clientRequest->addBodyRequest(buff, n, client->getUseBuffer());	

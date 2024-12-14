@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 17:48:30 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 18:53:34 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,7 @@ void Server::_sendResponse(const int &fd, Client *client) {
 void Server::_sendRedirect(Client *client, const std::string &redirect) {
 	Request *clientRequest = client->getRequest();
 	int code;
-	
 
-	printnl("je passe ici");
 	clientRequest->setResponsCode("302");
 	code = atoi(clientRequest->getResponsCode().c_str());
 	std::ostringstream oss;
@@ -121,10 +119,15 @@ void Server::_sendResponseLocation(Client *client)
 		std::cerr << "redirected on : " + location->redirect() << std::endl;
 		_sendRedirect(client, location->redirect());
 	}
-	else if (clientRequest->getRequestType() is CGI)
+	if (clientRequest->responseCgi() is true)
 	{
 		if (_checkCgi(client) is FINISHED)
-			_responseCGI(client);
+		{
+			if (clientRequest->responseCgi() is true)
+				_responseCGI(client);
+			else
+			 	_sendResponse(client->getClientFd(), client);
+		}
 	}
 	else
 	 	_sendResponse(client->getClientFd(), client);
@@ -135,10 +138,15 @@ void Server::_sendResponseDefault(Client *client)
 	Request *clientRequest;
 
 	clientRequest = client->getRequest();
-	if (clientRequest->getRequestType() is CGI)
+	if (clientRequest->responseCgi() is true)
 	{
 		if (_checkCgi(client) is FINISHED)
-			_responseCGI(client);
+		{
+			if (clientRequest->responseCgi() is true)
+				_responseCGI(client);
+			else
+			 	_sendResponse(client->getClientFd(), client);
+		}
 	}
 	else
 	 	_sendResponse(client->getClientFd(), client); //this methode send response with appropriate code

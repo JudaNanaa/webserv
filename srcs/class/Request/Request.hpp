@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 17:16:20 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/13 10:13:54 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 18:44:15 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_responseFile
 
 class Request : public RawBits {
 	private:
+		bool								_responseCgi;
 		t_state								_state;
 		int									_requestType;
 		int									_method;
@@ -60,6 +61,7 @@ class Request : public RawBits {
 
 		/*	GETTER	*/
 		const int							&method( void ) const;
+		bool								responseCgi(void) const;
 		const std::string					&path( void ) const;
 		const std::string					&find(const std::string &key) const;
 		const t_state						&getState(void) const;
@@ -74,6 +76,7 @@ class Request : public RawBits {
 		Location							*getLocation(void) const;
 		
 		/*	SETTER	*/
+		void								setResponseCgi(bool boolean);
 		void								setRequestType(const int &type);
 		void								addResponseFileTotalSend(const std::size_t &nbSend);
 		void								method( const int& newMethod );

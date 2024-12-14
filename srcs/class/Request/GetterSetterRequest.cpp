@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:31:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 10:14:42 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 18:43:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 #include "../Client/Client.hpp"
 #include <cstddef>
 #include <iterator>
+
+void Request::setResponseCgi(bool boolean) {
+	_responseCgi = boolean;
+}
 
 void Request::setRequestType(const int &type) {
 	_requestType = type;
@@ -29,6 +33,10 @@ const int &Request::method( void	) const {
 
 const std::string&	Request::path( void	) const {
 	return (_path);
+}
+
+bool	Request::responseCgi(void) const {
+	return _responseCgi;
 }
 
 const std::string&	Request::find( const std::string &key ) const {

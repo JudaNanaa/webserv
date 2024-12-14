@@ -22,13 +22,14 @@
 
 Request::Request(Client *client, Server *server)
     : RawBits(),
-      _state(ON_HEADER),
-      _method(0),
-      _ResponsCode("200"),
-      _contentLenght(-1),
-	  _server(server),
-      _client(client),
-      _isRedirect(false)
+		_responseCgi(false),
+		_state(ON_HEADER),
+		_method(0),
+		_ResponsCode("200"),
+		_contentLenght(-1),
+		_server(server),
+		_client(client),
+		_isRedirect(false)
 {
 
 }

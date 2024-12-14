@@ -59,7 +59,7 @@ class Server {
 		// Response
 		void						_generateAutoIndex(Client *client, const std::string &directoryPath);
 		std::string					_openResponseFile(Request *clientRequest, Client* client);
-		std::string					_openErrorFile(Client *client, Request *clientRequest);
+		std::string					_openErrorFile(Request *clientRequest);
 		std::string					_normalOpenFile(Request *clientRequest, Client* client);
 		std::string					_getContentType(const std::string& path);
 		std::string					_getResponseHeader(Request *request, const std::string& path);

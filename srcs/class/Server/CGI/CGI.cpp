@@ -131,7 +131,7 @@ void	Server::_handleCGI( Client *client ) {
     int CGIToParent[2] = {-1, -1};
 
 	std::cerr << "CGI" << std::endl;
-	client->getRequest()->setRequestType(CGI);
+	client->getRequest()->setResponseCgi(true);
 	if (_setCgiArgs(client->getRequest(), cgi) == -1)
 		return;
     if (pipe(ParentToCGI) == -1 || pipe(CGIToParent) == -1)

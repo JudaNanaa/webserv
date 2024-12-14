@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 12:49:07 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 18:33:18 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ typedef enum s_state
 # define DEFAULT_UPLOAD_FILE "URIs/uploads/default"
 
 # define DEFAULT 1
-# define CGI 2
 # define LOCATION 3
 
 #include <iostream>

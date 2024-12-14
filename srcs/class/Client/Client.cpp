@@ -37,7 +37,8 @@ void Client::setCGIStatus(const int &status) {
 		_request->setResponsCode("504");
 	else
 		_request->setResponsCode("500");
-
+	if (_CGIStatus != 0)
+		_request->setResponseCgi(false);
 }
 
 const int &Client::getCGIStatus(void) const {

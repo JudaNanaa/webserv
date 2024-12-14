@@ -6,14 +6,15 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 16:26:59 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 17:38:57 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 19:17:49 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Server.hpp"
 #include <sys/stat.h>
+#include <unistd.h>
 
-std::string Server::_openErrorFile(Client *client, Request *clientRequest)
+std::string Server::_openErrorFile(Request *clientRequest)
 {
 	std::string responseCode;
 	std::string finalPath;
@@ -24,14 +25,43 @@ std::string Server::_openErrorFile(Client *client, Request *clientRequest)
 		Location *location = _data->getLocation(clientRequest->path());
 		if (location->errorPageIsSet(responseCode) is true)
 		{
-			_sendRedirect(client, location->getErrorPage(responseCode));
-			return "";
+			std::string errorPage = location->getErrorPage(responseCode);
+			if (_data->checkLocation(errorPage) is true)
+			{
+				Location *locationError = _data->getLocation(responseCode);
+				if (locationError->root().empty())
+				{
+					if (location->root().empty())
+						finalPath = _data->_root + '/' + errorPage;
+					else 
+						finalPath =  location->root() + '/' + errorPage;
+				}
+				else
+					finalPath =  locationError->root() + '/' + errorPage;				
+			}
+			if (access(finalPath.data(), F_OK | R_OK) == 0)
+			{
+				clientRequest->openResponseFile(finalPath.c_str());
+				return finalPath;
+			}
 		}
 	}
 	if (_data->errorPageIsSet(responseCode) is true)
 	{
-		_sendRedirect(client, _data->getErrorPage(responseCode));
-		return "";
+		std::string errorPage = _data->getErrorPage(responseCode);
+		if (_data->checkLocation(errorPage) is true)
+		{
+			Location *locationError = _data->getLocation(errorPage);
+			if (locationError->root().empty())
+					finalPath = _data->_root + '/' + errorPage;
+			else
+				finalPath =  locationError->root() + '/' + errorPage;			
+		}
+		if (access(finalPath.data(), F_OK | R_OK) == 0)
+		{
+			clientRequest->openResponseFile(finalPath.c_str());
+			return finalPath;
+		}
 	}
 	finalPath = "URIs/errors/" + clientRequest->getResponsCode() + ".html"; // TODO: changer ca c'est pas propre
 	clientRequest->openResponseFile(finalPath.c_str());
@@ -86,6 +116,6 @@ std::string Server::_openResponseFile(Request *clientRequest, Client* client)
 	if (clientRequest->getState() == SEND)
 		return finalPath;
 	if (clientRequest->getResponsCode() != "200")
-		finalPath = _openErrorFile(client, clientRequest);
+		finalPath = _openErrorFile(clientRequest);
 	return finalPath;
 }
