@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 14:32:45 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 15:43:57 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,11 @@ const std::string &getMessageCode(const int &code) {
 		codes_responses[450] = "Blocked by Windows Parental Controls";
 		codes_responses[451] = "Unavailable For Legal Reasons";
 		codes_responses[456] = "Unrecoverable Erstatus()";
+		codes_responses[500] = "Internal Server Error";
+		codes_responses[501] = "Not Implemented";
+		codes_responses[502] = "Bad Gateway";
+		codes_responses[503] = "Gateway Timeout";
+		codes_responses[504] = "Not Implemented";
 		codes_responses[505] = "HTTP Version not supported";
 		codes_responses[506] = "Variant Also Negotiates";
 		codes_responses[507] = "Insufficient storage";
@@ -440,15 +445,15 @@ void Server::_sendResponse(const int &fd, Client *client) {
 	char	buffer[BUFFER_SIZE];
 	std::size_t	n = 0;
 
-	std::cerr << "SEND RESPONSE" << std::endl;
-	std::cerr << "RESPONSE CODE : " << clientRequest->getResponsCode() << std::endl;
 	std::string	finalPath;
 	
 	if (clientRequest->responseFileOpen() is false)
 	{
+		std::cerr << "SEND RESPONSE" << std::endl;
 		finalPath = _openResponseFile(clientRequest, client);
 		if (clientRequest->getState() is SEND)
 			return;
+		std::cerr << "RESPONSE CODE : " << clientRequest->getResponsCode() << std::endl;
 		std::string	header = _getResponseHeader(clientRequest, finalPath);
 		if (send(fd, header.c_str(), header.size(), MSG_NOSIGNAL) is -1) {
 			client->setResponse("500");
@@ -563,7 +568,7 @@ void Server::_sendResponseDefault(Client *client)
 			_responseCGI(client);
 	}
 	else
-	 	_sendResponse(client->getClientFd(), client);
+	 	_sendResponse(client->getClientFd(), client); //this methode send response with appropriate code
 }
 
 t_state Server::giveClientResponse(const int &fd) {
@@ -576,7 +581,7 @@ t_state Server::giveClientResponse(const int &fd) {
 	if (client->getRequest()->getRequestType() is LOCATION)
 		_sendResponseLocation(client);
 	else 
-		_sendResponseDefault(client); //this methode send response with appropriate code
+		_sendResponseDefault(client);
 	if (client->getRequest()->getState() == SEND)
 	{
 		client->afterResponse();

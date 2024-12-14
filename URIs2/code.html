@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation de Terminal de Programmation</title>
+    <style>
+        body {
+            background-color: #181818;
+            color: #d4f7b6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            flex-direction: column;
+        }
+
+        #terminal {
+            background-color: #1d1f21;
+            border: 2px solid #3a3a3a;
+            padding: 20px;
+            width: 80%;
+            max-width: 700px;
+            box-shadow: 0px 0px 20px rgba(0, 255, 0, 0.5);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        #output {
+            white-space: pre-wrap;
+            font-size: 1.1rem;
+            color: #d4f7b6;
+            margin-bottom: 20px;
+        }
+
+        input {
+            background-color: #1d1f21;
+            color: #d4f7b6;
+            border: none;
+            outline: none;
+            font-size: 1.1rem;
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        input::placeholder {
+            color: #7c7c7c;
+        }
+
+        button {
+            background-color: #3a3a3a;
+            color: #d4f7b6;
+            border: 1px solid #d4f7b6;
+            padding: 10px 15px;
+            cursor: pointer;
+            position: absolute;
+            bottom: -50px;
+            left: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5e5e5e;
+        }
+    </style>
+</head>
+<body>
+
+<div id="terminal">
+    <div id="output">Bienvenue dans le terminal de simulation de programmation !
+Tapez "help" pour voir la liste des commandes disponibles.</div>
+    <input type="text" id="input" placeholder="Entrez une commande ici..." autofocus>
+    <button id="goBackButton" onclick="goBack()">Go Back</button>
+</div>
+
+<script>
+    const output = document.getElementById("output");
+    const input = document.getElementById("input");
+
+    const commands = {
+        help: `Commandes disponibles:
+- help: Affiche cette liste de commandes.
+- about: Affiche une description du terminal.
+- js: Informations sur le langage JavaScript.
+- c: Informations sur le langage C.
+- python: Informations sur le langage Python.
+- rust: Informations sur le langage Rust.
+- boucle: Explication des boucles (for, while).
+- condition: Explication des conditions (if, else).
+- fonction: Explication des fonctions.
+- variable: Explication des variables.
+- tableau: Explication des tableaux (array).
+- quit: Quitte le terminal.`,
+        about: "Simulation de terminal qui affiche des infos sur des langages de programmation et des notions de base.",
+        js: "JavaScript: Langage de programmation principalement utilisé pour le développement web.",
+        c: "C: Langage de programmation bas niveau, souvent utilisé pour le développement système.",
+        python: "Python: Langage de programmation polyvalent, populaire pour le développement web, scientifique, et l'IA.",
+        rust: "Rust: Langage de programmation axé sur la sécurité, la performance et la concurrence.",
+        boucle: `Boucles:
+1. for: Répète un bloc de code un nombre défini de fois.
+   Exemple en C: for (int i = 0; i < 5; i++) { printf("%d", i); }
+2. while: Répète un bloc de code tant qu'une condition est vraie.
+   Exemple en Python: while x < 5: print(x)`,
+        condition: `Conditions:
+1. if: Exécute un bloc de code si une condition est vraie.
+   Exemple en C: if (a > b) { printf("a est plus grand que b"); }
+2. else if / else: Permet d'ajouter des conditions supplémentaires.
+   Exemple en Python: if a > b: print("a est plus grand") else: print("b est plus grand")`,
+        fonction: `Fonctions:
+1. Une fonction est un bloc de code réutilisable.
+   Exemple en C: int somme(int a, int b) { return a + b; }
+   Exemple en Python: def somme(a, b): return a + b`,
+        variable: `Variables:
+1. Une variable stocke une valeur.
+   Exemple en C: int age = 25;
+   Exemple en Python: age = 25`,
+        tableau: `Tableaux (Arrays):
+1. Un tableau stocke plusieurs valeurs dans une seule variable.
+   Exemple en C: int nombres[5] = {1, 2, 3, 4, 5};
+   Exemple en Python: nombres = [1, 2, 3, 4, 5]`,
+        quit: "Fermeture du terminal... Merci d'avoir utilisé cette simulation !"
+    };
+
+    input.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            const userInput = input.value.trim().toLowerCase();
+            if (commands[userInput]) {
+                addOutput(`> ${userInput}\n${commands[userInput]}`);
+                if (userInput === "quit") input.disabled = true;
+            } else {
+                addOutput(`> ${userInput}\nCommande non reconnue. Tapez 'help' pour les commandes disponibles.`);
+            }
+            input.value = "";
+        }
+    });
+
+    function addOutput(text) {
+        output.textContent += `\n${text}`;
+        output.scrollTop = output.scrollHeight;
+    }
+
+    function goBack() {
+        addOutput("> Retour à la page précédente...");
+        setTimeout(() => window.history.back(), 0); // Simuler un retour en arrière après un délai de 2 secondes
+    }
+</script>
+
+</body>
+</html>
