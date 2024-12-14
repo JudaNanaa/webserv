@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 16:32:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:48:30 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +85,14 @@ void Server::_sendResponse(const int &fd, Client *client) {
 	}
 }
 
-void Server::_sendRedirect(const std::string &redirect, const int &fd, Client *client) {
+void Server::_sendRedirect(Client *client, const std::string &redirect) {
 	Request *clientRequest = client->getRequest();
-	int code = atoi(clientRequest->getResponsCode().c_str());
+	int code;
+	
 
+	printnl("je passe ici");
+	clientRequest->setResponsCode("302");
+	code = atoi(clientRequest->getResponsCode().c_str());
 	std::ostringstream oss;
 	oss << "HTTP/1.1 " << code << " " << getMessageCode(code) << "\r\n"; 
 	oss << "Location: " << redirect << "\r\n";
@@ -97,7 +101,7 @@ void Server::_sendRedirect(const std::string &redirect, const int &fd, Client *c
 
 	std::string response = oss.str();
 
-	if (send(fd, response.c_str(), response.size(), MSG_NOSIGNAL) is -1)
+	if (send(client->getClientFd(), response.c_str(), response.size(), MSG_NOSIGNAL) is -1)
 	{
 		client->setResponse("500");
 		throw std::runtime_error("Can't send the message !");
@@ -114,9 +118,8 @@ void Server::_sendResponseLocation(Client *client)
 	location = clientRequest->getLocation();
 	if (clientRequest->getRedirect())
 	{
-		clientRequest->setResponsCode("302");
 		std::cerr << "redirected on : " + location->redirect() << std::endl;
-		_sendRedirect(location->redirect(), client->getClientFd(), client);
+		_sendRedirect(client, location->redirect());
 	}
 	else if (clientRequest->getRequestType() is CGI)
 	{

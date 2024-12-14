@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 13:17:16 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:22:55 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,17 @@ struct Data {
     Data();
     ~Data();
     bool								checkLocation(const std::string &path) const;
-	  Location 							*getLocation(const std::string &path);
+	Location 							*getLocation(const std::string &path);
+	const std::string					&getErrorPage(const std::string	&code) const;
+	bool								errorPageIsSet(const std::string &code) const;
+
     int									_port;
 
     std::string							_serverName;
     std::string							_root;
     std::string							_uploadFolder;
     int									_allowedMethods;
-    std::string							_errorPage;
+    std::map<std::string, std::string>	_errorPages;
     bool								_autoIndex;
     std::map<std::string, std::string> 	_cgi;
     long								_clientMaxBodySize;
@@ -52,7 +55,7 @@ class Pars {
     static std::vector<Server>			parseConfigFile(std::ifstream &configFile, char **env);
 
   public:
-    static std::vector<Server> parse(std::string path, char **env);
+    static std::vector<Server>			parse(std::string path, char **env);
 
     void								addPort(Data* data, const std::string &port);
     void								addServName(Data* data, const std::string &name);

@@ -6,12 +6,13 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 14:56:21 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/14 14:26:41 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:41:34 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../class/RawBits/RawBits.hpp"
 #include "../../includes/includes.hpp"
+#include <cctype>
 #include <cstddef>
 #include <cstring>
 #include <exception>
@@ -78,4 +79,14 @@ void formatSlash(std::string &str)
 			break;
 		str.erase(found,1);
 	}
+}
+
+bool allDigit(const char *str)
+{
+	for (int i = 0; str[i]; i++)
+	{
+		if (isdigit(str[i]) == false)
+			return false;
+	}
+	return true;
 }

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 13:55:03 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/14 13:39:20 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:23:27 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,10 @@ struct	Location {
 		std::string									_redirect;
 		int											_allowedMethods;
 		long long									_client_max_body_size;
-		std::vector<std::string>									_index;
+		std::vector<std::string>					_index;
 		int											_autoIndex;
 		std::string									_uploadFolder;
+    	std::map<std::string, std::string>			_errorPages;
 
     	void										assignKeyValue(std::string &key, std::string &value);
 
@@ -50,7 +51,7 @@ struct	Location {
 		const std::vector<std::string>				&index( void ) const;
 		const int									&autoIndex( void ) const;
 		const std::string							&uploadFolder( void ) const;
-
+		const std::string							&getErrorPage(const std::string &code) const;
 		/*	SETTER	*/
 		void										location( std::string &newLocation );
 		void										root( std::string &newRoot );
@@ -66,6 +67,9 @@ struct	Location {
 		void										uploadFolder( std::string &newUploadFolder );
 		void 										addCgi(std::string &cgi);
 		void										addLocationLine(std::string &line);
+		void										setErrorPage(std::string &value);
+
+		bool										errorPageIsSet(const std::string &code) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const Location& location);

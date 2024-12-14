@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 16:25:20 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 16:26:18 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:48:20 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void Server::_handleAuth(Client* client) {
 	Request* request = client->getRequest();
 	std::stringstream response;
 
-	client->getRequest()->setResponsCode("302");
 	if (request->path() is "/auth/login"){
 		response << "HTTP/1.1 " << request->getResponsCode() << " " << getMessageCode(std::atoi(request->getResponsCode().c_str())) << "\r\n"; 
 		response << "Content-Length: 0\r\n";
@@ -46,12 +45,12 @@ void Server::_handleAuth(Client* client) {
 		std::string header = request->getHeader();
 		if (request->isKeyfindInHeader("Cookie") is true) {
 			if (request->find("Cookie").find("auth=true") is_found) 
-				_sendRedirect(SECRET, client->getClientFd(), client);
+				_sendRedirect(client, SECRET);
 			else 
-				_sendRedirect(MYCEOC, client->getClientFd(), client);
+				_sendRedirect(client, MYCEOC);
 		}
 		else
-			_sendRedirect(MYCEOC, client->getClientFd(), client); 
+			_sendRedirect(client, MYCEOC); 
 	}
 	request->setState(SEND);
 }

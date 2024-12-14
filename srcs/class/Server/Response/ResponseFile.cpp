@@ -6,12 +6,37 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 16:26:59 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 16:27:51 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:38:57 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Server.hpp"
 #include <sys/stat.h>
+
+std::string Server::_openErrorFile(Client *client, Request *clientRequest)
+{
+	std::string responseCode;
+	std::string finalPath;
+
+	responseCode = clientRequest->getResponsCode();
+	if (clientRequest->getRequestType() is LOCATION)
+	{
+		Location *location = _data->getLocation(clientRequest->path());
+		if (location->errorPageIsSet(responseCode) is true)
+		{
+			_sendRedirect(client, location->getErrorPage(responseCode));
+			return "";
+		}
+	}
+	if (_data->errorPageIsSet(responseCode) is true)
+	{
+		_sendRedirect(client, _data->getErrorPage(responseCode));
+		return "";
+	}
+	finalPath = "URIs/errors/" + clientRequest->getResponsCode() + ".html"; // TODO: changer ca c'est pas propre
+	clientRequest->openResponseFile(finalPath.c_str());
+	return finalPath;
+}
 
 std::string Server::_getFinalPath(Request *clientRequest)
 {
@@ -61,9 +86,6 @@ std::string Server::_openResponseFile(Request *clientRequest, Client* client)
 	if (clientRequest->getState() == SEND)
 		return finalPath;
 	if (clientRequest->getResponsCode() != "200")
-	{
-		finalPath = "URIs/errors/" + clientRequest->getResponsCode() + ".html";
-		clientRequest->openResponseFile(finalPath.c_str());
-	}
+		finalPath = _openErrorFile(client, clientRequest);
 	return finalPath;
 }

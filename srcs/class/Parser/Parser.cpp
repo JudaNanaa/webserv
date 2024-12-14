@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 13:31:27 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:23:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <exception>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <map>
 #include <string>
@@ -72,6 +73,7 @@ void Location::assignKeyValue(std::string &key, std::string &value) {
 		actions["client_max_body_size"] = &Location::redirect;
 		actions["auto_index"] = &Location::handleAutoIndex;
 		actions["allowed_methods"] = &Location::handleAllowedMethods;
+		actions["error_pages"] = &Location::setErrorPage;
 	};
 
 	std::map<std::string, void (Location::*)(std::string&)>::iterator it = actions.find(key);
@@ -130,20 +132,21 @@ void	_handleLocation(std::string &line, std::ifstream &configFile, Data& data, i
 void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, int &lineNumber) {
 	static std::map<std::string, void (Pars::*)(Data*, const std::string&)> functionMap;
 	std::string	type;
+	std::ostringstream oss;
 
-  (void)lineNumber;
-  if (functionMap.empty()) {
-    functionMap["listen"] = &Pars::addPort;
-    functionMap["server_names"] = &Pars::addServName;
-    functionMap["root"] = &Pars::addRootDir;
-    functionMap["uploads_folder"] = &Pars::addUpFoldDir;
-    functionMap["allowed_methods"] = &Pars::addAllowedMethodes;
-    functionMap["auto_index"] = &Pars::addAutoIndex;
-    functionMap["error_pages"] = &Pars::addErrPage;
-    functionMap["cgi"] = &Pars::addCgi;
-    functionMap["client_max_body_size"] = &Pars::addClientMBodyS;
-    functionMap["index"] = &Pars::addIndex;
-  }
+	oss << lineNumber;
+	if (functionMap.empty()) {
+		functionMap["listen"] = &Pars::addPort;
+		functionMap["server_names"] = &Pars::addServName;
+		functionMap["root"] = &Pars::addRootDir;
+		functionMap["uploads_folder"] = &Pars::addUpFoldDir;
+		functionMap["allowed_methods"] = &Pars::addAllowedMethodes;
+		functionMap["auto_index"] = &Pars::addAutoIndex;
+		functionMap["error_pages"] = &Pars::addErrPage;
+		functionMap["cgi"] = &Pars::addCgi;
+		functionMap["client_max_body_size"] = &Pars::addClientMBodyS;
+		functionMap["index"] = &Pars::addIndex;
+	}
 
 	normalizeLine(line);
 	printnl("line before == [" << line << "]");
@@ -155,9 +158,9 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 	}
 
 	if (functionMap.find(trim(type)) == functionMap.end())	// type not in the map
-		throw std::invalid_argument("unknow keyword: " + trim(type));
+		throw std::invalid_argument("unknow keyword: " + trim(type) + " at line " + oss.str());
 	if (trim(&line[type.length()]).empty())
-		throw std::invalid_argument("empty value");
+		throw std::invalid_argument("empty value for the key: " + type + " at line " + oss.str());
 	Pars parsInstance;
 	(parsInstance.*functionMap[trim(type)])(data, trim(&line[type.length()]));
 	std::cout << trim(type) << ": " << &line[type.length()] << std::endl;

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:35:03 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 15:42:04 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:22:54 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,14 @@ Location *Data::getLocation(const std::string &path) {
 		}
 	}
 	return ok;
+}
+
+const std::string &Data::getErrorPage(const std::string	&code) const
+{
+	return _errorPages.at(code);
+}
+
+bool Data::errorPageIsSet(const std::string &code) const
+{
+	return _errorPages.find(code) != _errorPages.end();
 }

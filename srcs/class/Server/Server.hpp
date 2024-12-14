@@ -59,11 +59,12 @@ class Server {
 		// Response
 		void						_generateAutoIndex(Client *client, const std::string &directoryPath);
 		std::string					_openResponseFile(Request *clientRequest, Client* client);
+		std::string					_openErrorFile(Client *client, Request *clientRequest);
 		std::string					_normalOpenFile(Request *clientRequest, Client* client);
 		std::string					_getContentType(const std::string& path);
 		std::string					_getResponseHeader(Request *request, const std::string& path);
 		void						_sendResponse(const int &fd, Client *client);
-		void						_sendRedirect(const std::string &redirect, const int &fd, Client *client);
+		void						_sendRedirect(Client *client, const std::string &redirect);
 		void						_sendResponseDefault(Client *client);
 		std::string					_getFinalPath(Request *clientRequest);
 		std::vector<std::string>	_getIndex(Request *clientRequest);

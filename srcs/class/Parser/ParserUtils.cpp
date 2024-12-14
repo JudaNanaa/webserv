@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 13:21:20 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:25:09 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,10 @@ void Pars::addRootDir(Data* data, const std::string &path) {
 		data->_root.push_back('/');
 }
 
-
 void Pars::addUpFoldDir(Data* data, const std::string &path) {
   if (!path.empty())
     data->_uploadFolder = path;
 }
-
 
 void Pars::addAllowedMethodes(Data* data, const std::string &str) {
 	int	methods = 0;
@@ -71,10 +69,15 @@ void Pars::addAllowedMethodes(Data* data, const std::string &str) {
 	data->_allowedMethods = methods;
 }
 
-
 void Pars::addErrPage(Data* data, const std::string &path) {
-  if (!path.empty())
-    data->_errorPage = path;
+	std::vector<std::string> vec;
+
+	vec = split(path, " ");
+	if (vec.size() != 2)
+		throw std::invalid_argument("Invalid argument error_pages");
+	if (allDigit(vec[0].data()) == false)
+		throw std::invalid_argument("Not a number at error_pages");
+    data->_errorPages[vec[0]] = vec[1];
 }
 
 

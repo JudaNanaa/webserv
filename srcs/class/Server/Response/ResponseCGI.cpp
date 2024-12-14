@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 18:34:12 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:43:55 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,25 @@ void Server::_responseCgiError(Client *client)
 	std::ostringstream buffer;
 	Request *clientRequest = client->getRequest();
 	std::ifstream file;
+	std::string responseCode;
+
 
 	close(client->getCGIFD());
+	responseCode = clientRequest->getResponsCode();
+	if (clientRequest->getRequestType() is LOCATION)
+	{
+		Location *location = _data->getLocation(clientRequest->path());
+		if (location->errorPageIsSet(responseCode) is true)
+		{
+			_sendRedirect(client, location->getErrorPage(responseCode));
+			return;
+		}
+	}
+	if (_data->errorPageIsSet(responseCode) is true)
+	{
+		_sendRedirect(client, _data->getErrorPage(responseCode));
+		return;
+	}
 	file.open(("URIs/errors/" + clientRequest->getResponsCode() + ".html").c_str());
 	buffer << file.rdbuf();
 	std::string html_content = buffer.str();

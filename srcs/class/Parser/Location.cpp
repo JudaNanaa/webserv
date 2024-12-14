@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:53 by ibaby             #+#    #+#             */
-/*   Updated: 2024/12/14 13:39:37 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 17:24:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,10 @@ Location::~Location() {}
 
 const std::string&	Location::location( void ) const {
 	return _location;
+} // LOCATION
+
+const std::string&	Location::getErrorPage(const std::string &code) const {
+	return _errorPages.at(code);
 } // LOCATION
 
 const std::string&	Location::root( void ) const {
@@ -125,16 +129,32 @@ void Location::handleMaxBodySize(std::string &value) {
 
 void Location::handleAllowedMethods(std::string &value) {
   int methods = 0;
-  if (value.find("GET") is_found) {
-    methods = methods | GET_;
-  } if (value.find("POST") is_found) {
-    methods = methods | POST_;
-  } if (value.find("DELETE") is_found) {
-    methods = methods | DELETE_;
-  }
-  if (methods == 0) {	// no methods found
-    throw std::invalid_argument("GET, DELETE or POST expected");
-  } else {
-    allowedMethods(methods);
-  }
+
+	if (value.find("GET") is_found)
+		methods = methods | GET_;
+	if (value.find("POST") is_found)
+		methods = methods | POST_;
+	if (value.find("DELETE") is_found)
+		methods = methods | DELETE_;
+
+	if (methods == 0)	// no methods found
+		throw std::invalid_argument("GET, DELETE or POST expected");
+	allowedMethods(methods);
+}
+
+bool Location::errorPageIsSet(const std::string &code) const
+{
+	return _errorPages.find(code) != _errorPages.end();
+}
+
+void	Location::setErrorPage(std::string &value)
+{
+	std::vector<std::string> vec;
+	
+	vec = split(value, " ");
+	if (vec.size() != 2)
+		throw std::invalid_argument("Invalid argument error_pages");
+	if (allDigit(vec[0].data()) == false)
+		throw std::invalid_argument("Not a number at error_pages");
+    _errorPages[vec[0]] = vec[1];
 }
