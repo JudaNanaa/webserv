@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 18:37:55 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/14 22:07:04 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,46 @@
 #include <cstddef>
 #include <cstring>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <sys/socket.h>
 #include <unistd.h>
 
+char *Server::_checkContentLength(char *toSend, std::size_t &total)
+{
+	std::size_t i;
+	std::string header;
+	char *dest;
+	std::ostringstream oss;
+
+	i = 0;
+	while (toSend[i])
+	{
+		if (std::memcmp(&toSend[i], "\r\n\r\n", 4) == 0 || std::memcmp(&toSend[i], "\n\n",2) == 0)
+			break;
+		i++;
+	}
+	for (std::size_t j = 0; j < i; j++)
+		header.push_back(toSend[j]);
+	if (header.find("Content-Length: ") is_found)
+		return toSend;
+
+	oss << total - i - 4;
+	std::string line = "\r\nContent-Length: " + oss.str();
+	header += line;
+	std::size_t len = total + line.length();
+	dest = new char[len];
+	std::memcpy(dest, header.data(), header.length());
+	std::memcpy(&dest[header.length()], &toSend[i], total - i);
+	delete [] toSend;
+	total = len;
+	return dest;
+}
+
 void Server::_responseCgiIfNoProblem(Client *client)
 {
 	char *toSend = NULL;
-	unsigned long long total = 0;
+	std::size_t total = 0;
 	char buff[BUFFER_SIZE];
 	int nbRead = BUFFER_SIZE;
 
@@ -45,6 +77,7 @@ void Server::_responseCgiIfNoProblem(Client *client)
 		toSend = dest;
 		total += nbRead;
 	}
+	toSend = _checkContentLength(toSend, total);
 	close(client->getCGIFD());
 	if (send(client->getClientFd(), toSend, total, MSG_NOSIGNAL) == -1)
 	{

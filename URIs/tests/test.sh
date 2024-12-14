@@ -70,7 +70,6 @@ content_length=${#body}
 
 # Impression des en-têtes HTTP
 echo "Content-Type: text/html"
-echo "Content-Length: $content_length"
 echo
 # Impression du contenu HTML
 echo "$body"
