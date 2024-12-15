@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:35:03 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/15 18:06:57 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 19:15:20 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,28 +23,38 @@ Data::Data() {
 }
 
 Data::~Data() {
-  
+	
+}
+
+Data::Data(const Data &other)
+{
+	*this = other;
+}
+
+Data &Data::operator=(const Data &other)
+{
+	if (this != &other)
+	{
+		_portVec = other._portVec;
+		_port = other._port;
+		_internal = other._internal;
+		_serverName = other._serverName;
+		_root = other._root;
+		_uploadFolder = other._uploadFolder;
+		_allowedMethods = other._allowedMethods;
+		_errorPages =	other._errorPages;
+		_autoIndex = other._autoIndex;	
+		_cgi = other._cgi;
+		_clientMaxBodySize = other._clientMaxBodySize;	
+		_locations = other._locations;
+		_index = other._index;
+	}
+	return *this;
 }
 
 Data *Data::clone(void) const
 {
-	Data *dest;
-
-	dest = new Data();
-	dest->_portVec = _portVec;
-	dest->_port = _port;
-	dest->_internal = _internal;
-	dest->_serverName = _serverName;
-	dest->_root = _root;
-    dest->_uploadFolder = _uploadFolder;
-	dest->_allowedMethods = _allowedMethods;
-	dest->_errorPages =	_errorPages;
-	dest->_autoIndex = _autoIndex;	
-	dest->_cgi = _cgi;
-	dest->_clientMaxBodySize = _clientMaxBodySize;	
-	dest->_locations = _locations;
-	dest->_index = _index;
-	return dest;
+	return new Data(*this);
 }
 
 bool Data::checkLocation(const std::string &path) const {

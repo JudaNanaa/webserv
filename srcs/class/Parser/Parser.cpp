@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/15 18:11:06 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 19:20:27 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,15 +225,16 @@ std::vector<Server> Pars::parseConfigFile(std::ifstream &configFile, char **env)
 			Server	newServ;
 			parseServer(newServ, configFile, ln);
 			newServ.setEnv(env);
-			int size = servVec.size() ;
+			int size = servVec.size();
 			servVec.resize(size + newServ.getData()->_portVec.size());
 			for (std::size_t i = 0; i < newServ.getData()->_portVec.size(); i++)
 			{
 				servVec[size + i] = newServ;
+				servVec[size + i].addData(newServ.getData()->clone());
 				servVec[size + i].getData()->_port = std::atoi(newServ.getData()->_portVec[i].c_str());
 				checkNecessary(servVec[size + i]);
 			}
-			
+			delete newServ.getData();
 		}
 	}
 	if (servVec.empty())

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:32:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/15 18:01:05 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 19:13:39 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ struct Data {
   public:
     Data();
     ~Data();
+	Data(const Data &other);
+	Data &operator=(const Data &other);
     bool								checkLocation(const std::string &path) const;
 	Location 							*getLocation(const std::string &path);
 	const std::string					&getErrorPage(const std::string	&code) const;

@@ -47,7 +47,7 @@ Server &Server::operator=(const Server &other)
 	if (this != &other)
 	{
 		_clientMap = other._clientMap;
-		_data = other._data->clone();
+		_data = other._data;
 		_env = other._env;
 		_host[0] = other._host[0];
 		_host[1] = other._host[1];
