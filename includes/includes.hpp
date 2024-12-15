@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 23:56:30 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 02:08:43 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,15 @@ typedef enum s_state
 # define BUFFER_SIZE 8192
 
 # define DEFAULT_UPLOAD_FILE "default"
+
+# define POST_HTML "serverDefaultPages/post.html"
+# define DELETE_HTML "serverDefaultPages/delete.html"
+# define ERROR_FOLDER "serverDefaultPages/errors/"
+
+#define SECRET "https://www.cat29.fr/riche-et-independant/"
+#define SINGE "https://media.tenor.com/_uIJwdpxI8UAAAAM/mono-serio.gif"
+#define MYCEOO "https://pbs.twimg.com/media/EaoNasxXYAUE8pA.jpg"
+#define MYCEOC "https://pbs.twimg.com/media/EaoNYXkXkAMHJJK.jpg"
 
 # define DEFAULT 1
 # define LOCATION 3

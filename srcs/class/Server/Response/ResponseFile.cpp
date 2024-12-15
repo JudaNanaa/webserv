@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 16:26:59 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 19:17:49 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 01:55:49 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ std::string Server::_openErrorFile(Request *clientRequest)
 			return finalPath;
 		}
 	}
-	finalPath = "URIs/errors/" + clientRequest->getResponsCode() + ".html"; // TODO: changer ca c'est pas propre
+	finalPath = ERROR_FOLDER;
+	finalPath += '/' + clientRequest->getResponsCode() + ".html";
 	clientRequest->openResponseFile(finalPath.c_str());
 	return finalPath;
 }
@@ -86,11 +87,27 @@ std::string Server::_getFinalPath(Request *clientRequest)
 	return finalPath;
 }
 
+std::string Server::_openFilePost(Request *clientRequest)
+{
+	clientRequest->openResponseFile(POST_HTML);
+	return POST_HTML;
+}
+
+std::string Server::_openFileDelete(Request *clientRequest)
+{
+	clientRequest->openResponseFile(DELETE_HTML);
+	return DELETE_HTML;
+}
+
 std::string Server::_normalOpenFile(Request *clientRequest, Client* client)
 {
 	std::string finalPath;
 	struct stat buf;
 
+	if (clientRequest->method() == POST_)
+		return _openFilePost(clientRequest);
+	if (clientRequest->method() == DELETE_)
+		return _openFileDelete(clientRequest);
 	finalPath = _getFinalPath(clientRequest);
 	if (access(finalPath.data(), F_OK | R_OK) is -1)
 		clientRequest->setResponsCode("404");

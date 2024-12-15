@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 18:53:34 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 02:00:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ std::string	Server::_getContentType(const std::string& path) {
 std::string	Server::_getResponseHeader(Request *request, const std::string& path) {
 	int code = atoi(request->getResponsCode().c_str());
 
-	std::cerr << "debug code : " << code << std::endl;
 	std::ostringstream oss;
 	oss << request->getResponseFileSize();
     std::string header = "HTTP/1.1 " + request->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
@@ -46,6 +45,7 @@ std::string	Server::_getResponseHeader(Request *request, const std::string& path
 	std::cerr << "Content type: " << _getContentType(path) << std::endl;
     header += "Content-Length: " + oss.str() + "\r\n";
     header += "\r\n";
+
 	return header;
 }
 

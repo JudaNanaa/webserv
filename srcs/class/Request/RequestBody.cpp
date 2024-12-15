@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 00:01:58 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 00:12:39 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 01:35:58 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void	Request::_uploadBody(void) {
 	if (_uploadFolder.empty())
 	{
 		_uploadFolder = _server->getUploadFolder(this);
-		printnl("uploadFolder == " << _uploadFolder);
 		if (_uploadFolder.empty() is true)
 		{
 			setResponsCode("500");
@@ -54,7 +53,6 @@ void Request::addBodyRequest(const char *buff, const int &n, const bool &add) {
 		_uploadBody();
 	else
 	 	_client->setResponse();
-	printnl("getLenTotalBody()  == " << getLenTotalBody() << "_contentLenght == " << _contentLenght);
 	if (getLenTotalBody() is _contentLenght) {
 		if (_defaultFile.is_open())
 			_defaultFile.close();

@@ -6,16 +6,11 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 16:25:20 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 17:48:20 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 02:08:38 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Server.hpp"
-
-#define SECRET "https://www.cat29.fr/riche-et-independant/"
-#define SINGE "https://media.tenor.com/_uIJwdpxI8UAAAAM/mono-serio.gif"
-#define MYCEOO "https://pbs.twimg.com/media/EaoNasxXYAUE8pA.jpg"
-#define MYCEOC "https://pbs.twimg.com/media/EaoNYXkXkAMHJJK.jpg"
 
 void setCookie(std::stringstream &response, std::string key, std::string value) {
 	response

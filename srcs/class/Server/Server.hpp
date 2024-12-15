@@ -72,7 +72,8 @@ class Server {
 		std::string					_manageIfDirectory(Client *client, Request *clientRequest, std::string &finalPath);
 		bool						_ifAutoIndex(Request *clientRequest);
 		std::string					_checkIndex(const std::vector<std::string> &indexVec, const std::string &directoryPath);
-
+		std::string					_openFilePost(Request *clientRequest);
+		std::string					_openFileDelete(Request *clientRequest);
 		// Location
 		void						_sendResponseLocation(Client *client);
 		void						_handleLocation(Client *client);
