@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/11 00:28:14 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 19:26:09 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "class/GlobalData/GlobalData.hpp"
 #include "class/Server/Server.hpp"
 #include "class/Parser/Parser.hpp"
+#include <algorithm>
 #include <exception>
 #include <iostream>
 #include <stdexcept>
@@ -51,6 +52,13 @@ int main(int argc, char **argv, char **env) {
 	}
 	catch(std::exception& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
+		std::vector<Server>::iterator it = servVec.begin();
+		std::vector<Server>::iterator end = servVec.end();
+		
+		while (it is_not end) {
+			it->freeAll();
+			++it;
+		}
 		return 1;
 	}
 	data.closeServers();
