@@ -42,8 +42,7 @@ void Server::_writeBodyToCgi(Client *client, const char *buff, const std::size_t
 
 void	Server::_execChildProcess(char **cgi, const int ParentToCGI[2], const int CGIToParent[2])
 {
-    close(ParentToCGI[1]);
-    close(CGIToParent[0]);
+    close(ParentToCGI[1]), close(CGIToParent[0]);
     if (dup2(ParentToCGI[0], STDIN_FILENO) == -1)
     {
         close(CGIToParent[1]);

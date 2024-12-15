@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 20:03:24 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 21:18:41 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,11 @@ void Server::_sendResponseLocation(Client *client)
 			if (clientRequest->responseCgi() is true)
 				_responseCGI(client);
 			else
+			{
+				close(client->getCGIFD());
+				client->setCGIFD(-1);
 			 	_sendResponse(client->getClientFd(), client);
+			}
 		}
 	}
 	else
@@ -147,6 +151,7 @@ void Server::_sendResponseDefault(Client *client)
 			else
 			{
 				close(client->getCGIFD());
+				client->setCGIFD(-1);
 			 	_sendResponse(client->getClientFd(), client);
 			}
 		}
@@ -162,7 +167,7 @@ t_state Server::giveClientResponse(const int &fd) {
 	client = _getClient(fd);
 	if (std::strncmp(client->getRequest()->path().c_str(), "/auth/", 6) is 0 && client->getRequest()->getResponsCode() is "200")
 		_handleAuth(client);
-	if (client->getRequest()->getRequestType() is LOCATION)
+	else if (client->getRequest()->getRequestType() is LOCATION)
 		_sendResponseLocation(client);
 	else 
 		_sendResponseDefault(client);

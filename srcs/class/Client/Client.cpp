@@ -4,17 +4,21 @@
 #include <iostream>
 
 Client::Client(int const &fd, Server *server)
-    : _fd(fd),
-      _pid(-1),
-      _CGIStatus(-1),
-      _request(new Request(this, server)),
-      _server(server)
+    :	_fd(fd),
+		_pipeFD(-1),
+    	_pid(-1),
+    	_CGIStatus(-1),
+    	_request(new Request(this, server)),
+    	_server(server)
 {
 }
 
 Client::~Client() {
 	if (_request)
 		delete _request;
+	if (_pipeFD != -1)
+		close(_pipeFD);
+	close(_fd);
 	std::cerr << "client destroyed" << std::endl;
 }
 

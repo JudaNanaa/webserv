@@ -133,7 +133,6 @@ void GlobalData::_removeClient(const int &fd) {
 	server = _getServerWithClientFd(fd);
 	server->removeClientInMap(fd);
 	epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL);
-	close(fd);
 }
 
 bool GlobalData::_isServerFd(const int &fd) {

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 16:25:20 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 02:08:38 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 21:23:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@ void Server::_handleAuth(Client* client) {
 	Request* request = client->getRequest();
 	std::stringstream response;
 
-	if (request->path() is "/auth/login"){
+	if (request->path() is "/auth/login") {
+		printnl("click on login !!");
+		request->setResponsCode("302");
 		response << "HTTP/1.1 " << request->getResponsCode() << " " << getMessageCode(std::atoi(request->getResponsCode().c_str())) << "\r\n"; 
 		response << "Content-Length: 0\r\n";
 		if (request->isKeyfindInHeader("Cookie") is false || request->find("Cookie").find("auth=true") not_found) {
@@ -37,9 +39,10 @@ void Server::_handleAuth(Client* client) {
 			throw std::runtime_error("Can't send the message !");
 		}
 	} else if (request->path() is "/auth/secret") {
+		printnl("click on secret !!");
 		std::string header = request->getHeader();
 		if (request->isKeyfindInHeader("Cookie") is true) {
-			if (request->find("Cookie").find("auth=true") is_found) 
+			if (request->find("Cookie").find("auth=true") is_found)
 				_sendRedirect(client, SECRET);
 			else 
 				_sendRedirect(client, MYCEOC);
