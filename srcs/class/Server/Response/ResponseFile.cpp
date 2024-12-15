@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 16:26:59 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 01:55:49 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 19:37:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,14 @@ std::string Server::_openErrorFile(Request *clientRequest)
 						finalPath =  location->root() + '/' + errorPage;
 				}
 				else
-					finalPath =  locationError->root() + '/' + errorPage;				
+					finalPath =  locationError->root() + '/' + errorPage;
+			}
+			else
+			{
+				if (location->root().empty())
+					finalPath = _data->_root + '/' + errorPage;
+				else
+					finalPath =  location->root() + '/' + errorPage;
 			}
 			if (access(finalPath.data(), F_OK | R_OK) == 0)
 			{
@@ -53,10 +60,12 @@ std::string Server::_openErrorFile(Request *clientRequest)
 		{
 			Location *locationError = _data->getLocation(errorPage);
 			if (locationError->root().empty())
-					finalPath = _data->_root + '/' + errorPage;
+				finalPath = _data->_root + '/' + errorPage;
 			else
-				finalPath =  locationError->root() + '/' + errorPage;			
+				finalPath =  locationError->root() + '/' + errorPage;	
 		}
+		else
+			finalPath = _data->_root + '/' + errorPage;
 		if (access(finalPath.data(), F_OK | R_OK) == 0)
 		{
 			clientRequest->openResponseFile(finalPath.c_str());
