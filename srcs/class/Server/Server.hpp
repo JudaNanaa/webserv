@@ -30,10 +30,11 @@ struct Data ;
 
 class Server {
 	private:
-		int						_socket_fd;
-		std::string				_host[2];
-		std::map<int, Client*>	_clientMap;
-		char					**_env;
+		int							_socket_fd;
+		std::string					_host[2];
+		std::map<int, Client*>		_clientMap;
+		char						**_env;
+		Data						*_data;
 
 		// CGI
 		void						_responseCgiIfNoProblem(Client *client);
@@ -94,7 +95,6 @@ class Server {
 		
 		~Server();
 
-    	Data					*_data;
 		/*		SETTER		*/
 		void						setEnv(char **env);
 		bool						isCgi(const std::string& path);
@@ -107,6 +107,7 @@ class Server {
 		bool						isServerHost(std::string const &str) const;
 		bool						uploadFolderIsSet(Request *request) const;
 		const std::string			getUploadFolder(Request *request) const;
+		Data						*getData(void) const;
 		// Other 
 		void						init();
 		void						addClientToMap(Client *client);

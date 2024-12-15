@@ -6,11 +6,12 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 23:06:52 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/13 10:22:41 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 02:14:30 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <sys/epoll.h>
 
 Client *Server::_getClient(const int &fd) {
 	return this->_clientMap[fd];
@@ -34,4 +35,8 @@ void	Server::setEnv(char **env) {
 
 char	**Server::getEnv( void ) const {
 	return _env;
+}
+
+Data *Server::getData(void) const {
+	return _data;
 }

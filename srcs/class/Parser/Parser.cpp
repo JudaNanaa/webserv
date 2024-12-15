@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 23:03:20 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 02:15:04 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,9 +208,9 @@ void	Pars::parseServer(Server &serv, std::ifstream& configFile, int &lineNumber)
 }
 
 void	Pars::checkNecessary(Server& serv) {
-	if (serv._data->_root.empty())
+	if (serv.getData()->_root.empty())
 		throw std::invalid_argument("no root");
-	else if (serv._data->_port <= 1024 || serv._data->_port > 65535)
+	else if (serv.getData()->_port <= 1024 || serv.getData()->_port > 65535)
 		throw std::invalid_argument("invalid port");
 }
 
