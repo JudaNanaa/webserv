@@ -42,6 +42,20 @@ Server::~Server(void) {
 		close(this->_socket_fd);
 }
 
+Server &Server::operator=(const Server &other)
+{
+	if (this != &other)
+	{
+		_clientMap = other._clientMap;
+		_data = other._data->clone();
+		_env = other._env;
+		_host[0] = other._host[0];
+		_host[1] = other._host[1];
+		_socket_fd = other._socket_fd;
+	}
+	return *this;
+}
+
 void Server::freeAll(void) {
 	std::map<int, Client *>::iterator it = _clientMap.begin();
 	std::map<int, Client *>::iterator end = _clientMap.end();
@@ -58,6 +72,9 @@ void Server::init(void) {
 	struct sockaddr_in server_addr;
 	int opt = 1;
 	// Open socket
+	std::stringstream ss;
+	ss << this->_data->_port;
+
 	this->_socket_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (this->_socket_fd is -1)
 		throw std::runtime_error("Can't open socket");
@@ -75,12 +92,10 @@ void Server::init(void) {
 
 	// Link socket
 	if (bind(this->_socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
-        throw std::runtime_error("Can't bind the socket");
+        throw std::runtime_error("Can't bind the socket port " + ss.str());
 
 	if (listen(this->_socket_fd, INT_MAX) < 0)
         throw std::runtime_error("Can't listen on this socket");
-	std::stringstream ss;
-	ss << this->_data->_port;
 	this->_host[0] = "127.0.0.1:" + ss.str();
 	this->_host[1] = "localhost:" + ss.str();
 	std::cout << "server on : http://" << this->_host[0] << std::endl;

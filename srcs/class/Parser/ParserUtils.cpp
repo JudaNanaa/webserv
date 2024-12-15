@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 13:07:33 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 23:06:08 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 17:17:00 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,8 @@
 #include <vector>
 #include <cstddef>
 
-
 void Pars::addPort(Data* data, const std::string &port) {
-  if (!port.empty())
-    data->_port = std::atoi(port.c_str());
+	data->_portVec = split(port, " ");
 }
 
 void Pars::addServName(Data* data, const std::string &name) {

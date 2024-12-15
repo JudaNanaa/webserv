@@ -92,7 +92,7 @@ class Server {
 		void						_addingBody(Client *client, const char *buff, const int &n);
 	public:
 		Server();
-		
+		Server						&operator=(const Server &other);
 		~Server();
 
 		/*		SETTER		*/

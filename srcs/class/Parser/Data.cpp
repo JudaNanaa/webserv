@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:35:03 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/14 19:42:19 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 18:06:57 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,27 @@ Data::Data() {
 
 Data::~Data() {
   
+}
+
+Data *Data::clone(void) const
+{
+	Data *dest;
+
+	dest = new Data();
+	dest->_portVec = _portVec;
+	dest->_port = _port;
+	dest->_internal = _internal;
+	dest->_serverName = _serverName;
+	dest->_root = _root;
+    dest->_uploadFolder = _uploadFolder;
+	dest->_allowedMethods = _allowedMethods;
+	dest->_errorPages =	_errorPages;
+	dest->_autoIndex = _autoIndex;	
+	dest->_cgi = _cgi;
+	dest->_clientMaxBodySize = _clientMaxBodySize;	
+	dest->_locations = _locations;
+	dest->_index = _index;
+	return dest;
 }
 
 bool Data::checkLocation(const std::string &path) const {

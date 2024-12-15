@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:50:51 by itahri            #+#    #+#             */
-/*   Updated: 2024/12/15 02:15:04 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 18:11:06 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Location.hpp"
 #include <algorithm>
 #include <cctype>
+#include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
@@ -161,7 +162,6 @@ void Pars::handleLine(std::string &line, std::ifstream& configFile, Data* data, 
 	}
 
 	normalizeLine(line);
-	printnl("line before == [" << line << "]");
 	type = line.substr(0, line.find(' '));
 
 	if (type == "location") {
@@ -224,14 +224,22 @@ std::vector<Server> Pars::parseConfigFile(std::ifstream &configFile, char **env)
 		if (trim(line) == "server") {
 			Server	newServ;
 			parseServer(newServ, configFile, ln);
-			newServ.setEnv(env), checkNecessary(newServ);
-			servVec.push_back(newServ);
+			newServ.setEnv(env);
+			int size = servVec.size() ;
+			servVec.resize(size + newServ.getData()->_portVec.size());
+			for (std::size_t i = 0; i < newServ.getData()->_portVec.size(); i++)
+			{
+				servVec[size + i] = newServ;
+				servVec[size + i].getData()->_port = std::atoi(newServ.getData()->_portVec[i].c_str());
+				checkNecessary(servVec[size + i]);
+			}
+			
 		}
 	}
 	if (servVec.empty())
 		throw std::runtime_error("no server found");
-  printnl("PARSING OK!");
-  return servVec;
+	printnl("PARSING OK!");
+	return servVec;
 }
 
 std::vector<Server> Pars::parse(std::string path, char **env) {
