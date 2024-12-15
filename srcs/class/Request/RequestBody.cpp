@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 00:01:58 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 01:35:58 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 16:33:25 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	Request::_uploadBody(void) {
 		_uploadFolder = _server->getUploadFolder(this);
 		if (_uploadFolder.empty() is true)
 		{
-			setResponsCode("500");
+			eraseInBody(0, INT_MAX);
 			return;
 		}
 	}
@@ -49,14 +49,17 @@ void	Request::_uploadBody(void) {
 void Request::addBodyRequest(const char *buff, const int &n, const bool &add) {
 	if (add)
 		_appendBody(buff, n);
-	if (_method is POST_ && _server->uploadFolderIsSet(this))
+	if (_method is POST_ && _server->uploadFolderIsSet(this) is true)
 		_uploadBody();
 	else
-	 	_client->setResponse();
+	 	eraseInBody(0, INT_MAX);
 	if (getLenTotalBody() is _contentLenght) {
 		if (_defaultFile.is_open())
 			_defaultFile.close();
-		_client->setResponse();
+		if (_method is POST_ && (_server->uploadFolderIsSet(this) is false || _server->getUploadFolder(this).empty()))
+			_client->setResponse("500");
+		else
+			_client->setResponse();
 	}
 	else if (getLenTotalBody() > _contentLenght) {
 		std::cerr << "LEN TOO LARGE: body: " << getLenTotalBody() << " | content length: " << _contentLenght << std::endl;

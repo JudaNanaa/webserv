@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 19:42:11 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 23:56:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 16:38:14 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	RawBits::_flushBuffer(const long &pos, const long &n) {
 }
 
 int	RawBits::handleFileHeader(void) {
+	char		*header_c;
 	long		headerEnd;
 	long		fileStart;
 	std::string	header;
@@ -46,8 +47,10 @@ int	RawBits::handleFileHeader(void) {
 	if (headerEnd == -1)	/* header incomplete */
 		return STOP;
 
-	header = _substrBody(fileStart, headerEnd - fileStart);
-	
+	header_c = _substrBody(fileStart, headerEnd - fileStart);
+	header = header_c;
+	delete [] header_c;
+
 	_currentFile.clean();
 	checkFileHeader(_currentFile, header);
 

@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    stdin_open: true
+    ports:
+      - "8080-8089:8080-8089"
+    tty: true
+
