@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/14 22:07:04 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 20:02:39 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,5 @@ void Server::_responseCGI(Client *client)
 	std::cerr << "-------- RESPONSE CGI --------" << std::endl;
 	if (client->getCGIStatus() == EXIT_SUCCESS)
 		_responseCgiIfNoProblem(client);
-		
 	client->getRequest()->setState(SEND);
 }

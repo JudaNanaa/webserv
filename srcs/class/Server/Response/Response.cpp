@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 02:00:41 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/15 20:03:24 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,10 @@ void Server::_sendResponseDefault(Client *client)
 			if (clientRequest->responseCgi() is true)
 				_responseCGI(client);
 			else
+			{
+				close(client->getCGIFD());
 			 	_sendResponse(client->getClientFd(), client);
+			}
 		}
 	}
 	else
