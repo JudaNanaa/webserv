@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 01:01:30 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 21:18:41 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/16 18:04:05 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,8 @@ void Server::_sendResponse(const int &fd, Client *client) {
 	Request *clientRequest = client->getRequest();
 	char	buffer[BUFFER_SIZE];
 	std::size_t	n = 0;
-
 	std::string	finalPath;
-	
+
 	if (clientRequest->responseFileOpen() is false)
 	{
 		std::cerr << "SEND RESPONSE" << std::endl;
@@ -69,7 +68,6 @@ void Server::_sendResponse(const int &fd, Client *client) {
 			throw std::runtime_error("Can't send the message !");
 		}
 	}
-
 	n += clientRequest->readResponseFile(buffer, BUFFER_SIZE);
 	if (send(fd, buffer, n, MSG_NOSIGNAL) is -1)
 	{

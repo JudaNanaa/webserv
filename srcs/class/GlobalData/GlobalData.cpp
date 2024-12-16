@@ -4,6 +4,7 @@
 #include "../Parser/Parser.hpp"
 #include "../../../includes/includes.hpp"
 #include <algorithm>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
@@ -85,10 +86,10 @@ Server *GlobalData::_getServerWithClientFd(const int &fd) {
 
 	while (it is_not end) {
 		if (it->second.ifClientInServer(fd) is true)
-			break;
+			return &it->second;
 		++it;
 	}
-	return &it->second;
+	return NULL;
 }
 
 void GlobalData::_modifyClientEvent(const int &fd, const uint32_t &events)
@@ -130,9 +131,13 @@ void GlobalData::_handleClientOut(const int &fd) {
 void GlobalData::_removeClient(const int &fd) {
 	Server *server;
 
+	if (epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL) == -1)
+	{
+		printnl("Error epoll_ctl_del");
+		return;
+	}
 	server = _getServerWithClientFd(fd);
 	server->removeClientInMap(fd);
-	epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, fd, NULL);
 }
 
 bool GlobalData::_isServerFd(const int &fd) {

@@ -39,7 +39,6 @@ class Server {
 		// CGI
 		void						_responseCgiIfNoProblem(Client *client);
 		char						*_checkContentLength(char *toSend, std::size_t &total);
-		void						_responseCgiError(Client *client);
 		void						_childProcess(Client *client, const int ParentToCGI[2], const int CGIToParent[2]);
 		void						_responseCGI(Client *client);
 		void						_handleCGI(Client *client);

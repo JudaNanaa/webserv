@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 23:09:46 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 00:08:30 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/16 17:09:52 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ void Server::removeClientInMap(const int &fd) {
 	Client *client;
 
 	client = _getClient(fd);
-	delete client;
 	this->_clientMap.erase(fd);
+	delete client;
 }
 
 bool Server::isServerHost(std::string const &str) const {

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 20:02:39 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/16 17:22:34 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,47 +85,6 @@ void Server::_responseCgiIfNoProblem(Client *client)
 		throw std::runtime_error("Can't send the message !");
 	}
 	delete [] toSend;
-}
-
-void Server::_responseCgiError(Client *client)
-{
-	std::ostringstream buffer;
-	Request *clientRequest = client->getRequest();
-	std::ifstream file;
-	std::string responseCode;
-
-
-	close(client->getCGIFD());
-	responseCode = clientRequest->getResponsCode();
-	if (clientRequest->getRequestType() is LOCATION)
-	{
-		Location *location = _data->getLocation(clientRequest->path());
-		if (location->errorPageIsSet(responseCode) is true)
-		{
-			_sendRedirect(client, location->getErrorPage(responseCode));
-			return;
-		}
-	}
-	if (_data->errorPageIsSet(responseCode) is true)
-	{
-		_sendRedirect(client, _data->getErrorPage(responseCode));
-		return;
-	}
-	file.open(("URIs/errors/" + clientRequest->getResponsCode() + ".html").c_str());
-	buffer << file.rdbuf();
-	std::string html_content = buffer.str();
-	int code = atoi(clientRequest->getResponsCode().c_str());
-
-	std::ostringstream oss;
-    std::string response = "HTTP/1.1 " + clientRequest->getResponsCode() + " " + getMessageCode(code)+ "\r\n";
-    response += "Content-Type: text/html\r\n";
-	oss << html_content.size();
-    response += "Content-Length: " + oss.str() + "\r\n";
-    response += "\r\n";
-    response += html_content;
-	file.close();
-	if (send(client->getClientFd(), response.c_str(), response.size(), MSG_NOSIGNAL) == -1)
-		throw std::runtime_error("Can't send the message !");
 }
 
 void Server::_responseCGI(Client *client)

@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 19:26:09 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/16 16:06:50 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #include <stdexcept>
 #include <vector>
 #include <csignal>
+
+# define DEFAULT_CONFIG_PATH "serverDefaultPages/configExample.conf"
 
 void ifSignal(int sig) {
 	(void)sig;
@@ -37,12 +39,13 @@ int main(int argc, char **argv, char **env) {
 	std::vector<Server> servVec;
 	
 	signalHandle();
-	if (argc != 2) {
+	if (argc > 2) {
 		std::cerr << "Need only one argument" << std::endl;
 		return 1;
 	}
+	const char *config_path = argc == 2 ? argv[1] : DEFAULT_CONFIG_PATH;
 	try {
-    	servVec = Pars::parse(argv[1], env);
+    	servVec = Pars::parse(config_path, env);
 	} catch (std::exception &e) {
 		std::cerr << "Error : " << e.what() << std::endl;
 		return 1;
