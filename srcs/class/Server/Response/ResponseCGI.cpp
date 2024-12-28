@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/16 17:22:34 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/28 23:20:45 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void Server::_responseCgiIfNoProblem(Client *client)
 {
 	char *toSend = NULL;
 	std::size_t total = 0;
-	char buff[BUFFER_SIZE];
 	int nbRead = BUFFER_SIZE;
 
 	toSend = new char[19];
@@ -62,7 +61,7 @@ void Server::_responseCgiIfNoProblem(Client *client)
 	total = strlen(toSend);
 	while (nbRead == BUFFER_SIZE)
 	{
-		nbRead = read(client->getCGIFD(), buff, BUFFER_SIZE);
+		nbRead = read(client->getCGIFD(), _buffer, BUFFER_SIZE);
 		if (nbRead == -1)
 		{
 			close(client->getCGIFD());
@@ -72,7 +71,7 @@ void Server::_responseCgiIfNoProblem(Client *client)
 			break;
 		char *dest = new char[total + nbRead];
 		std::memcpy(dest, toSend, total);
-		std::memcpy(&dest[total], buff, nbRead);
+		std::memcpy(&dest[total], _buffer, nbRead);
 		delete [] toSend;
 		toSend = dest;
 		total += nbRead;

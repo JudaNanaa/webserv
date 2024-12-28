@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 00:05:09 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/16 16:06:50 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/28 23:22:31 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@
 #include <stdexcept>
 #include <vector>
 #include <csignal>
-
-# define DEFAULT_CONFIG_PATH "serverDefaultPages/configExample.conf"
 
 void ifSignal(int sig) {
 	(void)sig;

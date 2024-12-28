@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/15 02:08:43 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/28 22:47:12 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ typedef enum s_state
 # define POST_HTML "serverDefaultPages/post.html"
 # define DELETE_HTML "serverDefaultPages/delete.html"
 # define ERROR_FOLDER "serverDefaultPages/errors/"
+# define DEFAULT_CONFIG_PATH "serverDefaultPages/configExample.conf"
 
 #define SECRET "https://www.cat29.fr/riche-et-independant/"
 #define SINGE "https://media.tenor.com/_uIJwdpxI8UAAAAM/mono-serio.gif"

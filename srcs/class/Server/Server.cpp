@@ -135,13 +135,12 @@ void Server::_handleDelete(Client* client) {
 }
 
 t_state Server::addClientRequest(const int &fd) {
-	char buff[BUFFER_SIZE];
 	int n;
 	Client *client = _getClient(fd);
 	Request *clientRequest = client->getRequest();
 
 	client->setUseBuffer(true);
-	n = recv(fd, buff, BUFFER_SIZE, MSG_DONTWAIT);
+	n = recv(fd, _buffer, BUFFER_SIZE, MSG_DONTWAIT);
 	if (n is -1) {
 		client->setResponse("505");
 		throw std::runtime_error("Can't recv the message !");
@@ -152,9 +151,9 @@ t_state Server::addClientRequest(const int &fd) {
 		throw std::runtime_error("Empty recv !");
 	}
 	if (client->whatToDo() is ON_HEADER)
-		_addingHeader(client, buff, n);
+		_addingHeader(client, _buffer, n);
 	if (client->whatToDo() is ON_BODY)
-		_addingBody(client, buff, n);
+		_addingBody(client, _buffer, n);
 	if (clientRequest->method() is DELETE_ && clientRequest->getResponsCode() is "200")
 		_handleDelete(client);
 	return clientRequest->getState();
