@@ -20,6 +20,7 @@
 #include <vector>
 
 bool g_running = true;
+char g_buffer[BUFFER_SIZE];
 
 GlobalData::GlobalData()
 	: _epoll_fd(-1) { 
@@ -72,7 +73,7 @@ void GlobalData::_addNewClient(Server &server) {
 		clientFd = accept(server.getSocketFd(),  (struct sockaddr *)&client_addr, &socklen);
 		if (clientFd is -1)
 			throw std::runtime_error("Can't accept the connexion with the client");
-		_addToEpoll(clientFd, EPOLLIN | EPOLLRDHUP | EPOLLHUP);
+		_addToEpoll(clientFd, EPOLLOUT | EPOLLIN | EPOLLRDHUP | EPOLLHUP);
 		client = new Client(clientFd, &server);
 		server.addClientToMap(client);
 	} catch (const std::exception &e) {
@@ -159,10 +160,12 @@ void	GlobalData::_handleEvent(const struct epoll_event& event) {
 
 void GlobalData::runServers(std::vector<Server> &servVec) {
 	int	fdsReady;
+	static int test = 0;
 
 	_initServers(servVec);
 	while (g_running) {
 		fdsReady = _waitFdsToBeReady();
+		printnl("test == " << test++);
 		for (int i = 0; i < fdsReady; i++)
 			_handleEvent(_events[i]);
 	}

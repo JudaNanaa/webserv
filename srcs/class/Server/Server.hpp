@@ -31,7 +31,6 @@ struct Data ;
 class Server {
 	private:
 		int							_socket_fd;
-		char						_buffer[BUFFER_SIZE];
 		std::string					_host[2];
 		std::map<int, Client*>		_clientMap;
 		char						**_env;

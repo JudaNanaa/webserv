@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 23:18:07 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/28 22:47:12 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/30 22:34:08 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ typedef enum s_state
 # define is_not !=
 # define not_found == std::string::npos
 # define is_found != std::string::npos
+
 extern bool g_running;
+extern char g_buffer[BUFFER_SIZE];
 
 #endif

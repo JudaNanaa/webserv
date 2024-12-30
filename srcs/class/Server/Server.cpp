@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../../../includes/includes.hpp"
 #include <asm-generic/socket.h>
 #include <cerrno>
 #include <climits>
@@ -140,7 +141,7 @@ t_state Server::addClientRequest(const int &fd) {
 	Request *clientRequest = client->getRequest();
 
 	client->setUseBuffer(true);
-	n = recv(fd, _buffer, BUFFER_SIZE, MSG_DONTWAIT);
+	n = recv(fd, g_buffer, BUFFER_SIZE, MSG_DONTWAIT);
 	if (n is -1) {
 		client->setResponse("505");
 		throw std::runtime_error("Can't recv the message !");
@@ -151,9 +152,9 @@ t_state Server::addClientRequest(const int &fd) {
 		throw std::runtime_error("Empty recv !");
 	}
 	if (client->whatToDo() is ON_HEADER)
-		_addingHeader(client, _buffer, n);
+		_addingHeader(client, g_buffer, n);
 	if (client->whatToDo() is ON_BODY)
-		_addingBody(client, _buffer, n);
+		_addingBody(client, g_buffer, n);
 	if (clientRequest->method() is DELETE_ && clientRequest->getResponsCode() is "200")
 		_handleDelete(client);
 	return clientRequest->getState();

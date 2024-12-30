@@ -6,11 +6,12 @@
 /*   By: madamou <madamou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 16:18:41 by madamou           #+#    #+#             */
-/*   Updated: 2024/12/28 23:20:45 by madamou          ###   ########.fr       */
+/*   Updated: 2024/12/30 22:36:20 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Server.hpp"
+#include "../../../../includes/includes.hpp"
 #include <cstddef>
 #include <cstring>
 #include <fstream>
@@ -61,7 +62,7 @@ void Server::_responseCgiIfNoProblem(Client *client)
 	total = strlen(toSend);
 	while (nbRead == BUFFER_SIZE)
 	{
-		nbRead = read(client->getCGIFD(), _buffer, BUFFER_SIZE);
+		nbRead = read(client->getCGIFD(), g_buffer, BUFFER_SIZE);
 		if (nbRead == -1)
 		{
 			close(client->getCGIFD());
@@ -71,7 +72,7 @@ void Server::_responseCgiIfNoProblem(Client *client)
 			break;
 		char *dest = new char[total + nbRead];
 		std::memcpy(dest, toSend, total);
-		std::memcpy(&dest[total], _buffer, nbRead);
+		std::memcpy(&dest[total], g_buffer, nbRead);
 		delete [] toSend;
 		toSend = dest;
 		total += nbRead;

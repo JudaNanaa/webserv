@@ -49,10 +49,10 @@ void RawBits::_appendBody(const char *str, const int &n) {
 	char *dest = new char[_lenBody + n];
 
 	if (_body) {
-		std::memmove(dest, _body, _lenBody);
+		std::memcpy(dest, _body, _lenBody);
 		delete [] _body;
 	}
-	std::memmove(&dest[_lenBody], str, n);
+	std::memcpy(&dest[_lenBody], str, n);
 	_body = dest;
 	_lenBody += n;
 	_lenTotalBody += n;
@@ -62,10 +62,10 @@ void RawBits::BuffToRequest(const char *buff, const size_t &n) {
 	char *dest = new char[_lenRequest + n];
 
 	if (_request) {
-		std::memmove(dest, _request, _lenRequest);
+		std::memcpy(dest, _request, _lenRequest);
 		delete [] _request;
 	}
-	std::memmove(&dest[_lenRequest], buff, n);
+	std::memcpy(&dest[_lenRequest], buff, n);
 	_request = dest;
 	_lenRequest += n;
 }
@@ -125,7 +125,7 @@ void RawBits::splitRequest(void) {
 char* RawBits::_substrBody(const size_t &pos, const size_t &n) {
 	char *result = new char[n + 1];
 
-	std::memmove(result, &_body[pos], n);
+	std::memcpy(result, &_body[pos], n);
 	result[n] = '\0';
 	return result;
 }
@@ -140,8 +140,8 @@ void RawBits::eraseInBody(const size_t &pos, const size_t &n) {
 	}
 	char *newBody = new char[_lenBody - n];
 
-	std::memmove(newBody, _body, pos);
-	std::memmove(&newBody[pos], &_body[pos + n], _lenBody - (pos + n));
+	std::memcpy(newBody, _body, pos);
+	std::memcpy(&newBody[pos], &_body[pos + n], _lenBody - (pos + n));
     delete [] _body;
     _body = newBody;
     _lenBody -= n;
