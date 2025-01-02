@@ -21,11 +21,13 @@ void Server::_writeBodyToCgi(Client *client, const char *buff, const std::size_t
 
 	if (client->getUseBuffer() is true)
 	{
-		write(client->getParentToCGI(), buff, n);
+		if (write(client->getParentToCGI(), buff, n) == -1)
+			return client->setResponse("500");
 		clientRequest->incrementSizeBody(n);
 	}
 	else
-		write(client->getParentToCGI(), clientRequest->getBody(), clientRequest->getLenBody());
+		if (write(client->getParentToCGI(), clientRequest->getBody(), clientRequest->getLenBody()) == -1)
+			return client->setResponse("500");
 	if (clientRequest->getLenTotalBody() is clientRequest->getContentLenght())
 	{
 		close(client->getParentToCGI());

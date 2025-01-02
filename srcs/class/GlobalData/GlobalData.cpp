@@ -160,12 +160,10 @@ void	GlobalData::_handleEvent(const struct epoll_event& event) {
 
 void GlobalData::runServers(std::vector<Server> &servVec) {
 	int	fdsReady;
-	static int test = 0;
 
 	_initServers(servVec);
 	while (g_running) {
 		fdsReady = _waitFdsToBeReady();
-		printnl("test == " << test++);
 		for (int i = 0; i < fdsReady; i++)
 			_handleEvent(_events[i]);
 	}
